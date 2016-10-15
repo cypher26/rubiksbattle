@@ -3,7 +3,7 @@
 const express = require('express');
 const socketIO = require('socket.io');
 const path = require('path');
-var favicon = require('serve-favicon');
+// var favicon = require('serve-favicon');
 
 
 
@@ -28,10 +28,10 @@ const server = express()
 	.use("/partials",express.static(__dirname + '/partials'))
 	.use("/img",express.static(__dirname + '/img'))
 	// .use(favicon(__dirname + '/favicon.ico'))
-	// .use("/node_modules/angular/",express.static(__dirname + '/node_modules/angular/'))
-	.use("/node_modules/angular-route/",express.static(__dirname + '/node_modules/angular-route/'))
-	.use ("/node_modules/angular-ui-bootstrap/",express.static(__dirname + '/node_modules/angular-ui-bootstrap/dist'))
-	.use ("/node_modules/font-awesome/",express.static(__dirname = "node_modules/font-awesome/"))
+	// .use("/node_modules/",express.static(__dirname + '/node_modules/angular/'))
+	// .use("/node_modules/angular-route/",express.static(__dirname + '/node_modules/angular-route/'))
+	// .use ("/node_modules/angular-ui-bootstrap/",express.static(__dirname + '/node_modules/angular-ui-bootstrap/dist'))
+	// .use ("/node_modules/font-awesome/",express.static(__dirname = "node_modules/font-awesome/"))
 	// .use("*",function(req,res){
 	//   res.sendFile(__dirname + '/partials/404.html')
 	// })
