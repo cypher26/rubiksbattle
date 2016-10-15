@@ -6,7 +6,7 @@
 /**
  * Main AngularJS Web Application
  */
-var app = angular.module('tutorialWebApp', [
+var app = angular.module('webApp', [
   'ngRoute'
 ]);
 
@@ -45,7 +45,7 @@ app.controller('PageCtrl', function (/* $scope, $location, $http */) {
 
   // Activates the Carousel
   $('.carousel').carousel({
-    interval: 5000
+    interval: 4000
   });
 
   // Activates Tooltips for Social Links

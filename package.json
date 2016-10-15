@@ -15,7 +15,10 @@
   "dependencies": {
     "express": "4.13.4",
     "socket.io": "1.4.6",
-    "angular": "1.2.31"
+    "angular": "1.2.31",
+    "serve-favicon ": "2.3.0",
+    "angular-ui-bootstrap " :"2.2.0",
+    "font-awesome":"4.6.3"
   
   }
 }
