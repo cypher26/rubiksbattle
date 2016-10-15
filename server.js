@@ -22,14 +22,15 @@ const server = express()
 	.use("/css",express.static(__dirname + '/css'))
 	.use("/templates",express.static(__dirname + '/templates'))
 	.use("/partials",express.static(__dirname + '/partials'))
-	
-	.use("/node_modules/angular/",express.static(__dirname + '/node_modules/angular/'))
+	// .use("/node_modules/angular/",express.static(__dirname + '/node_modules/angular/'))
+	.use("/node_modules/angular-route/",express.static(__dirname + '/node_modules/angular-route/'))
   // .use(function(req, res) {
   // 		res.sendFile(INDEX); 
   // 		// res.sendFile(INDEX); 
 
   // })
   .listen(PORT, () => console.log(`Listening on ${ PORT }`));
+
 
 
 
