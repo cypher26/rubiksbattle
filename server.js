@@ -19,22 +19,23 @@ router.get("/",function(req,res){
 const server = express()
 	.use("/",router)
 	// .use("",express.static(__dirname + '/views'))
-	.use("",express.static(__dirname + ''))
-	// .use("/js",express.static(__dirname + '/js'))
-	// .use("/css",express.static(__dirname + '/css'))
-	// .use("/fonts",express.static(__dirname + '/fonts'))
+	// .use("",express.static(__dirname + ''))
+	.use("/js",express.static(__dirname + '/js'))
+	.use("/css",express.static(__dirname + '/css'))
+	.use("/fonts",express.static(__dirname + '/fonts'))
 	
-	// .use("/templates",express.static(__dirname + '/templates'))
-	// .use("/partials",express.static(__dirname + '/partials'))
-	// .use("/img",express.static(__dirname + '/img'))
+	.use("/templates",express.static(__dirname + '/templates'))
+	.use("/partials",express.static(__dirname + '/partials'))
+	.use("/img",express.static(__dirname + '/img'))
+	.use("/node_modules",express.static(__dirname + '/node_modules'))
 	// .use(favicon(__dirname + '/favicon.ico'))
 	// .use("/node_modules/",express.static(__dirname + '/node_modules/angular/'))
 	// .use("/node_modules/angular-route/",express.static(__dirname + '/node_modules/angular-route/'))
 	// .use ("/node_modules/angular-ui-bootstrap/",express.static(__dirname + '/node_modules/angular-ui-bootstrap/dist'))
 	// .use ("/node_modules/font-awesome/",express.static(__dirname = "node_modules/font-awesome/"))
-	// .use("*",function(req,res){
-	//   res.sendFile(__dirname + '/partials/404.html')
-	// })
+	.use("*",function(req,res){
+	  res.sendFile(__dirname + '/partials/404.html')
+	})
   // .use(function(req, res) {
   // 		res.sendFile(INDEX); 
   // 		// res.sendFile(INDEX); 
