@@ -44,8 +44,29 @@ app.controller('BlogCtrl', function (/* $scope, $location, $http */) {
 /**
  * Controls all other Pages
  */
-app.controller('PageCtrl', function (/* $scope, $location, $http */) {
+app.controller('PageCtrl', function ($scope, $location, $http) {
   console.log("Page Controller reporting for duty.");
+
+  $scope.testName = 'napakalupet haha';
+  $scope.testFunc = function(){
+      
+    
+
+      $http.post('/',{testVariable:'wew xD'}).
+        success(function(data) {
+            console.log("posted successfully " + data.uno );
+        }).error(function(data) {
+            console.error("error in posting");
+        });
+         
+         
+
+    
+ 
+              
+  };
+
+
 
   // Activates the Carousel
   $('.carousel').carousel({

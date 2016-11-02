@@ -16,7 +16,8 @@
     "express": "4.13.4",
     "socket.io": "1.4.6",
     "angular": "1.2.31",
-    "font-awesome":"4.6.3"
+    "font-awesome":"4.6.3",
+    "body-parser": "*"
   
   }
 }
