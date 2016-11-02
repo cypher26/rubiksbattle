@@ -13,7 +13,8 @@ var app = angular.module('webApp', [
 /**
  * Configure the Routes
  */
-app.config(['$routeProvider', function ($routeProvider) {
+app.config(['$routeProvider','$locationProvider', function ($routeProvider,$locationProvider) {
+  $locationProvider.html5Mode(true);
   $routeProvider
     // Home
     .when("/", {templateUrl: "partials/home.html", controller: "PageCtrl"})
@@ -26,8 +27,11 @@ app.config(['$routeProvider', function ($routeProvider) {
     // Blog
     .when("/blog", {templateUrl: "partials/blog.html", controller: "BlogCtrl"})
     .when("/blog/post", {templateUrl: "partials/blog_item.html", controller: "BlogCtrl"})
+    .when("/404", {templateUrl: "partials/404.html", controller: "BlogCtrl"})
     // else 404
-    .otherwise("/404", {templateUrl: "partials/404.html", controller: "PageCtrl"});
+    .otherwise({redirectTo: '/404'});
+    // .otherwise("/404", {templateUrl: "partials/404.html", controller: "PageCtrl"});
+   
 }]);
 
 /**
