@@ -1,11 +1,11 @@
 'use strict';
-
-const express = require('express');
-const socketIO = require('socket.io');
-const path = require('path');
-const bodyParser =require('body-parser');
 // var favicon = require('serve-favicon');
+const express = require('express');
+// const socketIO = require('socket.io');
+const path = require('path');
+var session = require('express-session');
 
+// var mongoose = require('mongoose');
 
 
 
@@ -13,38 +13,38 @@ const bodyParser =require('body-parser');
 
 const PORT = process.env.PORT || 5000;
 // const INDEX = path.join(__dirname, '/views/index.html');
-
 var router = express.Router();
-router.get("/",function(req,res){
-	// res.send('hello world');
-  res.sendFile(__dirname + "/index.html");
-  // console.log(req.param('id'));
-});
+var users = require('./routes/users')
 
 
-router.use(bodyParser.json());
-router.use(bodyParser.urlencoded({extended:false}));
+// router.get("/",function(req,res){
+// 	// res.send('hello world');
+//   res.sendFile(__dirname + "/index.html");
+//   // console.log('testing get');
+//   // res.redirect("/");
+//   // console.log(req.param('id'));
+// });
 
 
-router.post("/",function(req,res){
-		console.log(req.body.testVariable);
-		console.log('tset ule');
 
-		// res.write({ statTest:'testing ule'});
-		res.send({uno:'one', dos:'two'});
 
-});
+var server = express()
 
-router.use('/',express.static(__dirname + '/public'));
-router.use("/templates",express.static(__dirname + '/templates'))
-router.use("/partials",express.static(__dirname + '/partials'))
-router.use("/node_modules",express.static(__dirname + '/node_modules'))
-	.all('/*', function(req, res, next) { // Just send the index.html for other files to support HTML5Mode
-     res.sendFile('/index.html', { root: __dirname });
-	})
-	
-const server = express()
-	.use("/",router)
+.engine('html', require('ejs').renderFile)
+.set('view engine', 'html')
+.use(session({
+    secret: 'secret',
+    saveUninitialized: true,
+    resave: true
+}))
+.use('/',express.static(__dirname + '/public'))
+.use('/js',express.static(__dirname + '/controllers'))
+.use("/templates",express.static(__dirname + '/templates'))
+.use("/partials",express.static(__dirname + '/partials'))
+.use("/node_modules",express.static(__dirname + '/node_modules'))
+
+.use("/",users)
+	// .set('view engine','html');
 	// .use("",express.static(__dirname + '/views'))
 	// .use("",express.static(__dirname + ''))
 	// .use("/js",express.static(__dirname + '/js'))
@@ -74,24 +74,5 @@ const server = express()
 
 
 
-const io = socketIO(server);
+var io = require('./socket/socket').listen(server)
 
-
-
-io.sockets.on('connection', function (socket) {
-		 console.log('Client connected hehe');
-
-		 	
-});
-
-// io.on('connection', (socket) => {
-//   console.log('Client connected');
-//   socket.on('disconnect', () => console.log('Client disconnected'));
-
-	
-
-// });
-
-
-
-setInterval(() => io.emit('time', new Date().toTimeString()), 1000);

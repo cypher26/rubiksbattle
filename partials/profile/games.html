@@ -1,0 +1,121 @@
+	<div class='row' style='border:0px solid; background-color:#F2F2F2;'>
+				
+					<div ng-include='"templates/side_template.html"' ></div>
+						
+
+							<div class="col-xs-9" style='font-family:; border:0px solid;'>
+					
+						<!-- <div class="col-xs-12" style='border:0px solid; background-color:#FFFFFF;'> -->
+  							
+		  						<div class="container col-xs-12" style='border:0px solid;' >
+								 
+								  <ul class="nav nav-tabs">
+								    <li><a data-toggle="" href="/profile"><span class='glyphicon glyphicon-pencil'>
+								    </span> About Me</a></li>
+								    <li class="active"><a  href="/profile/games"><span class='glyphicon glyphicon-signal'></span> Games</a></li>
+								  	<li><a data-toggle="" href="/profile/friends"><span class='glyphicon glyphicon-user'>
+								    </span> Friends</a></li>
+								  </ul>
+
+								  		<div class="tab-content">
+											    <div id="about" class="tab-pane fade in active" style='background-color:#FFFFFF; padding:10px;'>
+											    		<div class='row' align='right' style='padding-right:60px;'>
+											    				<font style='color:#a4a4a4;'>Total Games </font>
+														(<a id='totalGames'>123</a>)
+													
+											    	</div>
+											    		<div class='row' style='border:0px solid;'>
+														    		<div class='col-xs-12' style='border:0px solid;'>
+
+														    
+														    	<form id='searchUser' class="form-inline" style='border:0px solid;'>
+																  <div class="form-group has-success has-feedback">
+																    <label class="control-label" for="inputSuccess4"></label>
+																    <input placeholder='Search Games..'
+																     type="text" class="form-control" id="inputSearch">
+																    <span class="glyphicon glyphicon-search form-control-feedback"></span>
+																  </div>
+
+															
+																		Results for 123
+																		
+																	</i>
+																	</div>
+																<script>
+																$('#searchUser').submit(function(e){
+																	      e.preventDefault();
+																	      //do something
+																	      window.location.href= "games.php?search=" + $("#inputSearch").val();
+																	 });
+																</script>
+																</form>
+
+																</div>	
+																<!-- <strong style='font-size:16'>
+
+																	<span style='margin-left:100px; margin-right:300px;'>Event</span>
+																	<span style='margin-right:40px;'>Cube</span>
+																	<span style='margin-right:70px;'>Details</span>
+																	<span style='margin-right:80px;'>Date</span>
+																	<span>Action</span>
+																	
+																</strong> -->
+											      			  <table id='tblGames' class="table table-striped" style='font-size:13px; border:0px solid;'>
+															    <thead>
+															      <tr>
+															      		<th></th>
+								                                        <th>Event</th>
+								                                        <th>Cube</th>
+								                                        <th>Details</th>
+								                                        <th>Date</th>
+								                                        <th>Action</th>
+								                                        
+								                                      </tr>
+															    </thead>
+															    <tbody>
+		   							 <tr ng-repeat="i in getNumber(150) track by $index">
+				        		  	<td style='border:0px solid; width:120px; '><strong style='color:#a4a4a4;'>Single player</td>
+								      <td style=''><img src="/img/user/userDefault.png" style='width:20px; height:20px;'>
+								        	<a href='' style='color:#000000;'>123</a> vs 
+								        	<img src="/img/user/robotDefault.png" style='width:20px; height:20px;'> 
+							        	<a href='../member/?id=$row[requestTo]' style='color:#000000;'>123</a></td>
+								        <td><span class='glyphicon $cubeLogo' style='margin-right:0px;'></span> 3x3x3</td>
+								        <td>1 | 0 <strong><span style='color:#ff0000'>lose</span></strong></td>
+								        <td>2016-11-06</a></td>
+								        <td><a href='../archive.php?id=$row[archiveGame_id]' target=''><center>View</center></a>
+								      </tr>
+																		    
+																		
+															      	
+															     
+															    </tbody>
+														  </table>
+												  <script>
+												  $('#tblGames').scrollTableBody({rowsToDisplay:7});
+												  // $('#tblGames').scrollTableBody());
+												  </script>
+											
+														 
+											     	 </div>
+												   	  <div id="friends" class="tab-pane fade" style='background-color:#FFFFFF; padding-top:1px;'>
+												    		
+															 			
+
+											   
+											    </div>
+										    <div id="games" class="tab-pane fade" style='background-color:#FFFFFF; padding-top:1px;'>
+											    
+													    
+
+
+												  </div>
+								   			</div>
+								 	</div>
+										
+
+  						
+
+  					
+  								<div class="col-xs-12" style=' margin-top:10px;'></div>
+		
+					</div>

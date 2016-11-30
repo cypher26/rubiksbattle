@@ -13,12 +13,22 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "express": "4.13.4",
-    "socket.io": "1.4.6",
-    "angular": "1.2.31",
-    "font-awesome":"4.6.3",
-    "body-parser": "*",
-    "serve-favicon":"v2.3.0"
-  
+    "express": "v4.13.4",
+    "socket.io": "v1.4.6",
+    "angular": "v1.5.8",
+    "font-awesome":"v4.6.3",
+    "body-parser": "v1.15.2",
+    "serve-favicon":"v2.3.0",
+    "ejs":"v2.5.2",
+    "express-session":"v1.14.2",
+    "mongoose":"v4.6.8",
+    "mongodb":"v2.2.11",
+    "async":"v2.1.2",
+    "angular-ui-bootstrap":"v2.2.0",
+    "angular-smart-table":"v2.1.8",
+    "sticky-table-headers":"v0.1.19",
+    "mongoose-deep-populate":"v3.0.0",
+     "mongoose-sequence":"3.1.0",
+     "mongoose-auto-increment":"v5.0.1"
   }
 }

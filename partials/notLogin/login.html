@@ -1,0 +1,124 @@
+
+			<img id='imgPrimary' src='img/primaryLogo.png' style='width:220px;
+				 position:absolute; height:170px;  right:100px; top:100px;  border:0px solid;'></img>
+		<div id='mainRow' style='border:0px solid;' > 
+			<!-- 	<ol class="breadcrumb">
+			 <li><a href="#">  <img  style='height:50px; width:100px;'
+				  	src="img/primaryLogo.png">  </a> </li>
+				  <li >Home</a></li>
+				  <li><a href="#">Library</a></li>
+				  <li><a href="#">Data</li>
+				</ol> -->
+				
+				
+				<script>
+				$('#imgPrimary').css({left: (($('body').width()/2)-($('#imgPrimary').width()/2)) + "px", top:'20px' })
+				// </script>
+			<div class='col-xs-4' style='border:0px solid'></div>
+			<div class='col-xs-4' style='border:0px solid;' align='center'>
+				
+				<div class='row' style='border:0px solid; padding-top:12%; margin-bottom:5px; height:200;'>
+				</div>
+				<div id = 'errorUser' class='row' style='border:0px solid; font-size:12px; color:#FF0000;'>
+						Invalid username, please try again.
+				</div>
+				<div class='row' style='border:0px solid; font-size:12px; color:#848484;'>
+						Username
+				</div>
+				<div class='row' style='border:0px solid; margin-bottom:20px;' align='center'>
+					<div class='col-xs-1'></div>
+					<div class='col-xs-10'>
+							<input id='inputUsername' ng-model='inputUsername' autocomplete="on" class='form-control' style='text-align:center; '></input></div>
+					<div class='col-xs-1'></div>
+					
+			
+				</div>
+				<div id = 'errorPass' class='row' style='border:0px solid; font-size:12px; color:#FF0000;'>
+						Invalid password, please try again.
+				</div>
+				<div class='row' style='border:0px solid; font-size:12px; color:#848484; '>
+						Password
+				</div>
+				<script>
+					$('#errorPass').hide();
+					$('#errorUser').hide();
+				</script>
+				<div class='row' style='border:0px solid; margin-bottom:20px;' align='center'>
+					<div class='col-xs-1'></div>
+					<div class='col-xs-10'>
+							<input id='inputPassword' ng-model='inputPassword' type='password' class='form-control' style='text-align:center;'></input></div>
+					<div class='col-xs-1'></div>
+					
+			
+				</div>
+				<div class='row' style='border:0px solid; margin-bottom:5px; ' align='center'>
+					<div class='col-xs-1'></div>
+					<div class='col-xs-5'>
+							<button id='btnLogin' ng-click='loginScopeFunc()'class='form-control btn-success'>Login</button>
+						</div>
+						<div class='col-xs-5'>
+							<button ng-click='register()' class='form-control btn-default' style='background-color:#f2f2f2;'>Register</button>
+						</div>
+					<div class='col-xs-1'></div>
+					
+			
+				</div>
+				<div class='row' style='border:0px solid;'>
+						<a id='btnReset' href='#'><font style=' font-size:12px; color:#848484;'>Forgot Password?</font></a>
+				</div>
+
+			</div>
+			<div class='col-xs-4' style='border:0px solid'>
+					
+
+
+			</div>
+
+		</div>
+		
+		<script>	
+		// $( "#btnLogin" ).click(function(){
+		
+				
+		// });
+	
+
+
+		$("#inputUsername").keypress(function(e) {
+		    if(e.which == 13) {
+		    $("#btnLogin").click();
+		    }
+		});
+		$("#inputPassword").keypress(function(e) {
+		    if(e.which == 13) {
+		    $("#btnLogin").click();
+		    }
+		});
+
+		$( "#btnReset" ).click(function(){
+				 $('#mainRow').hide();	
+		 		 $('#errorPass').hide();
+		 		 $('#errorUser').hide();  	 	
+
+	 		$( "#imgPrimary" ).animate({ 
+  			 
+			  top: "+=" + parseInt($('#imgPrimary').height()), //-30
+			 
+			
+			 
+		  	 }, "slow", function(){
+ 						$( "#imgPrimary" ).delay(1500).animate({ 
+								 top: "-=" + parseInt($('#imgPrimary').height()), //-30
+															 
+								
+							  
+							  	 }, "slow", function(){
+							  	 	window.location.href='password_recovery.php';
+							  	 });
+												  				
+				});
+				
+		});
+		</script>
+
+

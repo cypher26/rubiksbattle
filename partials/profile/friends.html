@@ -1,0 +1,167 @@
+
+	<div class='row' style='border:0px solid; background-color:#F2F2F2;'>
+				
+					<div ng-include='"templates/side_template.html"' ></div>
+			<div class="col-xs-9" style='font-family:; border:0px solid;'>
+					
+						<!-- <div class="col-xs-12" style='border:0px solid; background-color:#FFFFFF;'> -->
+  							
+		  						<div class="container col-xs-12" style='border:0px solid;' >
+								 
+								  <ul class="nav nav-tabs">
+								    <li><a data-toggle="" href="/profile"><span class='glyphicon glyphicon-pencil'>
+								    </span> About Me</a></li>
+								    <li><a data-toggle="" href="/profile/games"><span class='glyphicon glyphicon-signal'></span> Games</a></li>
+								  	<li class="active"><a href="/profile/friends"><span class='glyphicon glyphicon-user'>
+								    </span> Friends</a></li>
+								  </ul>
+
+								  		<div class="tab-content">
+
+											    <div id="about" class="tab-pane fade in active" 
+												    style='background-color:#FFFFFF; 
+												    border:0 px solid;
+												    padding:20px; padding-top:10px;'>
+											    	<div class='row' align='right' style='padding-right:60px;'>
+											    				<font style='color:#a4a4a4;'>Total Friends </font>
+														(<a id='totalFriends'></a>)
+													
+											    	</div>
+											    	<div class='row' style='border:0px solid;'>
+												    		<div class='col-xs-12' style='border:0px solid;'>
+
+														    
+														    	<div id='searchUser' class="form-inline" style='border:0px solid;
+														    		margin-bottom:10px;'>
+																  <div class="form-group has-success has-feedback">
+																    <label class="control-label" for="inputSuccess4"></label>
+																    <input id='inputUsername' placeholder='Search Username..'
+																     type="text" class="form-control" id="inputSearch">
+																    <span class="glyphicon glyphicon-search form-control-feedback"></span>
+																  </div>
+			
+																		<span  id='searchKeyword'>	
+																		</span>
+																</div>
+															</div>
+													</div>
+															
+				<div class='row' style='border:0px solid;' >
+			              		<div id='divFriends' class='col-xs-12' style='border:1px solid #d8d8d8; padding:20px;
+								height:300px; overflow:scroll; overflow-x: hidden; '>
+												
+									<div class='row' style='border-bottom:1px solid #d8d8d8; margin-bottom:5px; padding-bottom:5px;'
+									   ng-repeat="i in getNumber(5) track by $index"> 
+													<div class='col-xs-8' style='border:0px solid;'>
+																<table style='border:0px solid;'>
+																	<tr><td rowspan='3'>
+																<img style='width:60px; height:60px; border:0px solid #d8d8d8; margin-right:10px;'
+									    						 src="img/user/userDefault.png"></img> 
+																		</td>
+																		<td>
+															    <a href='../member?id="+resArray[1]+"'> \
+									    						<font style='font-size:20px; color:#6E6E6E;'>123</font><br> 
+									    						<font style='font-size:13px; color:#6e6e6e;'>123 
+									    						</a>
+																		</td>
+																	</tr>
+																</table>
+								     				</div>
+								     				<!-- ng-repeat="i in getNumber(150) track by $index"  -->
+													<div class='col-xs-4'  style='border:0px solid;'>
+											     				<a href='../member?id="+resArray[1]+"'>
+									    						<font style='font-size:13px; color:#6E6E6E;'>
+									    							<span class='glyphicon glyphicon-info-sign'></span>
+									    						View Profile</font>
+									    						</a>
+									    						<br>
+									    						<a href='../create.php?id="+resArray[1]+"'>
+									    						<font style='font-size:13px; color:#6E6E6E;'>
+									    							<span  class='glyphicon glyphicon-comment'></span>
+									    						Send a message</font>
+									    						</a>
+									    						<a>
+									    						<h4 id='challengePlayer"+resArray[1]+"' style='margin-top:5px; cursor:default;'
+									    						 data-tooltip-content=\"#tooltip_content"+resArray[1]+"\" >
+									    						<span  class='glyphicon glyphicon-flash'></span>
+									    						Challenge to a play
+									    						</h4>
+									    						</a>
+						    						</div>
+						    					</div>
+									    					
+									    					
+									    				<!-- 	<div class="tooltip_templates">
+															    <span >
+															      	<img src='../img/user/pvp.png' style='width:25; height:25; background-color:#a4a4a4;
+								      				    				border:1px solid #ffffff;'></img>
+								      				    				<font style='color:#ffffff; font-size:15px;'>Battle PvP </font>
+															    </span>
+															</div> -->
+									    					
+									    				<!-- 		$('#challengePlayer"+resArray[1]+"').tooltipster({ \
+									    							animation: 'grow', \
+																    side: 'left' \
+																}); \
+																	"+displayOnly4+" \
+																$('#challengePlayer"+resArray[1]+"').click(function(){ \
+																	workerBool = false; \
+																	$('#divStatus').hide(); \
+																	$('#sendRequest').prop('disabled',false); \
+																	$('#inviteModal').modal('toggle'); \
+																	gameUserId = '"+resArray[1]+"'; \
+																	gameUsername = '"+resArray[2]+"'; \
+																	$('#divUsername').html('"+resArray[2]+"'); \
+																	$('#userImage').attr('src','../"+resArray[3]+"'); \
+																	$('#divDecline').hide(); \
+																	$('#divWaiting').show(); \
+																	$('#countdownDiv').show(); \
+																}); \
+													 -->
+<!-- 
+								<center><i>There is no friends to display, click <b><a href='../invite.php' >here</a></b> to invite others!</i></center></i></span>)
+
+																
+															
+																</div>	 -->
+
+
+					
+												
+																
+							    						</div>
+													</div>
+							 <script>
+							   $('#tblFriends').scrollTableBody({rowsToDisplay:7});
+							   	var e = jQuery.Event("keypress");
+																e.which=13;
+																$('#searchUser').trigger(e);
+																$('#searchKeyword').html('');
+
+							  </script>
+													
+											   
+											    </div>
+											    <div id="games" class="tab-pane fade" style='background-color:#FFFFFF; padding-top:1px;'>
+											    
+													    
+										     	 </div>
+												   	  <div id="friends" class="tab-pane fade" style='background-color:#FFFFFF; padding-top:1px;'>
+												    	<script>
+ 
+												    	</script>
+								
+
+
+												    	</div>
+								   			</div>
+								 	</div>
+										
+
+  						
+
+  					
+  								<div class="col-xs-12" style=' margin-top:10px;'></div>
+		
+					</div>
+  			</div>

@@ -1,6 +1,8 @@
-<nav class="navbar navbar-inverse" role="navigation">
-    <div class="container">
-        <div class="navbar-header">
+<div class='row' ng-controller='header_controller'>
+   
+<nav class="navbar navbar-default" role="navigation">
+   
+        <!-- <div class="navbar-header"> -->
             <!-- <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
                 <span class="sr-only">Toggle navigation</span>
                 <span class="icon-bar">asdf</span>
@@ -8,21 +10,29 @@
                 <span class="icon-bar">asdf</span>
             </button> -->
             <!-- You'll want to use a responsive image option so this logo looks good on devices - I recommend using something like retina.js (do a quick Google search for it and you'll find it) -->
-            <a class="navbar-brand" href="#/">Rubik's Battle</a>
+            <!-- <a class="navbar-brand" href="/">Rubik's Battle</a> -->
          <!--   <img id='imgPrimary' style='position: absolute; top:0px; left:50px; z-index:9999;
                            height:100px; width:130px;' src="/img/primaryLogo.png">   -->
-        </div>
+        <!-- </div> -->
 
         <!-- Collect the nav links, forms, and other content for toggling -->
-        <div class="collapse navbar-collapse navbar-ex1-collapse">
-            <ul class="nav navbar-nav navbar-right">
-                <li><a href="/services">Services</a>
+           
+            <ul class="nav navbar-nav " bsActiveLink>
+                
+                <li > <a class="navbar-brand" href="#">   </a> </li>
+
+                <li  set-active style="margin-left:130px;"><a  href="/" >Home</a>
                 </li>
-                <li><a href="/pricing">Pricing Table</a>
+                <li  set-active  ><a href="/play">Play</a>
                 </li>
-                <li><a href="/about">About</a>
+                <li  set-active ><a href="/profile">Profile</a>
                 </li>
-                <li><a href="/faq">FAQ</a>
+                <li  set-active ><a href="/invite">invite</a>
+                </li>
+                <script>
+
+                </script>
+               <!--  <li><a href="/faq">FAQ</a>
                 </li>
                 <li><a href="/contact">Contact</a>
                 </li>
@@ -34,10 +44,33 @@
                         <li><a href="/blog/post">View One Post</a>
                         </li>
                     </ul>
-                </li>
+                </li -->
             </ul>
-        </div>
+             <popupbutton is-open="isOpen"></popupbutton>
+            <ul class="nav navbar-nav navbar-right">
+                           <li><a href="#" id='btnHelp' style='margin-right:0px;'>Help</a></li>
+                            <li><a  ng-click='logout()' style='margin-right:0px;'>
+                                <span class="glyphicon glyphicon-log-out"></span> logout</a></li>
+                            <li><a href="profile" style='margin-right:0px;'>
+                             
+                                jester26
+                                 </a></li>
+                            <li><a class="navbar-brand dropdown-toggle" style='margin-right:20px;' data-toggle='dropdown' role='button' href="#" >
+                                 <img style='height:30px; width:30px;'  src=''
+                              
+                                 >  
+                                 <span id='spanRequestCount' class="badge" style='background-color:#2FEA1C;'></span></img></a> 
+                                    <ul class='dropdown-menu' style='border:1px solid; width:350px;  padding:5px;'>
+                                    <li style=' margin-bottom:5px;'>
+                                        <center>
+                                            <table id='ulListFriend' style='margin:5px; width:100%; border:0px solid'>
+                                            </table>
+                                        </center>
+                                    </li>
+             </ul>
+      
         <!-- /.navbar-collapse -->
-    </div>
+    
     <!-- /.container -->
 </nav>
+</div>

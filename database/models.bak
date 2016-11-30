@@ -1,0 +1,345 @@
+var mongoose = require('mongoose');
+
+var Schema = mongoose.Schema;
+// var ObjectId = require('mongodb').ObjectID;
+var db = require('mongodb');
+var async = require("async");
+
+// User Schema
+
+ var user_collections = Schema({
+        // username               :  {type: String, index: true},
+        username             : String,
+        user_password        :  String,
+        user_email           :  String
+        // colors              :    {
+        //     colorName       :    String,
+        //     colorId         :    String,
+        //     surcharge       :    Number
+        // }
+    });
+var course_collections = Schema({
+    // user_id :  [{ type: Schema.Types.ObjectId, ref: 'user_collection' }],
+    courseName         : String,
+    courseLevel        :  String
+  });
+
+
+var story_collections = Schema({
+  _creator : [{ type: String, ref:"user_collections"}],
+  title    : String,
+  date    :  String
+});
+
+
+var user_course_collections = Schema({
+    user_id :  { type: Schema.Types.ObjectId, ref: 'user_collections' },
+    course_id : { type: Schema.Types.ObjectId, ref: 'course_collections' }
+    // user_id:[user_collections],
+    // course_id:[course_collections]
+});
+
+
+
+ 
+// var user_model = mongoose.model('',user_collection,'user_collection'); 
+// var course_model = mongoose.model('',course_collection,'course_collection');
+
+var user_model = mongoose.model('user_collections',user_collections); 
+var course_model = mongoose.model('course_collections',course_collections);
+var user_course_model = mongoose.model('user_course_collections',user_course_collections);
+var story_model = mongoose.model('story_collections',story_collections);
+
+
+//testing add for user
+// var newUser1 = {
+//     _id: new mongoose.mongo.ObjectId('58327d2627ba1e08900d0809'),
+//     username: 'jacob',
+//     user_password: 'password',
+//     user_email:"jacob@yahoo.com"
+// };
+// var newUser2 = {
+//     _id: new mongoose.mongo.ObjectId('5832a685cc41e105e89b10c4'),
+//     username: 'beta',
+//     user_password: 'betapassword',
+//     user_email:"beta@yahoo.com"
+// };
+// var newUser3 = {
+//     _id: new mongoose.mongo.ObjectId('5832a685cc41e105e89b10c5'),
+//     username: 'alpha',
+//     user_password: 'password',
+//     user_email:"alpha@yahoo.com"
+// };
+//  var newUser4 = {
+//    _id: new mongoose.mongo.ObjectId('5833ed1f0fc95a12c8d488a5'),
+//     username: 'gamma',
+//     user_password: 'password',
+//     user_email:"gamma@yahoo.com"
+// };
+
+       
+// var people = [ newUser1, newUser2, newUser3, newUser4 ];
+
+// people.forEach(function(data){
+//     new user_model(data)
+//     .save(function(err,data){
+//         console.log(data);
+//     });
+// });
+
+
+// //testing add course
+
+// var newCourse1 = {
+//     _id: new mongoose.mongo.ObjectId('5832a685cc41e105e89b10c6'),
+//     courseName:"BSAC",
+//     courseLevel:"4th Year"
+// };
+// var newCourse2 = {
+//     _id: new mongoose.mongo.ObjectId('5832a685cc41e105e89b10c7'),
+//     courseName:"BSCS",
+//     courseLevel:"4th Year"
+// };
+// var newCourse3 = {
+//     _id: new mongoose.mongo.ObjectId('5832a685cc41e105e89b10c8'),
+//     courseName:"BSIT",
+//     courseLevel:"4th Year"
+// };
+// var courses = [newCourse1, newCourse2, newCourse3]
+
+// courses.forEach(function(data){
+//      new course_model(data)
+//     .save(function(err,data){
+//         console.log(data);
+//     });
+// });
+     
+// // //testing add user course
+// var newUserCourse1 = {
+//     // user_id :"582ede8c9d8cb40f28133f03",
+//     user_id: new mongoose.mongo.ObjectId('58327d2627ba1e08900d0809'),
+//     course_id: new mongoose.mongo.ObjectId("5832a685cc41e105e89b10c7")
+// };
+// var newUserCourse2 = {
+//     // user_id :"582ede8c9d8cb40f28133f03",
+//     user_id: new mongoose.mongo.ObjectId('5832a685cc41e105e89b10c4'),
+//     course_id: new mongoose.mongo.ObjectId("5832a685cc41e105e89b10c7")
+// };
+// var newUserCourse3 = {
+//     // user_id :"582ede8c9d8cb40f28133f03",
+//     user_id: new mongoose.mongo.ObjectId('5832a685cc41e105e89b10c5'),
+//     course_id: new mongoose.mongo.ObjectId("5832a685cc41e105e89b10c6")
+// };
+
+
+// var newUserCourse = [newUserCourse1, newUserCourse2, newUserCourse3];
+
+// newUserCourse.forEach(function(data){
+//       new user_course_model(data)
+//     .save(function(err,data){
+//         console.log(data);
+//     });
+// });
+    
+
+    // new user_course_model(newUserCourse3)
+    //     .save(function(err,data){
+    //         console.log(data);  
+    //     });
+
+
+
+// user_model.aggregate(
+//     [
+//         // Filter first
+//         // { "$match": {
+//         //     "username": { "$in": ['jacob'] } 
+//         // }},
+//         // Then join
+//         // {
+//         //     $unwind:"$_id"
+//         // },
+//         { "$lookup": {
+//             "from": "user_course_collections",
+//             "localField": "_id",
+//             "foreignField": "user_id",
+//             "as": "user_course"
+//         }},
+//         // More stages
+//     ],
+
+//     function(err,data) {
+//         // ids = data.map(function(c_id){
+//         //     return c_id.user_course
+//         // });
+
+//         // course_model.find({_id:{$in:ids}})
+//         //             .exec(function(course_extract){
+//         //                 console.log(course_extract);
+//         //             });
+//         // data.forEach(function(data1){
+//         //     console.log(data1);
+//         // });
+//         console.log(data);
+//     }
+// )
+
+
+// user_model.update({_id:"582ef5c975491d13285ffeaf"},{$set:{'username':'testasdfasdf'}},function(err, data){
+//     console.log(data);
+// });
+user_course_model
+                .find()
+            // .find({ course_id : "58305e32d5f97d06a80d048f"})
+            // .populate('user_id')
+            .populate({
+                path:'user_id',
+                // match: { username: { $in : ['beta']}}
+            })
+            .populate({
+                path:'course_id',
+                match: { courseName: { $in : ['BSCS']}}
+            })
+            // .populate('course_id')
+            // .populate('course_id')
+            // .populate(
+            //     'user_id',
+            //     null,
+            //     {username:{ $in: ['jester'] } }
+            // )
+           
+//             // .select({'user_id':1})
+//             // .find({'user_id.username':'jester'})
+            .exec(function(err,data){
+                   data.forEach(function(data1){
+                    // console.log(data1);
+                                    if(data1.user_id!=null && data1.course_id!=null)
+                        console.log(data1);
+                        // console.log(data1.user_id.username + " " +data1.course_id.courseName);   
+                        //     if(data1.course_id!=null)
+                        // console.log(data1.user_id.username + " " +data1.course_id.courseName);
+                   });  
+                // console.log(data[2].course_id)
+            });
+
+  // user_model.find()
+  //           .exec(function(err,data){ 
+  //               console.log(data);
+  //           });
+    
+//     var name = 'beta';
+// var get_userID = function(callback){
+//     // console.log('haha');
+//         user_model.find({username:'alpha'}).exec(function(err,data){
+//              var userList = data.map(function(data) { return data._id; } );
+//              callback(userList);
+//         });
+
+// }
+
+// get_userID(function(data){
+//     console.log('data is ' + data);
+// });
+//  user_model.find().exec(function(err,data){
+//                 userList = data.map(function(data) { return data._id; } );
+
+//                     user_course_model.find({ user_id : { $in : userList },  } )
+//                         .populate('user_id')
+//                         .populate('course_id')
+//                         .exec(function(err,data){
+//                                 data.forEach(function(data){
+//                                     console.log(data.user_id.username + " " + data.course_id.courseName);
+//                                 });
+//                         });
+// });
+
+db.user_collections.find().exec(function(err,data){
+    console.log('testing');
+});
+
+
+//   course_model.find({}}).exec(function(err,data){
+//                 var userList = data.map(function(data) { return data._id; } );
+
+//                     user_course_model.find({ user_id : { $in : userList },  } )
+//                         .populate('course_id')
+//                         .exec(function(err,data){
+//                                 console.log(data);
+
+//                     // var courseList = data.map(function(data) { return data._id; } );
+
+//                     // course_model.find({})
+                
+//                 });
+// });
+
+    // course = course_model.find({_id : { $in : user._id }}).toArray();
+
+    // console.log(course);
+// story_model
+//         // .findOne({date:'1996'})
+//         .find()
+//         .populate('_creator')
+//         .exec(function(err,data){
+//              if (err) return handleError(err);            
+//             console.log(data[0]);
+//         });
+
+module.exports.viewUser = function(callback){
+    // var user_info =  user_model
+    //                .findOne({});
+    // callback(user_info);
+    user_model
+        .find()
+        .select({'username':1,'_id':1})
+        .exec(callback);
+
+}
+
+
+
+module.exports.createUser = function (user_info,callback){
+     new user_model(user_info)
+        .save(function(err,data){
+            callback(err,data,data._id);
+        });    
+}
+
+
+// var data = {
+//     _creator:  "582ef5dcde4e3111a0fec532",
+//     title: "the great of HAHA",
+//     date: "1996"
+// };
+
+//   new story_model(data)
+// .save(function(err,data){
+//     console.log(data);
+// });
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+
+
+// module.exports = function() {
+   
+//     // declare seat covers here too
+//     var models = {
+//       user_model : mongoose.model('user_collections', user_collection)
+//       // SeatCovers : mongoose.model('SeatCovers', SeatCover)
+//     };
+
+
+//     return models;
+// }

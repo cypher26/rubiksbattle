@@ -1,0 +1,142 @@
+<div class='row' style='border:0px solid; background-color:#F2F2F2;'>
+				
+					<div ng-include='"templates/side_template.html"' ></div>
+<div class="col-xs-9" style='font-family:; border:0px solid;'>
+					
+						<!-- <div class="col-xs-12" style='border:0px solid; background-color:#FFFFFF;'> -->
+  							
+		  						<div class="container col-xs-12" style='border:0px solid;' >
+								 
+								  <ul class="nav nav-tabs">
+								    <li><a data-toggle="" href="/profile/create"><span class='glyphicon glyphicon-comment'></span>
+								    	New Message</a></li>
+								  	<li  class="active"><a data-toggle="" href="/profile/messages">
+								  		<span class='glyphicon glyphicon-briefcase'></span>
+								  		Inbox</a></li>
+								  
+								  </ul>
+
+								  <div class="tab-content" >
+								    <div id="compose" class="tab-pane fade in active" style='background-color:#FFFFFF; padding:10px;'>
+								   				<div class='row' style='border:0px solid'>
+
+								   					<div class='col-xs-5' style='border:0px solid; padding-top:10px;'>
+
+														    
+														    	<div id='searchUser' class="form-inline" style='border:0px solid;
+														    		margin-bottom:10px;'>
+																  <div class="form-group has-success has-feedback">
+																    <label class="control-label" for="inputSuccess4"></label>
+																    <input id='inputSearchUser' placeholder='Search Username..'
+																     type="text" class="form-control" id="inputSearch">
+																    <span class="glyphicon glyphicon-search form-control-feedback"></span>
+																  </div>
+
+															
+																		
+																	</i>
+																	</div>
+																<script>
+															
+																</script>
+																</div>
+
+													</div>	
+
+
+								   				
+								   				<div class='row' style='border:0px solid'>
+								   			<div class='col-xs-12' style='border:0px solid; padding:30px; padding-top:0;'>
+								   				<center>
+								    		<table class='table-responsive' style='border:0px solid #a8a8a8; width:100%; ' id='tblInbox'>
+								    			<thead style='border:0px solid; background-color:#d8d8d8;'>
+									   		<tr style='border:0px solid; padding-bottom:20px;' height='30'>
+									   				
+									    			<th>
+
+												    <center>		With </center>
+									    			</th>
+									    			
+									    			<th>
+									    				<center>	Message</center>
+									    			</th>
+									    			<th>
+									    				<center>	Date</center>
+									    			</th>
+
+									    			<th align='right' id='deleteLabel'>
+									    				<!-- <center><span class='glyphicon glyphicon-trash'></span>	Delete</center> -->
+									    					<button id='btnManage' style='font-size:12px;  margin-right:15px;'><b>Manage inbox</b></button>
+								   					 		
+									    			</th>
+
+									    		</tr>
+									    	</thead>
+									    	<tbody id='inboxQuery' align='center'>
+									    		<tr ><td></td>
+									    			<td style='padding-bottom:0px; border:0px solid;'><i>You have no messages to display</i></td></tr>		
+									    		</tr>								    		
+									    	
+
+									    								    		
+									    	
+									    	</tbody>
+										    	
+									    		</table>	
+													<script>
+
+
+														function tConvert (time) {
+											 			 // Check correct time format and split into components
+													  time = time.toString ().match (/^([01]\d|2[0-3])(:)([0-5]\d)(:[0-5]\d)?$/) || [time];
+
+													  if (time.length > 1) { // If time format correct
+													    time = time.slice (1);  // Remove full string match value
+													    time[5] = +time[0] < 12 ? ' AM' : ' PM'; // Set AM/PM
+													    time[0] = +time[0] % 12 || 12; // Adjust hours
+													  }
+													  return time.join (''); // return adjusted time or original string
+													}
+
+													</script>
+
+									    		
+									    	
+																
+																	
+
+													
+									 
+									    	</div>
+									    	</div>
+									    	<div class='row' id='manageFooter'>
+									    	<!-- 	<div class='col-xs-6' style='border:0px solid; height:5%;'>
+									    		</div>
+									    		 <div class='col-xs-1' style='border:0px solid'>
+									    			
+									    		</div>
+									    		<div class='col-xs-5' style='border:0px solid'>
+									    			<a href='#' id='selectAll'>Select all</a> 	| <a href='#' id='deSelectAll'>Deselect all</a>
+									    			<button id='btnDelete' class='btn btn-default' 
+									    			style='margin-left:50px;'>Delete</button>
+
+									    		</div> -->
+									    		
+									    		
+									    	</div>
+								    	
+								     </div>
+									      <div id="conversations" class="tab-pane fade" style='background-color:#FFFFFF; padding:10px;'>
+									   					<hr>
+									   			
+									  
+											</div>								   
+								 		 </div>
+									</div>
+  						
+  						<!-- </div> -->
+  						 <div class="col-xs-12" style=' margin-top:10px;'>
+  						 		
+  						</div>
+
+					</div>

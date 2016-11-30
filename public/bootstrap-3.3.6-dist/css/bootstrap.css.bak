@@ -4,23 +4,6 @@
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
  */
 /*! normalize.css v3.0.3 | MIT License | github.com/necolas/normalize.css */
-
-     span[style*="font-size:15px; "].glyphicon-envelope {
-      animation: blinker 1s linear infinite;
-    }
-
-    @keyframes blinker {  
-      100% { opacity: 0.0; }
-    }
-
-    span[style*="font-size:15px;"].glyphicon-envelope {
-      animation: blinker 1s linear infinite;
-    }
-
-    @keyframes blinker {  
-      100% { opacity: 0.0; }
-    }
-
 html {
   font-family: sans-serif;
   -webkit-text-size-adjust: 100%;
@@ -4117,7 +4100,7 @@ select[multiple].input-group-sm > .input-group-btn > .btn {
 .nav-pills > li.active > a:hover,
 .nav-pills > li.active > a:focus {
   color: #fff;
-  background-color: #a4a4a4; /*hover default*/
+  background-color: #337ab7;
 }
 .nav-stacked > li {
   float: none;
@@ -4513,7 +4496,7 @@ select[multiple].input-group-sm > .input-group-btn > .btn {
   }
 }
 .navbar-default {
-  background-color:#f8f8f8;   /*background-color*/
+  background-color: #f8f8f8;
   border-color: #e7e7e7;
 }
 .navbar-default .navbar-brand {
@@ -4528,27 +4511,18 @@ select[multiple].input-group-sm > .input-group-btn > .btn {
   color: #777;
 }
 .navbar-default .navbar-nav > li > a {
-  color: #000000;       /*font-color text*/
-  font-family:"Trebuchet MS", Helvetica, sans-serif;
-  /*font-weight:bold;*/
-  font-size:15px;
+  color: #777;
 }
 .navbar-default .navbar-nav > li > a:hover,
 .navbar-default .navbar-nav > li > a:focus {
-   /*hover default*/
-     font-weight:bold;
+  color: #333;
   background-color: transparent;
-  /*border-top:3px solid #e6e6e6;
-  */
-  border-top:3px solid #Ff0000;
 }
 .navbar-default .navbar-nav > .active > a,
 .navbar-default .navbar-nav > .active > a:hover,
 .navbar-default .navbar-nav > .active > a:focus {
-  /*color: #555;
-  background-color: #e7e7e7;*/
-  /*border:1px solid #000000;*/
-  border-top:3px solid #FF0000;
+  color: #555;
+  background-color: #e7e7e7;
 }
 .navbar-default .navbar-nav > .disabled > a,
 .navbar-default .navbar-nav > .disabled > a:hover,
