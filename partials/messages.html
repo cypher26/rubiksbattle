@@ -32,58 +32,97 @@
 																    <span class="glyphicon glyphicon-search form-control-feedback"></span>
 																  </div>
 
-															
-																		
-																	</i>
-																	</div>
-																<script>
-															
-																</script>
 																</div>
-
-													</div>	
+																
+													</div>
+														
+												</div>	
 
 
 								   				
 								   				<div class='row' style='border:0px solid'>
-								   			<div class='col-xs-12' style='border:0px solid; padding:30px; padding-top:0;'>
+								   			<div class='col-xs-12' style='border:0px solid; padding:10px; padding-top:0;'>
 								   				<center>
-								    		<table class='table-responsive' style='border:0px solid #a8a8a8; width:100%; ' id='tblInbox'>
+							    		<table  class='table-responsive' style='border:0px solid #a8a8a8; width:100%; ' id='tblInbox'>
 								    			<thead style='border:0px solid; background-color:#d8d8d8;'>
 									   		<tr style='border:0px solid; padding-bottom:20px;' height='30'>
 									   				
-									    			<th>
+									    			<th style='border:0px solid; width:30%;'>
 
-												    <center>		With </center>
+												   
+												    <center>With</center>
 									    			</th>
 									    			
-									    			<th>
-									    				<center>	Message</center>
+									    			<th  style='text-align:center; border:0px solid; width:40%;'>
+									    				Message
 									    			</th>
-									    			<th>
-									    				<center>	Date</center>
+									    			<th style='text-align:center; border:0px solid; width: 10%; ' >
+									    				Date
 									    			</th>
 
-									    			<th align='right' id='deleteLabel'>
+									    			<th style='border:0px solid; width: 20%; text-align:center' >
 									    				<!-- <center><span class='glyphicon glyphicon-trash'></span>	Delete</center> -->
-									    					<button id='btnManage' style='font-size:12px;  margin-right:15px;'><b>Manage inbox</b></button>
+									    					<button id='btnManage' ng-click='btnManage()' style='font-size:12px; '><b>Manage inbox</b></button>
 								   					 		
 									    			</th>
 
 									    		</tr>
 									    	</thead>
-									    	<tbody id='inboxQuery' align='center'>
-									    		<tr ><td></td>
-									    			<td style='padding-bottom:0px; border:0px solid;'><i>You have no messages to display</i></td></tr>		
-									    		</tr>								    		
+									    	<tbody id='inboxQuery' align='center' scroll-glue="glued">
+									    		<!-- if no inbox -->
+								    				
+									    		<tr ng-click="manageInbox === 1 ? '':redir(
+									    		(item.msg_from.username === username ? '':item.msg_from._id)+ '' +
+									    		(item.msg_to.username === username ? '':item.msg_to._id)
+									    		
+									    		)" height='50px;' ng-repeat="item in msg_text track by $index"
+														 style=" border-bottom:3px solid #ffffff; background-color:
+										 {{item.msg_status === 'unseen' && item.msg_from.username != username ? '#f2f2f2;':'#ffffff;'}} 
+									    			 			 padding-bottom:100px;">
+									    				<td  align='left'  style=' padding-left:20px; border:0px solid;'>
+										    				<img src='/img/user/userDefault.png' 
+												    		 style='border:0px solid #d8d8d8; height:30px; width:30px; margin-right:0px;'></img> 
+												    		  	{{item.msg_from.username === username ? '':item.msg_from.username}}
+												    		  	{{item.msg_to.username === username ? '':item.msg_to.username}}
+												    		 	
+										    			</td> 
+										    			<td   style='color:#6E6E6E;  border:0px solid;'> 
+										    				<font style='font-size:13px; '> 
+										    			<span class="
+						    								{{item.msg_from.username === username ? 'glyphicon glyphicon-share-alt':''}}
+											    		  	
+										    		 "></span> 
+															{{item.msg_text.substring(0,30)}}
+															
+										    			</font></td> 
+											    		<td  style='border:0px solid;'> 
+										    				<font style='font-size:13px; color:#6E6E6E;'>
+										    					{{convertToDate(item.msg_dateTime)}}</font> 
+
+										    			</td>
+									    				
+										    			<td align='center'> 
+										    			<input style="display:{{manageInbox === 1 ? 'block' : 'none'}}" 
+										    			ng-model="item.checkBox" 
+					    								ng-init="item.checkBox=false" 
+					    								type='checkbox'></input>
+					    										
+					    								</td>
+										    		
+								    			</tr>						    		
 									    	
 
 									    								    		
 									    	
 									    	</tbody>
 										    	
-									    		</table>	
+									    		</table>
+									    			<i style="">
+						    				{{msg_text.length==0 || msg_text.length==undefined ? ' You have no messages to display':''}}
+									    				</i>	
+									    			
 													<script>
+
 
 
 														function tConvert (time) {
@@ -98,6 +137,9 @@
 													  return time.join (''); // return adjusted time or original string
 													}
 
+													jQuery(function(){
+					          $('#tblInbox').scrollTableBody({rowsToDisplay:2});                    
+				                                    });
 													</script>
 
 									    		
@@ -109,21 +151,36 @@
 									 
 									    	</div>
 									    	</div>
-									    	<div class='row' id='manageFooter'>
-									    	<!-- 	<div class='col-xs-6' style='border:0px solid; height:5%;'>
-									    		</div>
-									    		 <div class='col-xs-1' style='border:0px solid'>
-									    			
-									    		</div>
-									    		<div class='col-xs-5' style='border:0px solid'>
-									    			<a href='#' id='selectAll'>Select all</a> 	| <a href='#' id='deSelectAll'>Deselect all</a>
-									    			<button id='btnDelete' class='btn btn-default' 
-									    			style='margin-left:50px;'>Delete</button>
-
-									    		</div> -->
+									    	<div class='row' id='manageFooter' style="border:0px solid;
+									    		display:{{manageInbox === 1 ? 'block' : 'none'}}
+									    	">
+												    <div class='col-xs-3' style='border-top:0px solid;'>
+														</div>
+														<div class='col-xs-6' style='border-top:0px solid; padding-top:5px; 
+														padding-bottom:5px'>
+												  			<b>Select inbox to delete</b> <span style='margin-right:20px;'></span>
+												  			<button id='btnCancel' ng-click='btnManage()' class='btn btn-sm btn-default'>Cancel</button>
+												  			<span style='margin-right:5px;'></span>
+												  			<button id='btnDelete' ng-click='btnDelete()' class='btn btn-sm btn-danger'>Delete</button>
+												  		 </div>
+													  	<div class='col-xs-3' style='border-top:0px solid; padding-top:5px; ' >
+															Select: <span style='margin-right:5px;'></span>
+												  			<span id='selectAll' ng-click='selectAll()' style='cursor:default'; class='label label-default'>All</span> 
+												  			<span id='deSelectAll' ng-click='deselectAll()' style='cursor:default'; class='label label-default'>None</span> 
+														</div>
+														
 									    		
 									    		
 									    	</div>
+									    	<script>
+									   //  	$('#btnManage').click(function(){
+													
+												// 	$('#manageFooter').html("");
+												// });
+								   			
+													
+									    		</script>
+									    		
 								    	
 								     </div>
 									      <div id="conversations" class="tab-pane fade" style='background-color:#FFFFFF; padding:10px;'>

@@ -55,21 +55,39 @@
 						  			<tr>
 						  				<td style='padding-right:10px; padding-bottom:10px; border:0px solid;'><b><font style='color:#6E6E6E; 
 						  					font-size:13px;'>Avatar: </font></b></td>
-						  				<td style='padding-bottom:0px'>
-						  					
-						  					<form id="uploadimage" method="post" enctype="multipart/form-data">
-											<div id="image_preview"><img id="previewing" src="" 
-												style='width:60px; border:1px solid;
-												 height:60px; margin-left:20px; margin-bottom:10px;'/></div>
+						  				<td style='padding-bottom:0px; border:0px solid;'>
+						  					<!-- upload form -->
+						  					<form ng-controller='imageCtrl as up' name="up.upload_form">
+											<div id="image_preview" style='border:0px solid; float:left;' >
+												<img = style='width:60px; border:1px solid; height:60px; margin-left:20px; margin-bottom:10px;'  ngf-thumbnail="up.file || userInfo.user_avatar"/>
+												<div style='float:right; padding-left:10px;' >
+												 	 <i ng-show="up.upload_form.file.$error.pattern">Only image file is required<br></i>
+													 <i ng-show="up.upload_form.file.$error.maxSize"> File too large max 5MB</i>	
+													 {{progress}}
+												</div>
+											</div>
+												
 												
 												<div id="selectImage">
 												
-												<input type="file" name="file" id="file" required />
-												<input type="submit" style='display:none;' value="Upload" class="submit" />
-											</div>
-										</form>
+												<input  type="file" 
+									             	ngf-select='updateAcct()'
+									                ng-model="up.file" 
+									                name="file" 
+									                ngf-pattern="'image/*'"
+									                accept="image/*" 
+									                ngf-max-size="5MB" 
+									                 />
+																
+												</div>
+											</form>
 
-												
+													  <!-- <i ng-show="up.upload_form.file.$error.pattern">Only image file is required</i><br>
+											<i ng-show="up.upload_form.file.$error.maxSize">File too large 
+									            {{up.file.size / 1000000|number:1}}MB: max 2M</i> -->
+						  				</td>
+						  				<td>
+
 						  				</td>
 						  			</tr>
 						  			</body>
@@ -221,7 +239,7 @@
 						  		</table>
 						  		<center>
 						  			<br>
-						  		<button type="button" id='btnCreateAccount' class="btn btn-warning">Update Your Account</button>
+						  		<button type="button" ng-click='updateAcct()' class="btn btn-warning">Update Your Account</button>
 						  			<script>
 						  			var errorResult,errorBool,ifSame;
 						  				$('#btnCreateAccount').click(function(){

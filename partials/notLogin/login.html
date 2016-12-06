@@ -12,8 +12,8 @@
 				
 				
 				<script>
-				$('#imgPrimary').css({left: (($('body').width()/2)-($('#imgPrimary').width()/2)) + "px", top:'20px' })
-				// </script>
+				$('#imgPrimary').css({left: (($('body').width()/2)-($('#imgPrimary').width()/2)) + "px", top:'20px' });
+			   </script>
 			<div class='col-xs-4' style='border:0px solid'></div>
 			<div class='col-xs-4' style='border:0px solid;' align='center'>
 				
@@ -40,8 +40,11 @@
 						Password
 				</div>
 				<script>
-					$('#errorPass').hide();
-					$('#errorUser').hide();
+					jQuery(function(){
+							$('#errorPass').hide();
+							$('#errorUser').hide();
+					});
+					
 				</script>
 				<div class='row' style='border:0px solid; margin-bottom:20px;' align='center'>
 					<div class='col-xs-1'></div>

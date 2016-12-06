@@ -5,9 +5,15 @@ const express = require('express');
 const path = require('path');
 var session = require('express-session');
 
+
+
 // var mongoose = require('mongoose');
 
-
+var sessionMiddleware = session({
+    secret: 'secret',
+    saveUninitialized: true,
+    resave: true
+});
 
 
 
@@ -26,22 +32,21 @@ var users = require('./routes/users')
 // });
 
 
-
-
 var server = express()
 
 .engine('html', require('ejs').renderFile)
 .set('view engine', 'html')
-.use(session({
-    secret: 'secret',
-    saveUninitialized: true,
-    resave: true
-}))
+.use(sessionMiddleware)
 .use('/',express.static(__dirname + '/public'))
 .use('/js',express.static(__dirname + '/controllers'))
 .use("/templates",express.static(__dirname + '/templates'))
 .use("/partials",express.static(__dirname + '/partials'))
 .use("/node_modules",express.static(__dirname + '/node_modules'))
+// .use(function(req, res, next) { //allow cross origin requests
+//         res.setHeader("Access-Control-Allow-Methods", "POST, PUT, OPTIONS, DELETE, GET");
+//         res.header("Access-Control-Allow-Origin", "/");
+//         res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+//     })
 
 .use("/",users)
 	// .set('view engine','html');
@@ -76,3 +81,6 @@ var server = express()
 
 var io = require('./socket/socket').listen(server)
 
+io.use(function(socket, next) {
+    sessionMiddleware(socket.request, socket.request.res, next);
+});

@@ -1,5 +1,4 @@
-
-<html class="no-js"  >
+<html ng-app="webApp">
 <head>
 
 		<title>Rubik's Battle</title>
@@ -8,6 +7,8 @@
 		 
     <meta charset="utf-8">
     <base href="/">
+    <meta http-equiv="Cache-control" content="no-cache">
+    <meta http-equiv="Expires" content="-1">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <meta name="description" content="Rubik's Battle">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -31,11 +32,8 @@
 
 </head>
 
-<body ng-app="webApp" >
-
-			
-		<!-- <div ng-include='"templates/headerLogin.html"'></div>		  -->
-		<div ng-view></div>
+<body  >
+        <div ng-view></div>
 		<script src='/js/login.js'></script>
 </body>
 

@@ -263,7 +263,7 @@ app.controller('loginCtrl', function ($scope, $location, $http, $window, $rootSc
 
 // $('#imgPrimary').css({left: (($('body').width()/2)-($('#imgPrimary').width()/2)) + "px", top:'20px' , width:'220px', height:'170px', position:'absolute'})
 
-
+console.log('login ctrl');
 
   $scope.testFunc = function(){
      $http.post('/getUser',{}).
@@ -321,6 +321,7 @@ app.controller('loginCtrl', function ($scope, $location, $http, $window, $rootSc
                             var promise = new Promise(function(resolve, reject){
                                 $http.post('/checkUserIfTaken',{username:$scope.inputUsername}).
                                             success(function(data) {
+                                              console.log('test 1');
                                               if (data.exist == true){
                                                   // alert('meron');
                                                    resolve();
@@ -332,6 +333,7 @@ app.controller('loginCtrl', function ($scope, $location, $http, $window, $rootSc
                                                     $('#mainRow').show();
                                                     $('#errorUser').show(); 
                                                  });
+                                                console.log('test 2');
                                               }
 
                                             }).error(function(data) {
@@ -342,31 +344,10 @@ app.controller('loginCtrl', function ($scope, $location, $http, $window, $rootSc
                              return promise;
                        })().then(function() {
                             var promise = new Promise(function(resolve, reject){
-                                  $http.post('/checkPassIfTaken',{password:$scope.inputPassword}).
-                                            success(function(data) {
-                                              if (data.exist == true){
-                                                  // alert('meron');
-                                                   resolve();
-                                              }else{
-                                                  $( "#imgPrimary" ).delay(1500).animate({ 
-                                                    top: "-=" + parseInt($('#imgPrimary').height()), //-30
-                                                       },function(){
-                                                        $('#mainRow').show();
-                                                      $('#errorPass').show();
-                                                          
-                                                   });
-                                              }
-                                            }).error(function(data) {
-                                               reject();
-                                            });
-                            });
-                         return promise;
-                        }).then(function() {
-                            var promise = new Promise(function(resolve, reject){
                                  $http.post('/userLogin',{username:$scope.inputUsername,password:$scope.inputPassword}).
                                             success(function(data) {
                                                 //$digest or $apply
-                                             
+                                              console.log('testing');
                                               if (data.exist == true){
                                                 $( "#imgPrimary" ).delay(1500).animate({ 
                       
@@ -380,7 +361,13 @@ app.controller('loginCtrl', function ($scope, $location, $http, $window, $rootSc
                                                  });
                                                  
                                               }else{
-                                                  alert('user login error');  
+                                                  $( "#imgPrimary" ).delay(1500).animate({ 
+                                                    top: "-=" + parseInt($('#imgPrimary').height()), //-30
+                                                       },function(){
+                                                        $('#mainRow').show();
+                                                      $('#errorPass').show();
+                                                          
+                                                   });
                                               }
                                             }).error(function(data) {
                                                alert('Internal server error')
