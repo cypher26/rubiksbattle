@@ -1,21 +1,797 @@
 
 const socketIO = require('socket.io');
+
+const util = require('util');
+
+var roomdata = require('roomdata');
 var models = require('../database/models');
+var Hotel = require('socket.io-hotel');
+
+
+var scrambler = require('../smart/scrambler.js');
+var pochmann = require('../smart/computerAlg.js');
+
+// if solve 
+var checkSolver = require('../smart/solveP1.js');
+
+
+//### glicko rating system
+
+
+var glicko2 = require('glicko2');
+
+
+setRatedPoints(1646,1354,1,function(p1Points,p2Points){
+		console.log("p1 = " + p1Points);
+		console.log('p2 = ' + p2Points);
+});
 
 
 
-// const io = socketIO(server);
+function setRatedPoints(p1Rating,p2Rating,whoWon,callback){
 
+
+	settings = {
+	  // tau : "Reasonable choices are between 0.3 and 1.2, though the system should 
+	  //       be tested to decide which value results in greatest predictive accuracy." 
+	  tau : 0.5,
+	  // rating : default rating 
+	  rating : 1500,
+	  //rd : Default rating deviation 
+	  //     small number = good confidence on the rating accuracy 
+	  rd : 50,
+	  //vol : Default volatility (expected fluctation on the player rating) 
+	  vol : 0.50
+	};
+
+    ranking = new glicko2.Glicko2(settings);
+
+	p1Rated = ranking.makePlayer(p1Rating,50,0.50);
+	p2Rated = ranking.makePlayer(p2Rating,50,0.50);
+
+	matches = []
+
+	matches.push([p1Rated,p2Rated,whoWon === 1 ? 1:0]);
+
+	ranking.updateRatings(matches);
+	callback(Math.round(p1Rated.getRating()),Math.round(p2Rated.getRating()));
+}
+
+
+//### glicko rating system -dn 
+
+
+//1163
+//1210
+
+// win +14 / draw -2 / lose -19
+
+//for request
+var varGameReqs = [];
+var varGameTimers = [];
+var varTimerInc = [];
+
+var varUserInclude = [];
+
+
+var roomVar={};
 
 
 module.exports.listen = function(app){
     io = socketIO.listen(app)
+ 
+	hotel = new Hotel(io.sockets.adapter)
+
+
+
+	//function update online users
+      function funcUpdateOnline(){
+      		//if number or not eg. 1 2 3 not hash then filter
+			return Object.keys(io.sockets.adapter.rooms).filter(function(data){
+    					if (!isNaN(data)) return data;
+					});
+	 }
+
+	 //function update live games
+	 function funcUpdateLiveGames(){
+
+	 	// console.log(util.inspect(roomVar,false,null));
+	 	// console.log(roomVar);
+	 	
+	 		// var data = bson.serialize(roomVar);
+			// console.log('data:', data)
+			// io.emit('updateLiveGames',[{'123':'hahaha'}]);
+			// console.log(roomVar);
+
+			
+			// delete roomVar['room234'];
+
+			data = Object.keys(roomVar);
+			tempRoomVar =  clone(roomVar);
+			for (x=0;x<data.length;x++){
+					if (tempRoomVar[data[x]].gameStatus == 'abandon') delete tempRoomVar[data[x]];
+			  try {	delete tempRoomVar[data[x]].iniTimer; }   catch(err){}
+				try {delete tempRoomVar[data[x]].clockTimer; } catch(err){}
+				try {	delete tempRoomVar[data[x]].aiTimer; } catch(err){}
+			try {	delete tempRoomVar[data[x]].dcTimer; } catch(err){}
+					// delete tempRoomVar[data[x]]		
+			}
+			console.log('last hint');
+
+
+			// console.log(roomVar);
+			io.emit('updateLiveGames',JSON.stringify(tempRoomVar));
+			// console.log(roomVar);
+				console.log('###########');
+
+	 }
+	 function clone(obj) {
+		    if (null == obj || "object" != typeof obj) return obj;
+		    var copy = obj.constructor();
+		    for (var attr in obj) {
+		        if (obj.hasOwnProperty(attr)) copy[attr] = obj[attr];
+		    }
+		    return copy;
+		}
+	/// initialize variables for database ----------------------------------
+	function iniVarGames(cb){
+		models.viewAllGames(function(err,data){
+			data.forEach(function(data){
+					if (data.reqStatus =='ongame' && roomVar['room'+data._id] == undefined){ // if ongame without data variables
+						roomVar['room'+data._id]={
+											userList:[],
+											roomMsg:[],
+											readyQueue:[],
+											playerQueue:[],
+											gameData:data,
+											//scramble
+											//iniTimer 3 2 1 go 
+											//iniCtr
+											//iniStr
+											gameStatus:'idle',
+											//cubePixels animate pixels update
+											//cubePixels1
+											//clockCtr flipclock
+											//clockTimer
+											//aiTimer
+											//aiCtr
+											//aiAlg
+											//arrayAlg for pixels update
+											//arrayAlg1
+											algP1:'',	//for user algs
+											algP2:'',
+											player1Dc:3, //num of disconnected
+											player2Dc:3,
+											//dcInc
+											//dcTimer
+											//dcStr
+											roomScore:{
+												p1:0,
+												p2:0
+											}
+										}
+
+										//########game status [ 'onGame, reconnect, idle, iniGame']
+								if (data.reqTo_id._id == '0'){
+										roomVar['room'+data._id].userList.push('0');
+										roomVar['room'+data._id].playerQueue.push('0');
+								}else if(data.reqTo_id._id == '-1'){
+								   		// roomVar['room'+data._id].userList.push('-1');
+								   		roomVar['room'+data._id].playerQueue.push('-1');
+							    }
+					}
+			});
+				cb();
+		});
+	}
+		/// initialize variables for database - end ----------------------------------
+	
+	iniVarGames(function(){
+			funcUpdateLiveGames();
+
+	});	
+	
 
     io.sockets.on('connection', function (socket) {
 
 
-		 console.log('socket client connected ' + socket.request.session.user_id);
+
+
+
+			//####################################### - Game - #########################################################
+
+				// socket.on('testDisconnect',function(){
+				// 	socket.emit('disconnect',function(){
+				// 			console.log('disconnect is finish');
+				// 	});
+				// })
+
+				socket.on('reqScoreUpdate',function(data,callback){
+						socket.emit('roomScoreUpdate',roomVar[socket.room].roomScore);
+						callback();
+				});
+				socket.on('abandonGame',function(data,callback){
+
+					  //fix stack size exceeded
+						// clearInterval(roomVar[socket.room].dcTimer);
+						// clearInterval(roomVar[socket.room].clockTimer);
+						// clearInterval(roomVar[socket.room].iniTimer);
+						// clearInterval(roomVar[socket.room].aiTimer);
+
+						console.log('abandon game');
+
+
+						if (roomVar[socket.room].gameStatus == 'onGame'){
+							if (socket.userPerspective == 'player1'){
+								socketWinnerUpdate('player2','resignation',roomVar[socket.room].gameData.reqTo_id);
+							}else if (socket.userPerspective == 'player2'){
+								socketWinnerUpdate('player1','resignation',roomVar[socket.room].gameData.reqFrom_id);
+							}
+						}
+
+						io.in(socket.room).emit('updateAbandon');
+
+						abandonGame(function(){ callback(); });
+
+
+				});
+				
+				function abandonGame(callback){
+					models.abandonGame(roomVar[socket.room].gameData._id,function(err,data){
+						  if (err) throw err;
+						  // console.log(data);
+						  	roomVar[socket.room].gameStatus = 'abandon';
+						  	funcUpdateLiveGames();
+
+						  callback();
+						  // console.log('success abandon');
+						});
+				}
+				socket.on('adduser',function(data,callback){
+
+
+				
+
+
+
+						//socket.userPerspective
+						socket.room = "room"+data.id;
+						socket.userInfo = socket.request.session.userInfo;
+
+
+						if (socket.userInfo==undefined) return;
+						
+						// if exist, trigger multiple user login detected
+						if (roomVar[socket.room]['userList'].indexOf(socket.userInfo._id)>-1){
+							io.sockets.in(socket.room).emit('multipleLogin',socket.userInfo._id);	
+						}
+
+
+						socket.join(socket.room);
+
+						//initialize room variables
+						
+						if (roomVar[socket.room].gameStatus =='abandon') return;
+
+
+						// console.log('r = ' + roomVar[socket.room] + " d = " + data.id);
+
+						
+						//room all users
+						roomVar[socket.room]['userList'].push(socket.userInfo._id);
+
+						console.log('userList + ' + roomVar[socket.room]['userList']);
+
+						// update users given id
+						models.getUsersById(roomVar[socket.room]['userList'],function(err,data){
+						    io.sockets.in(socket.room).emit('updateUsersInRoom',data); //broadcast also itself
+						    socket.emit('getGameStatus', roomVar[socket.room].gameStatus);
+						});
+
+
+						//check server user perspective
+						if (socket.userInfo._id == roomVar[socket.room].gameData.reqFrom_id._id)
+							socket.userPerspective = 'player1';
+						else if (socket.userInfo._id == roomVar[socket.room].gameData.reqTo_id._id)
+							socket.userPerspective = 'player2';
+						else
+							socket.userPerspective = 'observer';
+
+					
+						//player Queue
+
+						//add queue of player
+						if ([roomVar[socket.room].gameData.reqTo_id._id,
+							 roomVar[socket.room].gameData.reqFrom_id._id].indexOf(socket.userInfo._id)>-1)
+							 //  &&
+							 // roomVar[socket.room].playerQueue.indexOf(socket.userInfo._id)<0)
+							 {
+								 roomVar[socket.room].playerQueue.push(socket.userInfo._id);
+							 }
+						
+						
+						if (roomVar[socket.room].gameStatus == 'reconnect' && roomVar[socket.room].playerQueue.length==2){
+							reconnection();
+						}
+
+						console.log("PQueue add " + roomVar[socket.room].playerQueue);
+
+						checkIfReady();
+
+						// roomVar[socket.room].readyQueue.push('1');
+
+						callback();
+
+
+				});
+				socket.on('forfeitGame',function(data,cb){
+					if (socket.userPerspective == 'player1'){
+						socketWinnerUpdate('player2','resignation',roomVar[socket.room].gameData.reqTo_id);
+					}else if (socket.userPerspective == 'player2'){
+						socketWinnerUpdate('player1','resignation',roomVar[socket.room].gameData.reqFrom_id);
+					}
+
+					cb();
+					
+				});
+
+
+				function checkIfReady(){
+					if (roomVar[socket.room].playerQueue.length!=2){
+						io.in(socket.room).emit('gameUpdate', 'Waiting for players ..', roomVar[socket.room].gameStatus,false,'red');
+					}else{
+						io.in(socket.room).emit('gameUpdate', '', roomVar[socket.room].gameStatus,false,'blue');
+					}
+				}
+				function socketWinnerUpdate(perspective,winnerBy,winnerUser){
+						//remove all timer because all timer events are involve
+						clearInterval(roomVar[socket.room].dcTimer);
+						clearInterval(roomVar[socket.room].clockTimer);
+						clearInterval(roomVar[socket.room].iniTimer);
+						clearInterval(roomVar[socket.room].aiTimer);
+
+						//insert database
+							if (perspective=='player1') gameWinner = roomVar[socket.room].gameData.reqFrom_id._id;
+							else if (perspective =='player2') gameWinner = roomVar[socket.room].gameData.reqTo_id._id;
+
+							var game_set = {
+							        game_id          : roomVar[socket.room].gameData._id,
+							        p1_moves         : roomVar[socket.room].algP1,
+							        p2_moves         : roomVar[socket.room].algP2,
+							        scrambleMoves    : roomVar[socket.room].scramble,
+							        endedTime        : roomVar[socket.room].clockCtr,
+							        gameWinner       : gameWinner,  
+							        winnerBy         : winnerBy,  
+							};
+
+							models.createArchiveGame(game_set,function(err,data){
+								if (err) console.log(err);
+								// console.log(data);
+							});
+
+						
+							
+						//insert database -end
+
+						//initialize
+						roomVar[socket.room].scramble = '';
+						roomVar[socket.room].algP1='';
+						roomVar[socket.room].algP2='';
+						roomVar[socket.room].arrayAlg = null;
+						roomVar[socket.room].arrayAlg1 = null;
+						roomVar[socket.room].player1Dc=3;
+						roomVar[socket.room].player2Dc=3;
+
+						// console.log('pumasok ulit '  + roomVar[socket.room].algP2)
+
+					
+						if (winnerBy == 'resignation' || winnerBy == 'time'){
+							roomVar[socket.room].gameStatus ='idle';
+						}else{ // if won by disconnection
+
+								io.in(socket.room).emit('updateAbandon');
+								abandonGame(function(){  });
+
+							roomVar[socket.room].gameStatus = 'abandon';
+						}
+
+						
+						//update roomscore
+						if (perspective == 'player1'){
+							roomVar[socket.room].roomScore.p1++;
+						}else if (perspective == 'player2'){
+							roomVar[socket.room].roomScore.p2++;
+						}
+						io.in(socket.room).emit('roomScoreUpdate',roomVar[socket.room].roomScore);
+
+						
+						//if single player lose
+						if (roomVar[socket.room].gameData.reqTo_id._id == '-1' && perspective == 'player2'){	
+							winnerUser = roomVar[socket.room].gameData.reqFrom_id;
+							io.in(socket.room).emit('winnerUpdate',perspective,roomVar[socket.room].gameStatus,winnerUser,'1');
+							return;
+						}
+
+						io.in(socket.room).emit('winnerUpdate',perspective,roomVar[socket.room].gameStatus,winnerUser,'0');
+
+						
+
+
+
+				}
+
+
+				function reconnection(){
+					clearInterval(roomVar[socket.room].dcTimer);
+					roomVar[socket.room].dcInc = 0;
+					roomVar[socket.room].iniCtr = 3;
+					roomVar[socket.room].iniTimer = setInterval(function(){
+
+					roomVar[socket.room].iniStr = 'The game stars in ' +roomVar[socket.room].iniCtr;
+
+
+						if (roomVar[socket.room].iniCtr==0){
+							roomVar[socket.room].iniStr = 'Go!';
+
+							 roomVar[socket.room].gameStatus = 'onGame'; //resume clock time
+							 roomVar[socket.room].clockTimer = setInterval(function(){
+								 io.in(socket.room).emit('clockUpdate',roomVar[socket.room].clockCtr); 
+						 		roomVar[socket.room].clockCtr++;
+							 },1000);
+
+							 //resume computer time
+							 if (roomVar[socket.room].gameData.reqTo_id._id == '0'){
+							 	computerTimerInit();
+							 }
+
+						}
+
+						// 3 2 1 go
+						 io.in(socket.room).emit('gameUpdate', 
+						 		roomVar[socket.room].iniStr, roomVar[socket.room].gameStatus,false,'blue');
+
+						 if (roomVar[socket.room].iniCtr<=0){
+						 	clearInterval(roomVar[socket.room].iniTimer);
+						 }
+						 roomVar[socket.room].iniCtr--;
+					},1000);
+
+				}
+
+				socket.on('readyGame',function(data,cb){
+								//add queue of ready
+							if ([roomVar[socket.room].gameData.reqTo_id._id,
+								 roomVar[socket.room].gameData.reqFrom_id._id].indexOf(socket.userInfo._id)>-1 &&
+								 roomVar[socket.room].readyQueue.indexOf(socket.userInfo._id)<0)
+								 {
+									 roomVar[socket.room].readyQueue.push(socket.userInfo._id);
+								 }
+							console.log(roomVar[socket.room].readyQueue);
+
+							//if computer opponent
+							if (roomVar[socket.room].gameData.reqTo_id._id =='0'){
+								roomVar[socket.room].readyQueue.push('0');
+							}else if (roomVar[socket.room].gameData.reqTo_id._id == '-1'){
+								roomVar[socket.room].readyQueue.push('-1');
+							}
+
+
+							//start if  ready
+							if (roomVar[socket.room].readyQueue.length==2){
+								roomVar[socket.room].readyQueue = [];
+								roomVar[socket.room].gameStatus = 'iniGame';
+								roomVar[socket.room].iniCtr = 3;
+								roomVar[socket.room].iniTimer = setInterval(function(){
+											roomVar[socket.room].iniStr = 'The game stars in ' +roomVar[socket.room].iniCtr;
+									if (roomVar[socket.room].iniCtr==0){
+											roomVar[socket.room].iniStr = 'Go!';
+											//create game database
+
+
+											//update scramble
+											if (roomVar[socket.room].gameData.cubeType == '3x3x3'){
+												roomVar[socket.room].scramble = scrambler.cube3();
+												// roomVar[socket.room].scramble = "U2";
+											}else if (roomVar[socket.room].gameData.cubeType == '2x2x2'){
+												roomVar[socket.room].scramble = scrambler.cube2();
+											}
+
+											//computer algorithm
+											if (roomVar[socket.room].gameData.reqTo_id._id == '0'){
+												roomVar[socket.room].aiAlg = pochmann.solve(roomVar[socket.room].scramble).split(' ');
+											
+												roomVar[socket.room].aiCtr=0;
+												computerTimerInit();
+											}
+											//computer algorithm -end
+
+											
+											//update room scramble
+											 roomVar[socket.room].gameStatus = 'onGame';
+											 io.in(socket.room).emit('gameStartInit',roomVar[socket.room].scramble, 
+										 			roomVar[socket.room].scramble,roomVar[socket.room].gameStatus); 
+
+												 // roomVar[socket.room].algP1=roomVar[socket.room].scramble + " ";
+												 // roomVar[socket.room].algP2=roomVar[socket.room].scramble + " ";
+												 	 
+											 
+											 //start time
+											 roomVar[socket.room].clockCtr = 0;
+											 roomVar[socket.room].clockTimer = setInterval(function(){
+
+										 		 io.in(socket.room).emit('clockUpdate',roomVar[socket.room].clockCtr); 
+										 		roomVar[socket.room].clockCtr++;
+											 },1000);
+
+											 
+									
+									}
+									// 3 2 1 go
+									 io.in(socket.room).emit('gameUpdate', 
+									 		roomVar[socket.room].iniStr, roomVar[socket.room].gameStatus,false,'blue');
+
+									 if (roomVar[socket.room].iniCtr<=0){
+									 	clearInterval(roomVar[socket.room].iniTimer);
+									 }
+									 roomVar[socket.room].iniCtr--;
+								},1000);
+							}
+							cb();
+					
+				});  
+				function computerTimerInit(){
+						roomVar[socket.room].aiTimer = setInterval(function(){
+
+								roomVar[socket.room].algP2+=roomVar[socket.room].aiAlg[roomVar[socket.room].aiCtr] + " ";
+								checkWinner();
+
+								io.in(socket.room).emit('matrixComputerUpdate',
+									roomVar[socket.room].scramble+ " " + roomVar[socket.room].algP2); 
+
+								roomVar[socket.room].aiCtr++;
+								// console.log(roomVar[socket.room].algP2);
+								if (roomVar[socket.room].aiCtr>=roomVar[socket.room].aiAlg.length){
+									clearInterval(roomVar[socket.room].aiTimer)
+								}
+						},100);
+				}
+				socket.on('sendAlgP1',function(data,cb){  //send players solve algorithm 
+					roomVar[socket.room].algP1=data.alg;	//letter algs
+					roomVar[socket.room].arrayAlg = data.arrayAlg; //pixels
+					checkWinner();
+					cb();
+					// console.log('P1 moves = ' + roomVar[socket.room].algP1);
+				});
+				socket.on('sendAlgP2',function(data,cb){
+					roomVar[socket.room].algP2=data.alg;
+					roomVar[socket.room].arrayAlg1 = data.arrayAlg;
+					checkWinner();
+					cb();
+				});
+				function checkWinner (){
+					if (roomVar[socket.room].gameStatus != 'onGame') return;
+
+			// console.log('p1 = ' +checkSolver.isSolve(roomVar[socket.room].scramble + " "+ roomVar[socket.room].algP1) + "  " +
+			// 						roomVar[socket.room].scramble + " " + roomVar[socket.room].algP1  );
+
+			// console.log('p2 = ' +checkSolver.isSolve(roomVar[socket.room].scramble + " "+ roomVar[socket.room].algP2) + " " +
+			// 						roomVar[socket.room].scramble + " " + roomVar[socket.room].algP2  );
+				// console.log(roomVar[socket.room].gameData.cubeType.charAt(0) + " hihi");
+					if (checkSolver.isSolve(roomVar[socket.room].scramble + " "+ roomVar[socket.room].algP1,
+						roomVar[socket.room].gameData.cubeType.charAt(0))) {
+						// roomVar[socket.room].gameData.cubeType.charAt(0))){
+						 	socketWinnerUpdate('player1','time',roomVar[socket.room].gameData.reqFrom_id);
+					
+					}
+					else if (checkSolver.isSolve(roomVar[socket.room].scramble + " "+ roomVar[socket.room].algP2,
+						roomVar[socket.room].gameData.cubeType.charAt(0))){
+						 	socketWinnerUpdate('player2','time',roomVar[socket.room].gameData.reqTo_id);
+					
+					}
+
+
+					// console.log(roomVar[socket.room].algP2);
+		
+						
+				}
+				socket.on('cube_recon',function(data,cb){
+					cb(roomVar[socket.room].scramble,roomVar[socket.room].arrayAlg,
+					   roomVar[socket.room].scramble,roomVar[socket.room].arrayAlg1,
+					   roomVar[socket.room].algP1,roomVar[socket.room].algP2);
+				});
+
+				socket.on('sendRoomMsg',function(data,cb){
+
+						roomVar[socket.room]['roomMsg'].push({
+									'username':socket.userInfo.username,
+									'avatar':socket.userInfo.user_avatar,
+									'msg':data.msg
+								});
+
+
+						io.sockets.in(socket.room).emit('updateRoomMsg',roomVar[socket.room]['roomMsg']);
+						cb();
+				});
+
+				socket.on('disconnect', function() {
+					//for online users
+						io.emit('updateOnlineUsers',funcUpdateOnline());
+					    
+
+			     	if (String(socket.room).indexOf("room") < 0) return; //if disconnect in game or not
+			     														//remove id from game
+			     	if (socket.userInfo == undefined) return;
+
+			     	//remove from userList
+			  //  		roomVar[socket.room]['userList'] = roomVar[socket.room]['userList'].filter(function( obj ) {
+			  //  			 return obj !== socket.userInfo._id;
+					// });
+						if (roomVar[socket.room].userList.indexOf(socket.userInfo._id)!=-1){
+							roomVar[socket.room].userList.splice(roomVar[socket.room].userList.indexOf(socket.userInfo._id),1);
+						}
+
+					
+			   		//update users given id
+					models.getUsersById(roomVar[socket.room]['userList'],function(err,data){
+					    io.sockets.in(socket.room).emit('updateUsersInRoom',data); //broadcast also itself
+					});
+
+					//user say left the room
+					roomVar[socket.room]['roomMsg'].push({
+									'username':socket.userInfo.username,
+									'avatar':socket.userInfo.user_avatar,
+									'msg':"Left the room"
+								});
+					io.sockets.in(socket.room).emit('updateRoomMsg',roomVar[socket.room]['roomMsg']);
+
+					//delete queue
+					roomVar[socket.room]['readyQueue'] = roomVar[socket.room]['readyQueue'].filter(function( obj ) {
+			   			 return obj !== socket.userInfo._id;
+					});
+					// console.log(roomVar[socket.room]['readyQueue']);
+
+
+					console.log('userList ' + roomVar[socket.room]['userList']);
+					console.log('dc sr = ' + socket.room);
+					//if ini default ini
+					// console.log('gm = ' +roomVar[socket.room].gameStatus);
+					if (roomVar[socket.room].gameStatus == 'iniGame' && socket.userPerspective !='observer'){
+						clearInterval(roomVar[socket.room].iniTimer);
+						 roomVar[socket.room].readyQueue = [];
+						 io.in(socket.room).emit('gameUpdate', '', roomVar[socket.room].gameStatus,true,'blue');
+					}
+					if (roomVar[socket.room].gameStatus == 'reconnect'){
+						clearInterval(roomVar[socket.room].iniTimer);
+					}
+					
+
+					//if on game and player disconnect and from 2 players game
+					if ((roomVar[socket.room].gameStatus == 'onGame' || 
+						roomVar[socket.room].gameStatus == 'reconnect') && socket.userPerspective != 'observer' &&
+						roomVar[socket.room].playerQueue.length==2)
+					{
+
+							//for 1 second delay dc timer glitch
+							clearInterval(roomVar[socket.room].dcTimer);
+
+							//for computer timer stop
+							if (roomVar[socket.room].gameData.reqTo_id._id == '0')
+							clearInterval(roomVar[socket.room].aiTimer);
+							
+
+							//if times of dc limit is reached
+
+							console.log('p1 dc = ' + roomVar[socket.room].player1Dc);
+							console.log('p2 dc = ' + roomVar[socket.room].player2Dc);
+							
+							if (roomVar[socket.room]['player1Dc'] <=0 && socket.userPerspective == 'player1'){
+								console.log('pumasok 1');
+								socketWinnerUpdate('player2','disconnection',roomVar[socket.room].gameData.reqTo_id);
+								return;
+							}else if (roomVar[socket.room]['player2Dc'] <=0 && socket.userPerspective =='player2'){
+									console.log('pumasok 2');
+								socketWinnerUpdate('player1','disconnection',roomVar[socket.room].gameData.reqFrom_id);
+								return;
+							}
+
+							//decrement number of disconnection
+							roomVar[socket.room][socket.userPerspective + 'Dc']--;
+							clearInterval(roomVar[socket.room].clockTimer);
+
+							//60 seconds disconnection
+							roomVar[socket.room].dcInc = 60;
+							roomVar[socket.room].dcTimer = setInterval(function(){ //pause flipclock
+
+								roomVar[socket.room].gameStatus = 'reconnect';
+
+								roomVar[socket.room].dcStr = "Waiting for reconnection .. " + roomVar[socket.room].dcInc;
+								 io.in(socket.room).emit('gameUpdate', roomVar[socket.room].dcStr, roomVar[socket.room].gameStatus,false,'red');
+
+									console.log('dcInc ' + roomVar[socket.room].dcInc);
+							
+								// if dc clock expires
+								if (roomVar[socket.room].dcInc<=0){
+									clearInterval(roomVar[socket.room].dcTimer);
+									// console.log("PQueue " + roomVar[socket.room].playerQueue);
+									// console.log('s = ' + socket.userInfo._id);
+									// console.log('d = ' + roomVar[socket.room].playerQueue.indexOf(socket.userInfo._id)>-1 )
+									if (roomVar[socket.room].playerQueue.indexOf(roomVar[socket.room].gameData.reqFrom_id._id)>-1 ){
+										console.log('test dc 1');
+									   socketWinnerUpdate('player1','disconnection',roomVar[socket.room].gameData.reqFrom_id);
+									}else if (roomVar[socket.room].playerQueue.indexOf(roomVar[socket.room].gameData.reqTo_id._id)>-1 ){
+											console.log('test dc 1');
+									   socketWinnerUpdate('player2','disconnection',roomVar[socket.room].gameData.reqTo_id);
+									}else{
+										//abandon game
+									}
+								}
+
+								if (roomVar[socket.room].gameStatus == 'reconnect' && roomVar[socket.room].playerQueue.length==2){
+									reconnection();
+								}
+
+								roomVar[socket.room].dcInc--;
+
+
+							},1000);
+						
+					}
+
+					//remove from playerQueue
+					// roomVar[socket.room].playerQueue = roomVar[socket.room].playerQueue.filter(function(obj){
+					// 	return obj !== socket.userInfo._id;
+					// });
+						if (roomVar[socket.room].playerQueue.indexOf(socket.userInfo._id)!=-1){
+							roomVar[socket.room].playerQueue.splice(roomVar[socket.room].playerQueue.indexOf(socket.userInfo._id),1);
+						}
+					
+
+					console.log("PQueue dc" + roomVar[socket.room].playerQueue);
+
+					checkIfReady();
+
+
+			   	});
+
+			
+
+
+			   		socket.on('updatePixels', function (data){
+			   			socket.broadcast.to(socket.room).emit('playerPixels',data);
+					});
+					socket.on('updatePixels1', function (data){
+						socket.broadcast.to(socket.room).emit('playerPixels1',data);
+					});
+
+			//####################################### - Game - end #########################################################
+
 				socket.join(socket.request.session.user_id);
+				socket.room=socket.request.session.user_id;
+
+
+		//######################## -- online users and live games -- ################################
+
+				
+	    		socket.on('reqUpdateOnlineUsers',function(data,callback){
+					callback(funcUpdateOnline());
+	    		});
+
+	    		socket.on('reqUpdateLiveGames',function(data,callback){
+					funcUpdateLiveGames();
+					callback();
+	    		});
+
+	    		io.emit('updateOnlineUsers',funcUpdateOnline());
+
+	
+
+    		//#################-- online users and live games -end ###########################
+
+
+
+
+
+				// rooms for chat and inbox
 
 			socket.on('reqUpdateChat', function (user,callback){
 				io.sockets.in(user).emit('updateChat'); //broadcast also itself
@@ -26,45 +802,195 @@ module.exports.listen = function(app){
 
 				callback();
 			});
-			// socket.on('reqUpdateInbox',function(user,callback){
-			// 	io.sockets.in(user).emit('updateInbox'); //broadcast also itself
-			// 	io.sockets.in(socket.request.session.user_id).emit('updateInbox'); //broadcast also itself
+
+							// gameReq:gameReq,userFrom:$rootScope.userInfo,userTo:$scope.inviteData}
+			socket.on('createReqGame',function (data,callback){
+						//data from _id is the primary key of temporary request variable
+
+						//#######-computer opponent-############## or single player
+						if (data.gameReq.reqTo_id == '0' || data.gameReq.reqTo_id == '-1'){
+							//assign room variables of newly created game
+							models.createGame(data.gameReq,function(err,c_data){
+								io.sockets.in(data.gameReq.reqFrom_id).emit('redirGame',c_data._id);
+								io.sockets.in(data.gameReq.reqTo_id).emit('redirGame',c_data._id);
+
+								//initialize variable
+								iniVarGames(function(){
+										funcUpdateLiveGames();
+									
+								});
+									
+							});
+							return;
+						}
+						//#######-computer opponent- end ##############
+						
+						
+					if (varUserInclude.indexOf(data.gameReq.reqTo_id)>-1){
+						callback(1);
+					}else{
+
+
+							varGameReqs[data.gameReq.reqFrom_id] = data.gameReq;
+
+							varTimerInc[data.gameReq.reqFrom_id] = 1;
+
+							console.log(varGameReqs);
+							
+							
+
+							//include users in request
+							varUserInclude.push(data.gameReq.reqFrom_id);
+							varUserInclude.push(data.gameReq.reqTo_id);
+
+
+							varGameTimers[data.gameReq.reqFrom_id] = setInterval(function(){
+
+										io.sockets.in(data.gameReq.reqFrom_id).emit('updateInvite',varTimerInc[data.gameReq.reqFrom_id],
+													data.userTo,data.gameReq);
+
+									
+										io.sockets.in(data.gameReq.reqTo_id).emit('updateReceived',varTimerInc[data.gameReq.reqFrom_id],
+													data.userFrom,data.gameReq);
+									
+										
+
+										if (varTimerInc[data.gameReq.reqFrom_id]<0){
+												
+										//remove id when finish
+										console.log(varGameReqs);
+
+										clearInterval(varGameTimers[data.gameReq.reqFrom_id]);
+
+											varGameReqs = varGameReqs.filter(function( obj ) {
+											    return obj.reqFrom_id !== data.gameReq.reqFrom_id;
+											});
+
+											//delete user1 and use to to list
+											varUserInclude = varUserInclude.filter(function(obj){
+												return obj !== data.gameReq.reqFrom_id;
+											});
+											varUserInclude = varUserInclude.filter(function(obj){
+												return obj !== data.gameReq.reqTo_id;
+											});
+
+											io.sockets.in(data.gameReq.reqFrom_id).emit('closeModal');
+											io.sockets.in(data.gameReq.reqTo_id).emit('closeModal');
+
+
+										}
+
+									
+										varTimerInc[data.gameReq.reqFrom_id]-=.050;
+							},1000);
+
+
+							
+							 callback(0);
+					}
+				// create req game
+						
+			});
+				socket.on('deleteGameReq',function (data,callback){
+						//if empty object
+						if (Object.keys(data).length === 0 && data.constructor === Object) callback();
+						else{
+								clearInterval(varGameTimers[data.gameData.reqFrom_id]);
+
+								varGameReqs = varGameReqs.filter(function( obj ) {
+								    return obj.reqFrom_id !== data.gameData.reqFrom_id;
+								});
+
+								//delete user1 and use to to list
+								varUserInclude = varUserInclude.filter(function(obj){
+									return obj !== data.gameData.reqFrom_id;
+								});
+								varUserInclude = varUserInclude.filter(function(obj){
+									return obj !== data.gameData.reqTo_id;
+								});
+
+
+
+								io.sockets.in(data.gameData.reqFrom_id).emit('closeModal');
+								io.sockets.in(data.gameData.reqTo_id).emit('closeModal');
+
+								
+						}
+
+				});
+				socket.on('declineGameReq',function (data,callback){
+						//if empty object
+						if (Object.keys(data).length === 0 && data.constructor === Object) callback();
+						else{
+
+								clearInterval(varGameTimers[data.gameData.reqFrom_id]);
+
+								//delete id
+								varGameReqs = varGameReqs.filter(function( obj ) {
+								    return obj.reqFrom_id !== data.gameData.reqFrom_id;
+								});
+
+								//delete user1 and use to to list
+								varUserInclude = varUserInclude.filter(function(obj){
+									return obj !== data.gameData.reqFrom_id;
+								});
+								varUserInclude = varUserInclude.filter(function(obj){
+									return obj !== data.gameData.reqTo_id;
+								});
+
+
+								console.log('userInclude = ' + varUserInclude);
+
+								io.sockets.in(data.gameData.reqFrom_id).emit('declineModal');
+								io.sockets.in(data.gameData.reqTo_id).emit('closeModal');
+
+								
+						}
+
+				});
+
+					socket.on('acceptGameReq',function(data,callback){
+						clearInterval(varGameTimers[data.gameData.reqFrom_id]);
+						varGameReqs = varGameReqs.filter(function( obj ) {
+								    return obj.reqFrom_id !== data.gameData.reqFrom_id;
+						});
+
+						//delete user1 and use to to list
+						varUserInclude = varUserInclude.filter(function(obj){
+							return obj !== data.gameData.reqFrom_id;
+						});
+						varUserInclude = varUserInclude.filter(function(obj){
+							return obj !== data.gameData.reqTo_id;
+						});
+
+
+						//assign room variables of newly created game
+						models.createGame(data.gameData,function(err,c_data){
+							io.sockets.in(data.gameData.reqFrom_id).emit('redirGame',c_data._id);
+							io.sockets.in(data.gameData.reqTo_id).emit('redirGame',c_data._id);
+
+							//initialize variable
+							iniVarGames(function(){
+								funcUpdateLiveGames();
+							});
+
+								
+						});
+						
+						callback();
+
+
+
+				});
+
 				
-			// }
-
-    	 // sending to all clients except sender
-			// socket.broadcast.emit('message', socket.request.session.user_id);
-
-	 	 // sending to all clients in 'game' room(channel), include sender
- 				// io.in('5').emit('message', 'cool game');
+	
+			
 
 	});
-
-	// setInterval(() => io.emit('time', new Date().toTimeString()), 5000);
-	
 
 
 
     return io;
 }
 
-// io.sockets.on('connection', function (socket) {
-// 		 console.log('Client connected hehe');
-// console.log('testing');
-		 	
-// });
-
-// io.on('connection', (socket) => {
-//   console.log('Client connected');
-//   socket.on('disconnect', () => console.log('Client disconnected'));
-
-	
-
-// });
-
-
-
-
-
-
-// module.exports = router;

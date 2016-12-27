@@ -1,1 +1,1164 @@
-live
+<html  ng-app="webApp" id="controller_id" ng-controller='liveCtrl'>
+
+<head>
+		<meta charset="UTF-8">
+		 <base href="/">
+		 <script src="js/jquery.js"></script>
+		 <script src="js/three/three.js"></script>
+		 <script src="js/three/Projector.js"></script>
+	 	 <script src='js/three/CanvasRenderer.js'></script>
+		 <script src="js/three/TrackballControls.js"></script>
+	   	 <script src="js/three/tween.min.js"></script> 
+	   	 <script src="js/three/ImageUtils.js"></script>
+	   <!--   // <script src="js/bindWithDelay.js"></script>
+	   	 // <script src="js/onDelay.js"></script> -->
+		<!-- // <script src='js/jquery-3.1.0.min.js'></script> -->
+		 <script src = 'bootstrap-3.3.6-dist/js/bootstrap.js'></script>
+		   <script src="/node_modules/angular/angular.js"></script>
+		    <!-- // <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular.js"></script> -->
+		    <script src="/js/angular-route.min.js"></script> 
+
+		  <script src="node_modules/angularjs-scroll-glue/src/scrollglue.js"></script>
+
+		   <link href="node_modules/angular-tooltips/dist/angular-tooltips.min.css" rel="stylesheet" type="text/css" />
+		    <script src="node_modules/angular-tooltips/dist/angular-tooltips.min.js"></script>
+
+
+		    	<link rel="stylesheet" type="text/css" href="/tooltipster-master/dist/css/tooltipster.bundle.min.css" />
+		        <script type="text/javascript" src="/tooltipster-master/dist/js/tooltipster.bundle.min.js"></script>
+
+		 <!-- // <script type="text/javascript" src="js/inc/TimeCircles.js"></script> -->
+		 <!-- <link href="jqueryWidget/jquery-ui.css" rel="stylesheet"> -->
+		 <!-- // <script src = 'jqueryWidget/jquery-ui.js'></script> -->
+
+		 <!-- <link rel="stylesheet" type="text/css" href="js/tooltipster.bundle.css"> -->
+		<!-- // <script src = "js/tooltipster.bundle.js"></script> -->
+		
+		 <script src="/socket.io/socket.io.js"></script>
+
+	     <link rel="stylesheet" href="flipclock/flipclock.css">
+         <!-- <link rel="stylesheet" href="js/inc/TimeCircles.css" /> -->
+       	 <link rel="stylesheet" type="text/css" href="bootstrap-3.3.6-dist/css/bootstrap.css">
+       <!-- 	 <link rel="stylesheet" type="text/css" href="css/tooltipster-sideTip-noir.min.css">
+		 <link rel="stylesheet" type="text/css" href="css/tooltipster-sideTip-shadow.min.css">
+		 <link rel="stylesheet" type="text/css" href="css/tooltipster-sideTip-light.min.css">
+		 <link rel="stylesheet" type="text/css" href="css/tooltipster-sideTip-shadow.min.css">
+		 <link rel="stylesheet" type="text/css" href="css/tooltipster-sideTip-borderless.min.css"> -->
+		<link rel="stylesheet" type="text/css" href="css/shine.css">
+		  
+		<script src="/js/solveP1.js"></script>		
+
+		    <link rel='stylesheet' type='text/css' href='/css/loader.css'></link>
+	<div id='tpad'></div>
+    <!-- angular material -->
+        <link rel="stylesheet" href="/node_modules/angular-material/angular-material.css">
+       
+       <script src="/node_modules/angular-aria/angular-aria.js"></script> 
+        <script src="/node_modules/angular-animate/angular-animate.js"></script> 
+        <script src="/node_modules/angular-material/angular-material.js"></script>
+    <!-- angular material -->
+
+    	<script src="/node_modules/requirejs/require.js"></script>
+		    <script src='/js/live.js'></script>
+		 <script>
+			$(document).ready(function() {
+		         $("body").css('width', 1366 + 'px');
+			 });
+
+
+		 </script>
+		 
+		 <style>
+		 		[ng\:cloak],[ng-cloak],.ng-cloak{display:none !important}
+		 </style>
+
+
+		 	                    <!--    <div class="loader" style="display:{{loadComplete ? 'none':''}}">
+                                        <div class="loader-inner">
+                                            <div class="loading one"></div>
+                                        </div>
+                                        <div class="loader-inner">
+                                            <div class="loading two"></div>
+                                        </div>
+                                        <div class="loader-inner">
+                                            <div class="loading three"></div>
+                                        </div>
+                                        <div class="loader-inner">
+                                            <div class="loading four"></div>
+                                        </div>
+                                    </div>
+ -->
+		
+</head>
+	                            
+
+<!-- {{load}} -->
+
+<body style="position:absolute; 
+    top: 0; 
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: 0;
+    padding: 0;
+    border:0px solid;"  ng-cloak initialisation >
+
+<div id='masterRow' style='border:0px solid;'>
+
+	<!-- {{load===false ? 'hidden':''}} -->
+				<!-- <span id='yourCube' style='height:30px; background-color:#6E6E6E; color:#ffffff; padding:5px; '>
+						<strong> Your cube </strong>
+				</span> -->
+
+		<div class= "row" style = 'border:0px solid; margin:50px; margin-top:15px; margin-bottom:0px;'> 
+		
+
+			<div class='row' style='border:0px solid; background-color:#F2F2F2;'>
+				
+	  				<div class="col-xs-12" style='border:0px solid;'>
+	  						<div class="col-xs-12" style='border:0px solid; '>
+	  								<div class='col-xs-2' style='border:0px solid; background-color:#bdbdbd; padding:2.8px; '> 
+	  								
+	  								<img id='gameLogo' src="
+	  								  {{gameData.reqTo_id._id==0 ? 'img/user/pvb.png':
+                                       (gameData.reqTo_id._id==-1 ? 'img/user/p.png':'img/user/pvp.png')}}
+	  								" style='width:25; height:25; border:1px solid #ffffff; '></img>
+	  								
+	  								 	<font id='gameLabel' style='color:#ffffff; font-size:15px;'>
+							 		     {{gameData.reqTo_id._id==0 ? 'Versus Computer':
+					                      (gameData.reqTo_id._id==-1 ? 'Single Player':'Battle PvP')}}
+	  								 		 </font>
+
+	  								 </div> 
+	  								
+	  								 <div id='headerInformation' class='col-xs-7' style='border:0px solid;
+	  								  padding:5px; '> 
+	  								
+	  								 		<font style='color:#6E6E6E; font-size:12px;'>{{convertToDate(gameData.reqDate)}}</font>
+	  								 	<span style='margin-left:10px; margin-right:10px;'>|</span> 
+	  								 	<font style='color:#6E6E6E; font-size:12px;'>Cube: {{gameData.cubeType}}</font>
+	  								 	<span style='margin-left:10px; margin-right:10px;'>|</span> 
+	  								 		<font style='color:#6E6E6E; font-size:12px;'><span id='p1HeaderUser'>
+	  								 			{{gameData.reqFrom_id.username}}
+	  								 		</span> <span id='p1Score'>[{{scoreP1}}]</span> <span id='removeSingle'>
+	  								 		<span style="display:
+	  								 		{{gameData.reqTo_id._id == '-1' ? 'none':''}}">vs
+	  								 	<span id='p2Headeruser'>{{gameData.reqTo_id.username}}</span> <span id='p2Score'> [{{scoreP2}}]</span></span></span></font>
+  								 		<span style='margin-left:10px; margin-right:10px;'>|</span> 
+	  								 		<font style='color:#6E6E6E; font-size:12px;'>{{gameData.roomType}} </font>
+	  								 		<span style="border:0px solid; display:
+	  								 		{{gameData.roomType === '(Private)' ? '':'none'}}">
+  								 				<span style='margin-left:10px; margin-right:10px;'>|</span> 
+	  								 		<font style='color:#6E6E6E; font-size:12px;'> Keyword: ' {{gameData.reqKeyword}} '</font>
+	  								 		</span>
+
+	  								 <!-- 		<md-chips>
+									      <md-chip>Hockey</md-chip>
+									      <md-chip>Lacrosse</md-chip>
+									      <md-chip>Baseball</md-chip>
+
+									      <md-chip>{{ctrl.chipText}}</md-chip>
+									    </md-chips> -->
+	  								 </div>
+
+	  								 <div class='col-xs-1' style='padding:2.8px;'>	
+	  								 	<button id='btnHelp' class='btn btn-xs'><span class='glyphicon glyphicon-question-sign'></span> Help</button>
+	  								 </div>
+
+	  								 <div class='col-xs-1' style='padding:2.8px;'>	
+	  								 	<button id='btnSettings' class='btn btn-xs'><span class='glyphicon glyphicon-cog'></span> Settings</button>
+	  								 </div>
+
+	  								 <div class='col-xs-1' style='border:0px solid; background-color:; padding:2.8px; '> 
+	  								 	<button  ng-click="
+	  								 	playerPerspective != 'observer' ? showConfirmAbandon($event):home()" class='btn btn-xs'><span class='glyphicon glyphicon-home'></span> Home</button>
+	  							
+	  								  	<img src='img/primaryLogo.png' style='width:50; 
+	  								  	height:40;  position:absolute; top:-15px; right:-35px;'></img>
+	  								
+	  								 	<!-- <font style='color:#ffffff; font-size:15px;'>Battle PvP </font> -->
+	  								</div>
+
+
+	  						</div>
+							
+					 	
+	  						
+	  				</div>
+	  		</div>
+	 
+	  	
+	  		
+	  		<div class='row' style='border:0px solid; background-color:#F2F2F2;  margin-top:5px;' align='left'>
+							<div class="col-xs-4" style='border:0px solid; padding:5px;' align='left'>
+												<table style='margin:5px; border:0px solid;' >
+											<tr>
+												<td rowspan='4' style='border:0px solid;'>
+
+													<img id='p1Image' src='{{gameData.reqFrom_id.user_avatar}}' style='height=50px; width:50px; margin-left:10px;
+													margin-right:10px;'></img>
+												</td>
+												<td style='border:0px solid; padding-bottom:5px;'>
+													<b><font id='p1Username' style='font-size:17px; color:#6E6E6E;'>
+															{{gameData.reqFrom_id.username}}
+													</font> </b>
+													
+									</font></strong>
+													
+
+												</td>
+											</tr>
+											
+											<tr>
+												<td style='border:0px solid; padding-right:10px;'>
+													<font style='font-size:12px;'>Average:
+														<font  style='color:#6e6e6e'>00:43<b id='p1Average'></b></font></font>
+												</td>
+											</tr>
+											<tr>
+												<td>
+														<font style='font-size:12px;'> Races: 
+														<b>
+														<font id='p1Win' style='color:#04B404;'>23</font> | 
+																  <font id='p1Lose' style='color:#FE2E2E'>20</font></b> </font>
+														</b>
+																 
+												</td>
+											</tr>
+											<tr>
+												<td style='padding-top:10px;'>
+													<span id='p1Status' class="label label-{{user1? 'success':'Danger'}}
+													">{{user1===true? 'Connected':'Disconnected'}}</span>
+
+													
+												</td>
+											</tr>
+											
+										</table>
+
+
+							</div>
+						
+							<!-- <div class="col-xs-0" style='border:0px solid; '>
+								
+	  						</div> -->
+	  						<div class="col-xs-4" style='border:5px solid #ffffff; background-color:#f2f2f2; padding:0px;'>
+	  							
+<!-- 	  							<img src='img/primaryLogo.png' style='width:90px; height:50px;
+	  							 margin-right:10px; margin-top:-20px; border:0px solid; padding:0px;'></img>
+
+ -->							
+ 								<center>
+ 								<div class="clock" style='border:0px solid;'></div>
+ 								</center>
+								<script>
+									var hrDisplay = 0;
+									var clock;
+		
+									$(document).ready(function() {
+										
+										clock = $('.clock').FlipClock({
+									        clockFace: 'MinuteCounter',
+									       
+
+									    });
+									    clock.stop();
+									     // clock.start();
+
+									});
+									function timeFunc(){
+										//  clock.setTime(hrDisplay);
+										//  	hrDisplay++;
+										// clock.flip();
+										clock.start();
+									}
+								</script>
+					 			 <!-- <button onClick='timeFunc();'>test</button> -->
+					 			
+									
+								
+
+							
+					 		</div>
+					 
+						
+							<div id='p2Panel' class="col-xs-4" style="border:0px solid; padding:5px; display:
+							{{gameData.reqTo_id._id == '-1' ? 'none':''}}
+							" align='right'>
+
+								<table style='margin:5px; border:0px solid;' align='right'>
+											<tr>
+												
+												<td align='right' style='border:0px solid; padding-bottom:5px;'>
+													<!-- <span class="label label-danger">Disconnected</span> -->
+
+													<b><font id='p2Username' style='font-size:17px; color:#6E6E6E;'>
+															{{gameData.reqTo_id.username}}
+													</font> </b>
+												</td>
+												<td align='right' rowspan='4' style='border:0px solid;'>
+													<img id='p2Image' src='{{gameData.reqTo_id.user_avatar}}' style='height=50px; width:50px; margin-right:10px; margin-left:10px;'></img>
+												</td>
+
+											</tr>
+
+											<tr>
+												<td align='right' style='border:0px solid; padding-right:0px;'>
+													<font style='font-size:12px;'>Average:
+														<b id='p2Average' style=' color:#6e6e6e;'></b></font>
+												</td>
+											</tr>
+											<tr>
+												<td align='right'>
+													
+													<font style='font-size:12px;'> Races: 
+														<b>
+														<font id='p2Win' style='color:#04B404;'>23</font> | 
+																  <font id='p2Lose' style='color:#FE2E2E'>23</font></b> </font>
+														</b>
+																 
+													
+												</td>
+											</tr>
+											<tr align='right'>
+												<td style='padding-top:10px;'>
+														<span id='p2Status' class="label label-{{user2 === true? 'success':'Danger'}}">{{user2===true? 'Connected':'Disconnected'}}</span>
+
+												</td>
+											</tr>
+
+										
+									
+										</table>
+										
+										<!-- Player 2:  -->
+							</div>
+					 
+			</div>
+			<div class='row'>
+				<div id='p1Control1' class='col-xs-2' style='border:0px solid; height:25px;  background-color:#F2F2F2; margin-top:5px; padding:0px;' >
+								
+								
+								<div id='divKeyboard1' class='col-xs-12' 
+								style="visibility:{{playerPerspective=='player1' ? 'visibile':'hidden'}};" align='center'>
+									<button id='btnKeyboard' type="button" class="btn btn-default btn-xs" data-toggle="modal" 
+									data-target="#keyboardcontrols">
+									 <font style='font-size:13px; color:#6E6E6E;'>Keyboard controls</font>
+									</button>
+								</div>
+				</div>
+
+			<div  id='p1Control2' class='col-xs-2' style='border:0px solid; height:25px;  background-color:#F2F2F2; margin-top:5px;'>
+					<center style="visibility:{{playerPerspective=='player1'?'visible':'hidden'}};">
+				
+
+					<button id="{{playerPerspective=='player1'?'btnReady':''}}"  
+					data-tooltip-content="#ready_content" ng-click='btnReady(); btnP1=false;' 
+					ng-disabled = "btnP1 ? '':'disabled'" class='btn btn-primary btn-xs'> Ready</button>
+					<button id='btnForfeitP1'  ng-click='btnForfeit()' 
+					ng-disabled = "gameStatus === 'onGame' ? '':'disabled'"  class='btn btn-danger btn-xs'> Forfeit</button>
+				
+					 </center>
+					
+				</div>
+				<div  id='centerBackground' class='col-xs-4' style='border:0px solid; height:25px; background-color:#f2f2f2; margin-top:5px;'>
+					<!-- Button trigger modal -->
+						<center >
+						
+							<strong id='centerMessage' style="border:0px solid; font-size:17px; 
+							color:{{gameStatusColor}};" > 
+									{{centerMsg}}
+							</strong>
+						</center>
+				
+				</div>
+			
+				<div id='p2Control1' class='col-xs-2' style='border:0px solid #ffffff; height:25px; background-color:#f2f2f2; margin-top:5px;' align='right'>
+				
+										<center style="visibility:{{playerPerspective=='player2'?'visible':'hidden'}};">
+										<button id="{{playerPerspective=='player2'?'btnReady':''}}" 
+										data-tooltip-content="#ready_content" ng-disabled = "btnP2 ? '':'disabled'" 
+										ng-click='btnReady(); btnP2=false'
+										 class='btn btn-primary btn-xs'>Ready</button>
+										<button id='btnForfeitP2' ng-click='btnForfeit()' ng-disabled = "gameStatus === 'onGame' ? '':'disabled'" class='btn btn-danger btn-xs'> Forfeit</button>
+										</center>
+					
+				</div>
+				<div id='p2Control2' class='col-xs-2' style='border:0px solid #000000; height:25px; background-color:#F2F2F2; margin-top:5px; padding:0px;'  >
+							<div id="divKeyboard2" class='col-xs-12' style="border:0px solid; 
+							display:{{playerPerspective=='player2'?'':'none'}}" align='center'>
+									<button id='btnKeyboard1' type="button" class="btn btn-default btn-xs" data-toggle="modal" 
+									data-target="#keyboardcontrols">
+									 <font style='font-size:13px; color:#6E6E6E;'>Keyboard controls</font>
+									</button>
+							</div>
+							
+								
+
+					
+				</div>
+		
+				<script>
+					
+					
+				</script>
+				
+			</div>
+			<style>
+			.nopadding {
+				   padding: 0 !important;
+				   margin: 0 !important;
+				}
+			</style>
+			<script>
+
+			</script>
+			
+			<div class='row' ng-keydown="keydown($event)"  id='userControl' tabindex='1' style='border:0px solid; outline:none; background-color:#F2F2F2; margin-top:5px;'>
+				
+
+				<div id='player1' class="col-xs-6 nopadding" style="border:0px solid; width:
+				{{gameData.reqTo_id._id == '-1' ? '1296':'648'}}px; height:290px" align='right'>
+						<!-- player panel -->
+				</div>
+				<div id='player2'  class="col-xs-6 nopadding" style="border:0px solid; width:648px; height:290px; display:
+					{{gameData.reqTo_id._id == '-1' ? 'none':''}}" align='left'>
+				
+
+				</div>
+			</div>
+			<div class='row' style='border:0px solid; background-color:#f2f2f2; margin-top:5px;'>
+				<div class="col-xs-1" style='border:0px solid;' align='right'>
+					 <!-- <span class='glyphicon glyphicon-comment' style='font-size:40px;'></span> -->
+				</div>
+				<div class='col-xs-8' style='border:0px solid #ffffff; '>
+						<span class='glyphicon glyphicon-comment'
+						 style='font-size:20px; position:absolute; top:0px; left:-10px;'></span>Chat
+				</div>
+				
+				<div class="col-xs-3" style='border:1px solid #ffffff;'>
+					<center>(<span id='spanNumUsers'>0</span>) Users in this room</center>
+				</div>
+				<div class="col-xs-0" style='border:1px solid #ffffff;'>
+				
+				</div>
+			</div>
+			<div class='row' style='border:0px solid; background-color:#f2f2f2; margin-top:0px;'>
+				<div class="col-xs-1" style='border:0px solid;' align='right'>
+					 <!-- <span class='glyphicon glyphicon-comment' style='font-size:40px;'></span> -->
+				</div>
+				<div scroll-glue="!glued" class="col-xs-8" style='border:1px solid #A4A4A4; background-color:#ffffff; height:15%; overflow:scroll; overflow-x: hidden; 
+					 padding:10px;'>
+					 			
+
+			 			<div ng-repeat="item in roomMsg" class='col-xs-12' style='border:0px solid #ffffff;'>
+								 		<img src='{{item.avatar}}' style='width:20px; margin-right:5px;
+								 			 height:20px;'></img> <a style='color:#000000;' href='' target='_blank'><b>
+								 			 {{item.username}}</b>:</a> 
+								 			 <span style="font-style: {{item.msg =='Entered the room' || item.msg =='Left the room' ? 'italic':''}}">
+								 			 {{item.msg}}
+								 			</span>
+								 	</div>
+		
+				</div>
+				<div id='userScroll' class="col-xs-3" style='border:1px solid #A4A4A4; background-color:#ffffff; height:15%; overflow:scroll; overflow-x: hidden; 
+					 padding:10px;'>
+						
+				
+						<a ng-repeat="item in usersInRoom" style='color:#000000;' href = 'member/?id=userInfo[0]' target='_blank'><div class='col-xs-12'  style='border:2px solid #ffffff; background-color:#f2f2f2;'>
+										 		<img src='{{item.user_avatar}}' style='width:20px; margin-right:5px;
+										 			 height:20px;'></img> <b>{{item.username}}</b></div>
+
+										 		
+										 			</a>
+				
+
+
+				</div>
+				<div class='col-xs-0' style='border:0px solid #ffffff'>
+
+				</div>
+			</div>
+
+			<div class='row' style='border:0px solid; background-color:#f2f2f2; margin-top:5px; height:4%;'>
+				<div class="col-xs-1" style='border:0px solid;' align='right'>
+					 
+				</div>
+				<div id='divChat' class="col-xs-8" style='border:1px solid #ffffff;  
+					 padding:0px;'>
+					 <img id='userImg' src='{{userInfo.user_avatar}}' style='width:20px; margin-right:5px;
+					 			 margin-top:5px; height:20px;'></img> <b id='bUsername'>{{userInfo.username}}:</b>
+					
+					 <input id='inputMessage' my-enter="btnSend()" ng-model='inputMessage' style='width:500px; height:25px;'></input>
+					 <button id='btnSend' ng-click='btnSend()' class='btn btn-default btn-xs'>Send</button>
+
+
+
+				</div>
+				<div class="col-xs-3" style='border:0px solid; '>
+					 
+				</div>
+			</div>
+
+		<div ng-include='"templates/footer.html"'></div>
+
+								<div class="modal fade" id="keyboardcontrols" 
+									tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+									  <div class="modal-dialog modal-lg" role="document" >
+									    <div class="modal-content">
+									      <div class="modal-header">
+									        <button type="button" class="close" data-dismiss='modal'>
+									        x</button>
+									        <h4 class="modal-title" id="myModalLabel"> 
+									        	</span>	
+									        	<font style='font-size:17px; color:#6E6E6E;'>Cube Keyboard Shortcuts
+									        	</font></h4>
+									      </div>
+									      <div class="modal-body" style='background-color:#ffffff;' align='center'>
+									      	<style>
+									      		.borderTable{
+
+									      			border:1px solid #d8d8d8;
+									      			text-align:center;
+									      			padding:5px;
+									      			color:#6E6E6E;
+									      			font-size:20px;
+									      			font-weight:bold;
+									      		}
+									      	</style>
+									      	<table style='border:0px solid;'>
+
+									      		<tr class='borderTable'>
+									      				<td class='borderTable' rowspan='2'>
+									      					<font style='font-size:17px; color:#6E6E6E;
+									      					 font-weight:normal;'>Turns / Faces</font>
+									      				</td>
+									      				<td class='borderTable'>
+									      					<img style='width:70px; height:70px; border:0px solid; 
+								       							background-color:#d8d8d8;' src='img/controls/up.png'></img>
+									      				</td>
+									      				<td class='borderTable'>
+									      					<img style='width:70px; height:70px; border:0px solid; 
+								       							background-color:#d8d8d8;' src='img/controls/down.png'></img>
+									      				</td>
+									      				<td class='borderTable'>
+									      					<img style='width:70px; height:70px; border:0px solid; 
+								       							background-color:#d8d8d8;' src='img/controls/left.png'></img>
+									      				</td>
+									      				<td class='borderTable'>
+									      					<img style='width:70px; height:70px; border:0px solid; 
+								       							background-color:#d8d8d8;' src='img/controls/right.png'></img>
+									      				</td>
+									      				<td class='borderTable'>
+									      					<img style='width:70px; height:70px; border:0px solid; 
+								       							background-color:#d8d8d8;' src='img/controls/front.png'></img>
+									      				</td>
+									      				<td class='borderTable'>
+									      					<img style='width:70px; height:70px; border:0px solid; 
+								       							background-color:#d8d8d8;' src='img/controls/back.png'></img>
+									      				</td>
+									      		</tr>
+
+									      		<tr>
+									      				
+									      				<td class='borderTable'>
+									      					U
+									      				</td>
+									      				<td class='borderTable'>
+									      					D
+									      				</td>
+									      				<td class='borderTable'>
+									      					L
+									      				</td>
+									      				<td class='borderTable'>
+									      					R
+									      				</td>
+									      				<td class='borderTable'>
+									      					F
+									      				</td>
+									      				<td class='borderTable'>
+									      					B
+									      				</td>
+									      		</tr>
+
+									      		<tr class='borderTable'>
+
+									      				<td class='borderTable' rowspan='2'>
+									      				<font style='font-size:17px; color:#6E6E6E;
+									      					 font-weight:normal;'>Slice / turns</font>
+									      				</td>
+									      				<td class='borderTable'>
+									      					<img style='width:70px; height:70px; border:0px solid; 
+								       							background-color:#d8d8d8;' src='img/controls/middle.png'></img>
+
+									      				</td>
+									      				<td class='borderTable'>
+									      					<img style='width:70px; height:70px; border:0px solid; 
+								       							background-color:#d8d8d8;' src='img/controls/equatorial.png'></img>
+									      				</td>
+									      				<td class='borderTable'> 
+									      					<img style='width:70px; height:70px; border:0px solid; 
+								       							background-color:#d8d8d8;' src='img/controls/standing.png'></img>
+									      				</td>
+									      				<td class='' colspan='3' rowspan='2'>
+
+									      				</td>
+									      			<!-- 	<td class='borderTable'>
+									      				</td>
+									      				<td class='borderTable'>
+									      				</td> -->
+									      		</tr>
+
+									      		<tr class='borderTable'>
+
+									      				
+									      				<td class='borderTable'>
+									      					M
+									      				</td>
+									      				<td class='borderTable'>
+									      					E
+									      				</td>
+									      				<td class='borderTable'>
+									      					S
+									      				</td>
+									      			
+									      				
+									      		</tr>
+
+									      		<tr class='borderTable'>
+
+									      				<td class='borderTable' rowspan='2'>
+									      					<font style='font-size:17px; color:#6E6E6E;
+									      					 font-weight:normal;'>Rotations</font>
+									      				</td>
+									      				<td class='borderTable'>
+									      					<img style='width:70px; height:70px; border:0px solid; 
+								       							background-color:#d8d8d8;' src='img/controls/x.png'></img>
+									      				</td>
+									      				<td class='borderTable'>
+									      					<img style='width:70px; height:70px; border:0px solid; 
+								       							background-color:#d8d8d8;' src='img/controls/y.png'></img>
+									      				</td>
+									      				<td class='borderTable'>
+									      					<img style='width:70px; height:70px; border:0px solid; 
+								       							background-color:#d8d8d8;' src='img/controls/z.png'></img>
+									      				</td>
+									      				<td class='borderTable' colspan='3'>
+									      					<img style='height:70px; width:180px;' src='img/controls/shift.png'></img>
+									      				</td>
+									      				
+									      		</tr>
+
+									      		<tr class='borderTable'>
+
+									      				
+									      				<td class='borderTable'>
+									      					X
+									      				</td>
+									      				<td class='borderTable'>
+									      					Y
+									      				</td>
+									      				<td class='borderTable'>
+									      					Z
+									      				</td>
+									      				<td class='borderTable' colspan='3'>
+
+									      					<font style='font-size:14px;'>Press shift key before, 
+									      						to turn <font style='color:#0080FF'>counter-clockwise</font>
+									      					</font>
+									      				</td>
+									      				
+
+									      		</tr>
+									      	</table>
+								     
+								     	
+									       	  	
+									     
+									      </div>
+									      <div style='border:0px solid; padding-left:20px;' align='left'>
+									      		 <span class='glyphicon glyphicon-info-sign'></span>
+									      		  <a style="text-decoration:none; color:#A4A4A4;" href='https://www.speedsolving.com/wiki/index.php/3x3x3_notation';
+									      		  target='_blank'>
+									      <font style='font-size:15px'> Based on the standard notation</font>
+									      </a>
+									      </div>
+									      <div class="modal-footer">
+
+									        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+									        <!-- <button type="button" class="btn btn-primary">Save changes</button> -->
+									       
+									      </div>
+									    </div>
+									  </div>
+									</div>
+				
+	</div>
+	<!-- <div id='tpad'>this is tpad</div> -->
+</body>
+		<div id="dialogAbandonRoom" title='Rubiks Battle' style="display:none;" > 
+				<center><table>
+				<tr>	<td rowspan='2' style='padding:15px; padding-left:0px; font-size:25;'><span class='glyphicon glyphicon-transfer'></span></td>
+						<td><strong>The game is abandoned.</strong></td>
+						
+						
+				</tr>
+						<tr>
+								<td>
+									You can now leave the room ..
+								</td>
+						</tr>
+				</table></center>	
+				
+		
+			<!-- <center><span style='font-size:20px; margin-right:15px;' class='glyphicon glyphicon-remove-sign'></span>The game is abandoned.<br>
+				You can now leave the room ..</center> -->
+			
+		</div>
+		
+
+		<div id="toggleKeyboard" style="display:none; style='border:50px outset #6E6E6E" > 
+			<center><button id='btnToggleKeyboard' style='font-size:15;'>Click here to toggle keyboard controls</button></center>
+		</div>
+		<div class="tooltip_templates" style='display:none;'>
+			    <span id="ready_content" >
+			        <strong><span class='glyphicon glyphicon-fire'></span> <span id='spanClick'>Click here to begin!</span></strong> 
+			    </span>
+		      	<span id="here_content" >
+			        <h3 style='margin:0; padding:0;'>Here!</h3>
+			    </span>
+			 
+			 
+			</div>
+
+				<div id="dialogSettings" title='Rubiks battle - Settings' style='display:none;'>
+			    <center>  <table><tr>
+			       			<td>
+			       				<span class='glyphicon glyphicon-apple' style='margin-right:5px;'></span>Theme:
+			       			</td>
+			       			<td style='padding:10px;'>
+			       				<select id='cubeTheme'>
+								  <option value="solid">Solid</option>
+								  <option value="transparent">Transparent</option>
+								  
+								</select>
+			       			</td>
+		       			</tr> 
+		       			<tr>
+		       				<td>
+		       					<span class='glyphicon glyphicon-volume-up' style='margin-right:5px' ></span>Sounds:
+		       				</td>
+		       				<td style='padding:10px; padding-top:5px; border:0px solid'>
+		       						<form style='border:0px solid; margin:0px;'>
+									    <label class="radio-inline">
+									      <input id = 'enableSound'type="radio" name='inputSound' checked='checked' value="enableSound">Enable
+									    </label>
+									    <label class="radio-inline">
+									      <input id = 'disableSound' type="radio" name='inputSound'  value="disableSound">Disable
+									    </label>
+								   
+								  </form>
+		       				</td>
+		       			</tr>
+			 	</table></center>
+			 
+			</div>
+			<div id='privateDialog' title='Rubiks Battle - Private Room' style='display:none'>
+				<center>Enter the keyword: <input id='inputPassword'></input><br>
+				<span id='spanKeyword' style='color:#FE2E2E; display:none;'>Invalid keyword <span id='inputKeyword'></span></span></center>
+				
+			</div>
+			<div id='dialogIfAbandon' title='Rubiks Battle - Exit Room' style='display:none'>
+				<center><span style='margin-right:10px;' class='glyphicon glyphicon-remove'></span>Are you sure you want to abandon this room?</center>
+			</div>
+
+
+		<!-- <button id='btnTesting'>Testing</button> -->
+		<!-- <button id='btnTesting1'>Testing</button> -->
+		
+<div id = 'modalBattleResultWinner' class="modal fade" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel"
+	style="top:25%; ">
+  <div class="modal-dialog modal-sm" role="document">
+
+    <div class="modal-content demo"  style="background-color:#088A29; padding:10px;" align='center'>
+	 	<span type="button" class="close" style='opacity:1; z-index:1; position:relative;' data-dismiss="modal" aria-label="Close"><span 
+    	 	style='color:#ffffff'>&times;</span></span>
+    	  <!-- <h3 id="gridSystemModalLabel" style=' color:#ffffff;' > Result</h3> -->
+
+    	  <img src ='img/winner.png' style='width:250px; height: 130px;  top:-60px; right:105px; padding-top:px;'></img>
+     		
+      <div class=""style='background-color:#04B431; color:#ffffff;' align='center'>
+         <h3>You won!</h3>
+        <!--  <button id='modalTest' style='z-index:1; position:relative;'>modal</button> -->
+      </div>
+        <div class="show-off" />
+      </div>
+     </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->	
+	<script>
+		jQuery(function(){
+				$( "#cubeTheme" ).change(function() {
+				 	if (gameType !='singlePlayer'){
+				 		alert('Transparent theme is only available on single player');
+				 			$(this).val('solid');
+				 	}
+				});
+				// alert(room_status);
+		});
+	</script>
+
+<div id = 'modalBattleResultLoser' class="modal fade" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel"
+	style="top:25%; ">
+  <div class="modal-dialog modal-sm" role="document">
+
+    <div class="modal-content demo"  style="background-color:#8A0808; padding:10px;" align='center'>
+	 	<span type="button" class="close" style='opacity:1; z-index:1; position:relative;' data-dismiss="modal" aria-label="Close"><span 
+    	 	style='color:#ffffff'>&times;</span></span>
+    	  <!-- <h3 id="gridSystemModalLabel" style=' color:#ffffff;' > Result</h3> -->
+
+    	  <!-- <img src ='img/loser.png' style='width:200px; height: 130px;  top:-60px; right:105px; padding-top:px;'></img> -->
+     		
+      <div class=""style='background-color:#B40404; color:#ffffff;' align='center'>
+         <h3>You lose!</h3>
+      </div>
+        <div class="show-off" />
+      </div>
+     </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->	
+
+<div id = 'modalHelp' class="modal fade" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel"
+	style="top:23%; ">
+  <div class="modal-dialog modal-md" role="document">
+
+    <div class="modal-content"  style="background-color:#0431B4; padding:10px; color:#ffffff;" align=''>
+	 	<span type="button" class="close" style='opacity:1;  z-index:1; position:relative;' data-dismiss="modal" aria-label="Close"><span 
+    	 	style='color:#ffffff'>&times;</span></span>
+
+    	 	 <span id="" style='padding-left:20px;  
+    	 	 	font-size:20px; border:0px solid;   font-family:"Comic Sans MS", cursive, sans-serif;' > <span class='glyphicon glyphicon-question-sign'></span> Help</span>
+    	 	<div class='col-xs-9'>
+    	 			<div class='col-xs-5' style='border:0px solid;' align='right'>
+			      		<button id='btnBack' class='btn btn-default' style='' > &#9668; </button>
+			      	</div>
+			      	 <div class='col-xs-2' style='border:0px solid; color:#ffffff'>
+			      		<h4 id='pagination'>1/6</h4>
+			      	</div>
+			      	<div class='col-xs-5' style='border:0px solid;'>
+			      		<button id='btnNext' class='btn btn-default' style=''>  &#9658;</button>
+			      	</div>
+    	 	</div>
+    	  <!-- <img src ='img/loser.png' style='width:200px; height: 130px;  top:-60px; right:105px; padding-top:px;'></img> -->
+     		
+      <div id='helpBody' class=""style='background-color:#EFF2FB; margin-top:10px;  color:#000000; padding:10px; ' align='center' >
+      
+		   	<center> 	<h4> Keyboard controls</h4></center>
+      		Keyboard controls are used to rotate the sides of cube.
+      		<br> 
+      			<br>
+      			<img style='width:150px; height:100px;' src='img/keyboard.png'></img>
+      			<Br>
+      		<br>
+      		To see the full list of keyboard controls just hit the button located above
+
+      	
+
+      
+      </div>
+     <!--  <div class="modal-footer"style='padding-bottom:0px;' >
+	      
+
+		    
+ 	 </div> -->
+        <!-- <div class="show-off" /> -->
+      </div>
+     </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->	
+
+
+	<script>
+	var helpPage = 1;
+	var funcHelpPage,destroyHelpTooltips;
+		$(document).ready(function(){
+
+
+
+
+				$('#btnBack').click(function(){
+						helpPage--;
+						funcHelpPage();
+				});
+				$('#btnNext').click(function(){
+
+					if (helpPage == 6){
+						$('#modalHelp').modal('hide');
+					}else{
+						helpPage++;
+						funcHelpPage();
+					}
+						
+
+
+					
+				});
+			destroyHelpTooltips =function (){
+					// $('#btnKeyboard').css('z-index',0);
+					$('#p1Control2').css('z-index',0);
+					$('#p2Control2').css('z-index',0);
+					$('#p1Control1').css('z-index',0);
+					$('#p2Control1').css('z-index',0);
+					$('#btnSettings').parent().css('z-index', 0);
+					$('#btnHome').parent().css('z-index', 0);
+					$('#btnSend').css('z-index',0);
+
+												
+
+					// try { $('#divKeyboard1').tooltipster('destroy'); } catch(err){ };
+					// try { $('#divKeyboard2').tooltipster('destroy'); } catch(err){ };
+
+					try { $('#p1Control2').tooltipster('destroy'); } catch(err){ };
+					try { $('#p2Control2').tooltipster('destroy'); } catch(err){ };
+					try { $('#p1Control1').tooltipster('destroy'); } catch(err){ };
+					try { $('#p2Control1').tooltipster('destroy'); } catch(err){ };
+					try { $('#btnSettings').tooltipster('destroy'); } catch(err){ };
+					try { $('#btnHome').tooltipster('destroy'); } catch(err){ };
+					try { $('#btnSend').tooltipster('destroy'); } catch(err){ };
+					
+
+
+					// $('#btnKeyboard').css('position','');
+					$('#p1Control2').css('position','');
+					$('#p2Control2').css('position','');
+					$('#p1Control1').css('position','');
+					$('#p2Control1').css('position','');
+					$('#btnSettings').css('position','');;
+					$('#btnHome').css('position','');;
+					$('#btnSend').css('position','');
+					
+							
+				}
+			funcHelpPage = function(){
+
+					$('#pagination').html(helpPage + "/6");
+					if (helpPage == 1){
+						$('#btnBack').hide();
+					}else{
+						$('#btnBack').show();
+					}
+
+					
+
+					destroyHelpTooltips();
+					switch(helpPage){
+						case 1:
+							if (userPerspective == 'player1'){
+								$('#p1Control1').css('z-index', 3000);
+								$('#p1Control1').parent().css('z-index', 3000);
+								$('#p1Control1').attr('data-tooltip-content','#here_content');
+													$('	#p1Control1').tooltipster({
+														 theme: 'tooltipster-shadow', 
+														  animation: 'fall', 
+														    side: 'top',
+												    contentCloning:true
+
+														});
+								$('#p1Control1').tooltipster('show');
+
+							}else if (userPerspective == 'player2'){
+								$('#p2Control2').css('z-index', 3000);
+								$('#p2Control2').parent().css('z-index', 3000);
+								$('#p2Control2').attr('data-tooltip-content','#here_content');
+													$('	#p2Control2').tooltipster({
+														 theme: 'tooltipster-shadow', 
+														  animation: 'fall', 
+														    side: 'top',
+												    contentCloning:true
+														});
+								$('#p2Control2').tooltipster('show');
+
+							}
+									
+							
+							
+							$('#helpBody').html(" \
+							   	<center> 	<h4> Keyboard controls</h4></center> \
+					      		Keyboard controls are used to rotate the sides of cube. \
+					      		<br>  \
+					      			<br> \
+					      			<img style='width:150px; height:100px;' src='img/keyboard.png'></img> \
+					      			<Br> \
+					      		<br> \
+					      		To see the full list of keyboard controls just hit the button located above");
+
+
+						break;
+						case 2:
+
+							if (userPerspective == 'player1'){
+								$('#p1Control2').css('z-index', 3000);
+								$('#p1Control2').parent().css('z-index', 3000);
+								$('#p1Control2').attr('data-tooltip-content','#here_content');
+													$('	#p1Control2').tooltipster({
+														 theme: 'tooltipster-shadow', 
+														  animation: 'fall', 
+														    side: 'top',
+												    contentCloning:true
+
+														});
+								$('#p1Control2').tooltipster('show');
+
+							}else if (userPerspective == 'player2'){
+								$('#p2Control1').css('z-index', 3000);
+								$('#p2Control1').parent().css('z-index', 3000);
+								$('#p2Control1').attr('data-tooltip-content','#here_content');
+													$('	#p2Control1').tooltipster({
+														 theme: 'tooltipster-shadow', 
+														  animation: 'fall', 
+														    side: 'top',
+												    contentCloning:true
+														});
+								$('#p2Control1').tooltipster('show');
+
+							}
+							
+							$('#helpBody').html("	<center><h4> Starting the game <span class='glyphicon glyphicon-ok'></span></h4></center> \
+				      		Simply hit the 'Ready' button once you want to start the game and 'Forfeit' button to voluntarily give up.<br> \
+				      		<br> \
+				      		<strong>Note:</strong> Both must be ready if you are playing with another player(Battle PvP).");
+
+						break;
+						case 3:
+							$('#btnSettings').parent().css('z-index', 3000);
+							$('#btnSettings').attr('data-tooltip-content','#here_content');
+											$('	#btnSettings').tooltipster({
+												 theme: 'tooltipster-shadow', 
+												  animation: 'fall', 
+												    side: 'top',
+												    contentCloning:true
+												});
+											$('#btnSettings').tooltipster('show');
+
+							$('#helpBody').html(" \
+							   	<center> 	<h4> Settings <span class='glyphicon glyphicon-cog'></span></h4></center> \
+					      		'Settings' button is where you can change your cube preference , and turn on/off the sounds. \
+					      		<br>  \
+					      			<table border='1'> \
+					      				<tr > \
+					      					<td align='center' style='padding:10px;'> \
+					      						<strong>Solid</strong> \
+ 					      					</td> \
+					      					<td align='center' style='width:50%;'> \
+					      						<strong>Transparent</strong> \
+					      					</td> \
+					      				</tr> \
+										<tr> \
+											<td> \
+												<img style='width:150px; height:100px;' src='img/solid.png'></img> \
+					      					</td> \
+					      					<td> \
+												<img style='width:150px; height:100px;' src='img/transparent.png'></img> \
+					      					</td> \
+										</tr> \
+					      			</table> \
+					      			<br> \
+				      		<strong>Note:</strong> You can only change your cube preference in single player mode.");
+
+						break;
+						case 4:
+
+									$('#btnHome').css('z-index', 3000);
+									$('#btnHome').parent().css('z-index', 3000);
+									$('#btnHome').attr('data-tooltip-content','#here_content');
+														$('	#btnHome').tooltipster({
+															 theme: 'tooltipster-shadow', 
+															  animation: 'fall', 
+															    side: 'top',
+													    contentCloning:true
+
+															});
+									$('#btnHome').tooltipster('show');
+
+								
+								
+								$('#helpBody').html("	<center><h4> Leaving the room  <span class='glyphicon glyphicon-home'></span></h4></center> \
+					      		If you want to leave the room and abandon the game, just click 'home' button.<br> \
+					      		<br> \
+				      			<strong>Note:</strong> If you leave while playing, you will lose the game. \
+					      		");
+
+						break;
+						case 5:
+
+							
+								$('#helpBody').html("	<center><h4> Winning the match <span class='glyphicon glyphicon-flag'></span></h4></center> \
+					      	<img style='width:150px; height:100px;' src='img/winning.png'></img> \
+					      			<Br> \
+					      		<br> \
+				      			Be the one who will first solve the cube to win the match.. \
+					      		");
+
+						break;
+						case 6:
+
+							
+								$('#helpBody').html("	<center><h4> Using chat</h4></center> \
+					      	<img style='width:150px; height:100px;' src='img/chat.png'></img> \
+					      			<Br> \
+					      		<br> \
+				      			You can chat with other user in the same room\
+					      		");
+
+									$('#btnSend').css('position','relative');
+									$('#btnSend').css('z-index', 100000);
+
+									$('#btnSend').attr('data-tooltip-content','#here_content');
+														$('	#btnSend').tooltipster({
+															 theme: 'tooltipster-shadow', 
+															  animation: 'fall', 
+															    side: 'top',
+													    contentCloning:true
+
+															});
+									$('#btnSend').tooltipster('show');
+
+						break;
+
+					}
+				
+				}
+		});
+	</script>
+
+
+
+			
+
+
+
+
+		<style> .no-close .ui-dialog-titlebar-close {display:none;} </style>
+		
+
+
+<div style='display:none'>
+		<div id="MyContent">
+		 <strong><span class='glyphicon glyphicon-fire'></span> <span id='spanClick'>Click here to begin!</span></strong> 
+		</div>
+</div>
+
+<script src='multiplayerCube/matrixManip.js'></script>
+<script src='multiplayerCube/matrixManip2.js'></script>
+	  <script src='multiplayerCube/myCubeB.js'></script>
+    <script src='multiplayerCube/myInitB.js'></script>
+    <script src='multiplayerCube/myCubeB2.js'></script>
+    <script src='multiplayerCube/myInitB2.js'></script>
+    
+
+
+     <script src="flipclock/flipclock.js"></script>	
+
+
+ 
+</html>

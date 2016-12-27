@@ -48,10 +48,10 @@
 							    									color:#848484;'>Username: </font>
 							    								</td>
 							    								<td style='padding-left:10px;'>
-							    									<input id='inputUsername' placeholder=' view all' style='height:30px; '></input>
+							    									<input  ng-model='inputUsername' ng-init="inputUsername=''" <input my-enter="btnEnter(inputUsername)" placeholder=' view all' style='height:30px; '></input>
 							    								</td>
 							    								<td style='padding-left:10px;'>
-							    									<button id='btnEnter' class='btn btn-default'>Enter</button>
+							    									<button id='btnEnter' ng-click='btnEnter(inputUsername)' class='btn btn-default'>Enter</button>
 							    								</td>
 							    							</tr>
 
@@ -64,36 +64,52 @@
 								   				padding-left:50px; padding-right:50px;'>
 								    			<!-- <span class='glyphicon glyphicon-heart-empty'></span> -->
 								    				<font style='color:#6E6E6E;'>Search results: </font>
-								    				<i><span id='searchKeyword'></span></i></td>
+								    				<i><span id='searchKeyword'>{{inputUsername}}</span></i></td>
 								    			</div>
 								    			<div class="row" id='searchResult' style='font-family:; border:1px solid #d8d8d8;
 								    			 padding-left:50px; padding-right:50px; background-color:#f2f2f2;
 								    			 margin:10px; height:260px; overflow:scroll; overflow-x: hidden; '>
 
-								    				<div ng-repeat="i in getNumber(150) track by $index" class='row' style='border-bottom:1px solid #d8d8d8; background-color:#ffffff'>
+								    				<div ng-repeat="item in viewMembers" class='row' style='border-bottom:2px solid #d8d8d8; background-color:#ffffff'>
 								    					 <div class='col-xs-8' style='border-bottom:0px solid;'>
 									    					 <table>
 									    					 	<tr >
 									    					 		<td rowspan='3'>
-									    					 				<img src="/img/user/robotDefault.png"
+									    					 				<img src="{{item.user_avatar}}"
 									    						style='width:60px; height:60px;
 									    						 border:0px solid #d8d8d8; padding:5px;'></img>
 									    					 		</td>
 									    					 		<td style='border:0px solid; padding-left:10px;'>
 								    					 			<a href='member/?id="+resArray[0]+"'><font style='font-size:20px;
-								    					 			 color:#6e6e6e'>123</font></a><br>
+								    					 			 color:#6e6e6e'>{{item.username}}</font></a><br>
 									    					 		<font style='font-size:13px; color:#6E6E6E;'>
-																		asdf
+																{{item.user_gender}} - {{item.user_location}}, {{item.user_country}}
 																	</font>
 									    					 		</td>
 																</tr>
 									    					</table>
 									    				</div>
 									    				<div class='col-xs-4' style='border:0px solid; padding-top:1%;'>
-									    					<h4>
-									    					<button id='"+btnId+"'class='btn btn-success btn-xs'>
-									    					<span class='glyphicon glyphicon-plus'></span>
-									    					Add to Friends List</button></h4>
+									    					<h4> 
+									    						
+									    					<button ng-click='changeFriendStatus(item._id,item.status)'class="
+									    					{{item.status==='0' ? 'btn btn-success btn-xs':''}}
+									    					{{item.status==='1' ? 'btn btn-danger btn-xs':''}}
+									    					{{item.status==='2' ? 'btn btn-warning btn-xs':''}}
+									    					{{item.status==='3' ? 'btn btn-danger btn-xs':''}}
+									    					">
+									    					<span class="
+									    					{{item.status==='0' ? 'glyphicon glyphicon-plus':''}}
+									    					{{item.status==='1' ? 'glyphicon glyphicon-minus':''}}
+									    					{{item.status==='2' ? 'glyphicon glyphicon-plus':''}}
+									    					{{item.status==='3' ? 'glyphicon glyphicon-minus':''}}"></span>
+
+									    					{{item.status==='0' ? 'Add to Friends List':''}}
+									    					{{item.status==='1' ? 'Remove from friends list':''}}
+									    					{{item.status==='2' ? 'Accept Friend Request':''}}
+									    					{{item.status==='3' ? 'Cancel Friend Request':''}}
+									    					
+									    					</button></h4>
 									    				</div>
 								    				</div>
 							    					

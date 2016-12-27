@@ -7,7 +7,7 @@
  * Main AngularJS Web Application
  */
 var app = angular.module('webApp', [
-  'ngRoute'
+  'ngRoute','ngMaterial','ngMessages'
 ]);
 
 /**
@@ -35,151 +35,104 @@ app.config(['$routeProvider','$locationProvider', function ($routeProvider,$loca
    
 }]);
 
+
+
+
 /**
  * Controls the Blog
  */
-app.controller('registerCtrl', function ( $scope, $location, $http,$q, $window, $rootScope) {
+app.controller('registerCtrl', function ( $scope, $location, $http,$q, $window, $rootScope,$timeout,$interval) {
+
+      $scope.yearNow = new Date().getFullYear();
+      // $scope.project.username = '123';
+      // $scope.project.password = '123';
+
+      $scope.changeVisible = function(){
+        if ($scope.visible) $scope.visible = false; else $scope.visible = true;
+      }
+
+      //work around for auto complete bug
+     $scope.visible = true;
+
+        $scope.project = {
+          username:' ',
+          password:' '
+         }
+         $scope.project.email = ' ';
+      $timeout(function(){
+        $scope.project.username = '';
+        $scope.project.password = '';
+        $scope.project.email = '';
+        $scope.visible = false;
+      },1000);  
+
     $scope.aLogin = function(){
         $('#mainRow').hide();
           
-          $( "#imgPrimary" ).animate({ 
-        
-              left: "+=" + (($('body').width()/2)-160),
-             top: "+=" + 20, //-30
-       
-              width: '220px',
-              height: '170px'
-          
-             }, "slow", function(){
-              $rootScope.$apply(function(){
-                $location.path('/');
-             });
-              
-             });
-    }
-    $scope.registerScopeFunc = function(){
-       
-                      var  errorResult = "";
-                      var   errorBool = false;
+         $( "#imgPrimary" ).animate({ 
+    
+        left: "-=" + parseInt($('#imgPrimary').offset().left - 575),
+        top: "-=" + parseInt($('#imgPrimary').offset().top - 20), //-30
+        width: '220px',
+        height: '170px'
+      
+         }, "slow", function(){
+          // location.href='register';
+          $rootScope.$apply(function(){
+              $location.path('/');
+           });
+           // $window.location.href ='/register'; 
+         });    }
 
-                        $('#errorHeader').hide();
-                        // alert($("input[name='gender']:checked").val());
-                        // alert(outputInfo);
-                        $('#inputUsername').tooltip('hide');
-                        $('#inputPassword').tooltip('hide');
-                        $('#inputRePassword').tooltip('hide');
-                        $('#inputEmail').tooltip('hide');
-                        $('#inputFName').tooltip('hide');
-                        $('#selectYear').tooltip('hide');
+      // $scope.project.username = 'jester';
+      // $scope.project.password = 'jester'
+      // $scope.project.email = 'jester@yahoo.com';
 
-                  
-                      $('#inputUsername').css({'background-color':'#ffffff'});
-                        $('#inputPassword').css({'background-color':'#ffffff'});
-                        $('#inputRePassword').css({'background-color':'#ffffff'});
-                        $('#inputEmail').css({'background-color':'#ffffff'});
-                        $('#inputFName').css({'background-color':'#ffffff'});
-                        // $('#selectYear').css({'background-color':'#ffffff'});
-                        
+       $scope.removeErrDuplicate = function(){
+        try{
+            delete $rootScope.registerForm.nameUsername.$error.exists;
+            $rootScope.registerForm.nameUsername.$validate();
 
+            delete $rootScope.registerForm.clientEmail.$error.exists;
+            $rootScope.registerForm.clientEmail.$validate();
 
-                        if ($('#inputUsername').val().length<4){
-                            errorResult+="* The username must be at least 4 characters long.<br>";
-                            $('#inputUsername').css({'background-color':'#F6CECE'});
-                            errorBool=true;
-                        }
-                        if (! /^[a-zA-Z0-9_]+$/.test($('#inputUsername').val())) {
-                          errorResult+="* The username contains only letters, numbers and underscore.<br>";
-                            $('#inputUsername').css({'background-color':'#F6CECE'});
-                            errorBool=true;
-                      }
+         }catch(err){
+            // console.log("form err handling");
+         }
 
-                        if ($('#inputPassword').val().length<4){
-                            errorResult+="* Your password must be at least 4 characters long.<br>";
-                            $('#inputPassword').css({'background-color':'#F6CECE'});
-                            errorBool=true;
-                        }
-                        if ($('#inputRePassword').val() != $('#inputPassword').val()){
-                            errorResult+="* Password  does not match your confirmation.<br>";
-                            $('#inputRePassword').css({'background-color':'#F6CECE'});
-                            errorBool=true;
-                        }
+     }
 
-                      
+      $scope.removeErrDuplicate();
+     
+    
+    $scope.registerScopeFunc = function(form){
 
-                        if (!isValidEmailAddress($('#inputEmail').val())){
-                            errorResult+="* Plese enter a valid email address.<br>";
-                            $('#inputEmail').css({'background-color':'#F6CECE'});
-                            errorBool=true;
-                        }
-                          //if no string
-
-                        
-                        if (!$('#inputUsername').val()){
-                            $('#inputUsername').tooltip('toggle');
-                            $('#inputUsername').css({'background-color':'#F6CECE'});
-                            errorBool=true;
-                        }
-                        if (!$('#inputPassword').val()){
-                            $('#inputPassword').tooltip('toggle');
-                            $('#inputPassword').css({'background-color':'#F6CECE'});
-                            errorBool=true;
-                        }
-                        if (!$('#inputRePassword').val()){
-                            $('#inputRePassword').tooltip('toggle');
-                            $('#inputRePassword').css({'background-color':'#F6CECE'});
-                            errorBool=true;
-                        }
-                        if (!$('#inputEmail').val()){
-                            $('#inputEmail').tooltip('toggle');
-                            $('#inputEmail').css({'background-color':'#F6CECE'});
-                            errorBool=true;
-                        }
-                        if (!$('#inputFName').val()){
-                            $('#inputFName').tooltip('toggle');
-                            $('#inputFName').css({'background-color':'#F6CECE'});
-                            errorBool=true;
-                        }
-                        if ($('#selectDay').val() == 0 || $('#selectYear').val() == 0 || 
-                           $('#selectMonth').val() == 0){
-                            $('#selectYear').tooltip('toggle');
-                            errorResult+="* Invalid birthdate.<br>";
-                            // $('#selectYear').css({'background-color':'#F6CECE'});
-
-                            errorBool=true;
-                         }
-                      
+      $rootScope.registerForm = form;
+      
+                        // alert('testing');
+                          // form.nameUsername.$setValidity('exists',true);
+                         
+                        // });
+// form.nameUsername.$error.exists =false;
+                         
+                                               // alert(form.nameUsername.$error.pattern);
                         
                           //get time since register
-                          var today = new Date();
-                        var dd = today.getDate();
-                        var mm = today.getMonth()+1; //January is 0!
-                        var yyyy = today.getFullYear();
-
-                        if(dd<10) {
-                            dd='0'+dd
-                        } 
-
-                        if(mm<10) {
-                            mm='0'+mm
-                        } 
-
-                        today = yyyy+'-'+mm+'-'+dd;
-                        // alert(today);
-                        var dt = new Date();
-                        var time = dt.getHours() + ":" + dt.getMinutes() + ":" + dt.getSeconds();
+                     
 
                  
                               (function() {
                                  var promise = new Promise(function(resolve, reject){
-                                    $http.post('/checkUserIfTaken',{username:$('#inputUsername').val()}).
+                                    $http.post('/checkUserIfTaken',{username:$scope.project.username}).
                                             success(function(data) {
                                               console.log('checkUser');
                                               if (data.exist == true){
-                                                errorResult+="* The username is already taken.<br>";
-                                                $('#inputUsername').css({'background-color':'#F6CECE'});
-                                                  errorBool=true;
-                                               }
-                                               resolve();
+                                                 form.nameUsername.$error.exists =true;
+                                                 form.nameUsername.$validate();
+                                              }else{
+                                                resolve();
+                                                
+                                              }
                                                  
                                              }).error(function(data) {
                                                 console.log("error in username");
@@ -188,15 +141,16 @@ app.controller('registerCtrl', function ( $scope, $location, $http,$q, $window, 
                                  return promise;
                               })().then(function() {
                                  var promise = new Promise(function(resolve, reject){
-                                     $http.post('/checkEmailIfTaken',{email:$('#inputEmail').val()}).
+                                     $http.post('/checkEmailIfTaken',{email:$scope.project.email}).
                                             success(function(data) {
                                               console.log('checkEmail');
                                               if (data.exist == true){
-                                                   errorResult+="* The email address is already in use.<br>";
-                                                    $('#inputEmail').css({'background-color':'#F6CECE'});
-                                                    errorBool=true;
-                                                }
-                                                 resolve();
+                                                // alert('check email');
+                                                     form.clientEmail.$error.exists =true;
+                                                     form.clientEmail.$validate();
+                                                    // errorBool=true;
+                                                   
+                                                }else resolve();
                                              }).error(function(data) {
                                                 console.log("error in email");
                                            });
@@ -205,43 +159,26 @@ app.controller('registerCtrl', function ( $scope, $location, $http,$q, $window, 
                                  return promise;
                               }).then(function() {
                                  var promise = new Promise(function(resolve, reject){
-                                    if (errorBool){
-                                          $('#errorHeader').show();
-                                          $('#errorHeader').html("<span class='glyphicon glyphicon-remove-circle'></span>  \
-                                      <b>Registration Failed</b> \
-                                      <div class='row'> \
-                                          <div class='col-xs-1'></div> \
-                                          <div class='col-xs-11' id='errorMsg'> \
-                                        </div> \
-                                      </div>");
-                                          console.log('checkError');
-                                          $('#errorMsg').html(errorResult);
-                                          $('body').scrollTop(0);
-                                      }else{
+                                    // if (true){
+                                    //       alert('login na');
+                                    //   }else{
                                          $http.post('/register',{funcName:'register',
-                                              username:$('#inputUsername').val(),
-                                              password:escape($('#inputPassword').val()),
-                                              repassword:escape($('#repassword').val()),
-                                              email:$('#inputEmail').val(),
-                                              firstname:escape($('#inputFName').val()),
-                                              lastname:escape($('#inputLName').val()),
-                                              gender:$("input[name='gender']:checked").val(),
-                                              birth:$('#selectYear').val() + "-" + $('#selectMonth').val() + "-" + $('#selectDay').val(),
-                                              country:escape($('#selectCountry').val()),
-                                              location:escape($('#inputLocation').val()),
-                                              about:escape($('#inputAbout').val()),
-                                              since:today
+                                              username:$scope.project.username,
+                                              password:$scope.project.password,
+                                              email:$scope.project.email,
                                               }).
-                                          success(function (data) {
+                                          success(function () {
                                             alert('Your account is successfully created!')
-                                              // window.location.href='login.php';
-                                              console.log('success register');
+                                              window.location.href='/';
+                                              // console.log('success register');
+
 
                                           }).error(function(data){
-                                              console.log("error in register");
+                                             alert("error in register");
                                           });
 
-                                       }
+                                    //    }
+                                    
                                  
                                  });
                                  return promise;
@@ -278,10 +215,10 @@ console.log('login ctrl');
         $('#mainRow').hide();
       $( "#imgPrimary" ).animate({ 
     
-        left: "-=" + parseInt($('#imgPrimary').offset().left - 50),
-        top: "-=" + parseInt($('#imgPrimary').offset().top - 00), //-30
-        width: '130px',
-        height: '100px'
+        left: "-=" + parseInt($('#imgPrimary').offset().left - 450),
+        top: "-=" + parseInt($('#imgPrimary').offset().top - 70), //-30
+        width: '95px',
+        height: '55px'
       
          }, "slow", function(){
           // location.href='register';
@@ -314,7 +251,7 @@ console.log('login ctrl');
          $('#errorUser').hide();      
 
       $( "#imgPrimary" ).animate({ 
-        top: "+=" + parseInt($('#imgPrimary').height()), //-30
+        // top: "+=" + parseInt($('#imgPrimary').height()), //-30 [comment]
        }, "slow", function(){
                
                          (function() {
@@ -354,7 +291,7 @@ console.log('login ctrl');
                                                   left: "-=" + parseInt($('#imgPrimary').offset().left - 50),
                                                   top: "-=" + parseInt($('#imgPrimary').offset().top - 00), //-30
                                                   width: '130px',
-                                                  height: '100px'
+                                                  height: '100px' //[comment]
                                                 
                                                    }, "slow", function(){
                                                     $window.location.reload();

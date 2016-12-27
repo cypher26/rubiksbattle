@@ -12,7 +12,7 @@
 								    <li><a data-toggle="" href="/profile"><span class='glyphicon glyphicon-pencil'>
 								    </span> About Me</a></li>
 								    <li><a data-toggle="" href="/profile/games"><span class='glyphicon glyphicon-signal'></span> Games</a></li>
-								  	<li class="active"><a href="/profile/friends"><span class='glyphicon glyphicon-user'>
+								  	<li class="active" style='border-top:4px solid #a4a4a4; '><a href="/profile/friends"><span class='glyphicon glyphicon-user'>
 								    </span> Friends</a></li>
 								  </ul>
 
@@ -22,49 +22,75 @@
 												    style='background-color:#FFFFFF; 
 												    border:0 px solid;
 												    padding:20px; padding-top:10px;'>
-											    	<div class='row' align='right' style='padding-right:60px;'>
+											    	<!-- <div class='row' align='right' style='padding-right:60px;'>
 											    				<font style='color:#a4a4a4;'>Total Friends </font>
 														(<a id='totalFriends'></a>)
 													
-											    	</div>
-											    	<div class='row' style='border:0px solid;'>
-												    		<div class='col-xs-12' style='border:0px solid;'>
+											    	</div> -->
+											    	  <div layout='row'>
+    <md-input-container flex='75' class="md-icon-float  " style='margin-bottom:0px; border:0px solid;'>
+      <label>Username</label>
+      <md-icon md-svg-src="img/svg/ic_account_circle_black_24px.svg" class="name"></md-icon>
+      <input ng-model="inputFriendsUsername" ng-init="inputFriendsUsername=''" type="text" >
+        </md-input-container>
+ 		
+        <div flex></div>
+ 		<font style='color:#a4a4a4;'>Total Friends &nbsp </font>(<a id='totalGames'>{{friendsData.length}}</a>)
+    </div>
 
-														    
-														    	<div id='searchUser' class="form-inline" style='border:0px solid;
-														    		margin-bottom:10px;'>
-																  <div class="form-group has-success has-feedback">
-																    <label class="control-label" for="inputSuccess4"></label>
-																    <input id='inputUsername' placeholder='Search Username..'
-																     type="text" class="form-control" id="inputSearch">
-																    <span class="glyphicon glyphicon-search form-control-feedback"></span>
-																  </div>
-			
-																		<span  id='searchKeyword'>	
-																		</span>
-																</div>
-															</div>
-													</div>
-															
+			<style> /*for online circle*/
+				.menu {width:65px; text-align:center; float:left; border:0px solid; padding:0px; padding-bottom:0px;position:relative;
+					margin-right:10px;}
+					.menu_label {width:154px; color:#FFFFFF;  float:left; position:absolute; top:50px; left:5px;}
+
+
+					.photoStyle{max-width:125px; border:0px; margin:auto;}
+			</style>									
 				<div class='row' style='border:0px solid;' >
 			              		<div id='divFriends' class='col-xs-12' style='border:1px solid #d8d8d8; padding:20px;
 								height:300px; overflow:scroll; overflow-x: hidden; '>
-												
+									<center style="display:{{friendsData.length == 0 ? '':'none'}}"><i>There is no friends to display, click 
+										<b><a href='/invite' >here</a></b> to invite others!</i></center>
+
 									<div class='row' style='border-bottom:1px solid #d8d8d8; margin-bottom:5px; padding-bottom:5px;'
-									   ng-repeat="i in getNumber(5) track by $index"> 
+									   ng-repeat="item in friendsData" ng-if=
+									   "item.username.indexOf(inputFriendsUsername.toString())>-1"> 
+									   	
 													<div class='col-xs-8' style='border:0px solid;'>
-																<table style='border:0px solid;'>
-																	<tr><td rowspan='3'>
-																<img style='width:60px; height:60px; border:0px solid #d8d8d8; margin-right:10px;'
-									    						 src="img/user/userDefault.png"></img> 
-																		</td>
-																		<td>
-															    <a href='../member?id="+resArray[1]+"'> \
-									    						<font style='font-size:20px; color:#6E6E6E;'>123</font><br> 
-									    						<font style='font-size:13px; color:#6e6e6e;'>123 
-									    						</a>
-																		</td>
-																	</tr>
+																<table style='border:0px solid; table-layout:fixed'>
+															<tr><td  style='border:0px solid' rowspan='2'>
+															<!-- 	<img style='width:60px;  height:60px; border:0px solid #d8d8d8; margin-right:0px;'
+									    						 src="{{item.user_avatar}}">
+																</img> 
+ -->
+
+
+			<div class="menu">
+    <img src="{{item.user_avatar}}" class="" style='width:60px; height:60px;' />
+    <span class="menu_label">
+           <svg width="25" height="25" style='position: relative; top:-11px; left:-28px; z-index: 3;' >
+	                               <circle cx="12.5" cy="12.5" r="8"   fill="{{onlineList.indexOf(item._id.toString())>-1 ? 'LightGreen':'Red'}}" />
+           </svg> 
+    </span>                                            
+</div>
+																</td>
+																<td style='border:0px solid' >
+															    <a href='../member?id="+resArray[1]+"'> 
+								    						<font style='font-size:20px; color:#6E6E6E;'> {{item.username}}</font>		</a>
+				    										 </td>
+								                            </tr>
+								                            <tr>
+								                            	<td>
+								                            		 <font style='font-size:13px; color:#6e6e6e;'>
+							    								{{item.user_gender}} - {{item.user_location}}, {{item.user_country}}
+									    				
+								                            	</td>
+
+								                            </tr>
+								                             
+																
+															
+
 																</table>
 								     				</div>
 								     				<!-- ng-repeat="i in getNumber(150) track by $index"  -->
@@ -79,55 +105,22 @@
 									    						<font style='font-size:13px; color:#6E6E6E;'>
 									    							<span  class='glyphicon glyphicon-comment'></span>
 									    						Send a message</font>
-									    						</a>
-									    						<a>
-									    						<h4 id='challengePlayer"+resArray[1]+"' style='margin-top:5px; cursor:default;'
+									    						</a><br>
+									    						<!-- <a>
+									    						<h4 ng-click='showDialog()'style='margin-top:5px; cursor:default;'
 									    						 data-tooltip-content=\"#tooltip_content"+resArray[1]+"\" >
 									    						<span  class='glyphicon glyphicon-flash'></span>
 									    						Challenge to a play
 									    						</h4>
-									    						</a>
+									    						</a> -->
+					    						 <md-button class="md-raised" style='font-size:12px;' 
+					    						 ng-click='inviteDialog(item)'>
+					    						 <span  class='glyphicon glyphicon-flash'></span> 
+					    						 Challenge to a play!  </md-button>
 						    						</div>
 						    					</div>
 									    					
-									    					
-									    				<!-- 	<div class="tooltip_templates">
-															    <span >
-															      	<img src='../img/user/pvp.png' style='width:25; height:25; background-color:#a4a4a4;
-								      				    				border:1px solid #ffffff;'></img>
-								      				    				<font style='color:#ffffff; font-size:15px;'>Battle PvP </font>
-															    </span>
-															</div> -->
-									    					
-									    				<!-- 		$('#challengePlayer"+resArray[1]+"').tooltipster({ \
-									    							animation: 'grow', \
-																    side: 'left' \
-																}); \
-																	"+displayOnly4+" \
-																$('#challengePlayer"+resArray[1]+"').click(function(){ \
-																	workerBool = false; \
-																	$('#divStatus').hide(); \
-																	$('#sendRequest').prop('disabled',false); \
-																	$('#inviteModal').modal('toggle'); \
-																	gameUserId = '"+resArray[1]+"'; \
-																	gameUsername = '"+resArray[2]+"'; \
-																	$('#divUsername').html('"+resArray[2]+"'); \
-																	$('#userImage').attr('src','../"+resArray[3]+"'); \
-																	$('#divDecline').hide(); \
-																	$('#divWaiting').show(); \
-																	$('#countdownDiv').show(); \
-																}); \
-													 -->
-<!-- 
-								<center><i>There is no friends to display, click <b><a href='../invite.php' >here</a></b> to invite others!</i></center></i></span>)
-
-																
-															
-																</div>	 -->
-
-
-					
-												
+									    		
 																
 							    						</div>
 													</div>
@@ -142,7 +135,7 @@
 													
 											   
 											    </div>
-											    <div id="games" class="tab-pane fade" style='background-color:#FFFFFF; padding-top:1px;'>
+										    <div id="games" class="tab-pane fade" style='background-color:#FFFFFF; padding-top:1px;'>
 											    
 													    
 										     	 </div>
@@ -158,10 +151,15 @@
 								 	</div>
 										
 
-  						
-
+  					
   					
   								<div class="col-xs-12" style=' margin-top:10px;'></div>
 		
 					</div>
   			</div>
+  			<!-- <div style="position: relative; z-index: 1; border:1px solid;"> -->
+					<!--   <img src="img/user/userDefault.png" style="position: absolute; width:50px; height:50px; z-index: 2;" />
+					   <svg width="25" height="25" style='position: relative; top: 30px; left:30px; z-index: 3;' >
+	                               <circle cx="12.5" cy="12.5" r="8"   fill="red" />
+                       </svg> -->
+			<!-- </div> -->

@@ -43,8 +43,11 @@
 								   				<div class='row' style='border:0px solid'>
 								   			<div class='col-xs-12' style='border:0px solid; padding:10px; padding-top:0;'>
 								   				<center>
-							    		<table  class='table-responsive' style='border:0px solid #a8a8a8; width:100%; ' id='tblInbox'>
-								    			<thead style='border:0px solid; background-color:#d8d8d8;'>
+								   					<!-- fix table header -->
+								   		 <div style='overflow:auto; max-height:255px; border:0px solid #ffffff; '>
+                                			
+							    		<table  style='border:0px solid #a8a8a8; width:100%; ' id='tblInbox'>
+								    			<thead style='border:0px solid; background-color:#d8d8d8;'  fix-head>
 									   		<tr style='border:0px solid; padding-bottom:20px;' height='30'>
 									   				
 									    			<th style='border:0px solid; width:30%;'>
@@ -72,24 +75,30 @@
 									    		<!-- if no inbox -->
 								    				
 									    		<tr ng-click="manageInbox === 1 ? '':redir(
-									    		(item.msg_from.username === username ? '':item.msg_from._id)+ '' +
-									    		(item.msg_to.username === username ? '':item.msg_to._id)
+									    		(item.msg_from.username === userInfo.username ? '':item.msg_from._id)+ '' +
+									    		(item.msg_to.username === userInfo.username ? '':item.msg_to._id)
 									    		
 									    		)" height='50px;' ng-repeat="item in msg_text track by $index"
 														 style=" border-bottom:3px solid #ffffff; background-color:
-										 {{item.msg_status === 'unseen' && item.msg_from.username != username ? '#f2f2f2;':'#ffffff;'}} 
+										 {{item.msg_status === 'unseen' && item.msg_from.username != userInfo.username ? '#f2f2f2;':'#ffffff;'}} 
 									    			 			 padding-bottom:100px;">
 									    				<td  align='left'  style=' padding-left:20px; border:0px solid;'>
+									    					   <svg width="25" height="25" style='padding-top:5px;'>
+                               <circle cx="12.5" cy="12.5" r="5"   fill="LightGreen" /> <!-- Chartreuse -->
+                      </svg> 
 										    				<img src='/img/user/userDefault.png' 
 												    		 style='border:0px solid #d8d8d8; height:30px; width:30px; margin-right:0px;'></img> 
-												    		  	{{item.msg_from.username === username ? '':item.msg_from.username}}
-												    		  	{{item.msg_to.username === username ? '':item.msg_to.username}}
+												    		  	{{item.msg_from.username === userInfo.username ? '':item.msg_from.username}}
+												    		  	{{item.msg_to.username === userInfo.username ? '':item.msg_to.username}}
+
+		    		
+												    		  
 												    		 	
 										    			</td> 
 										    			<td   style='color:#6E6E6E;  border:0px solid;'> 
 										    				<font style='font-size:13px; '> 
 										    			<span class="
-						    								{{item.msg_from.username === username ? 'glyphicon glyphicon-share-alt':''}}
+						    								{{item.msg_from.username === userInfo.username ? 'glyphicon glyphicon-share-alt':''}}
 											    		  	
 										    		 "></span> 
 															{{item.msg_text.substring(0,30)}}
@@ -137,11 +146,11 @@
 													  return time.join (''); // return adjusted time or original string
 													}
 
-													jQuery(function(){
-					          $('#tblInbox').scrollTableBody({rowsToDisplay:2});                    
-				                                    });
+													// jQuery(function(){
+					          // $('#tblInbox').scrollTableBody({rowsToDisplay:2});                    
+				                                    // });
 													</script>
-
+												</div> <!-- fix table header -->
 									    		
 									    	
 																

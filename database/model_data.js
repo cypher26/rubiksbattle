@@ -4,88 +4,47 @@
 
 
 
-// testing add for user
-var newUser1 = {
-    _id: 1,
-     username             : 'jester26',
-    user_password        :  'jester',
-    user_email           :  'jestercaporado@yahoo.com',
-    user_fname           : 'jester',
-    user_lname           : 'caporado',
-    user_gender           : 'Male',
-    user_birthDate          : '1996-11-17',
-    user_country           : 'Philippines',
-    user_location           : 'Cavite',
-    user_about           : 'rubiks battle is awesome haha',
-    user_since           : '2016-11-26',
-    user_avatar            : "/img/upload/img_1.jpg"
+// accept remove cancel add
+//0 - not friend
+//1 - friends
+//2 - request
+//3 - accept
+//4 - block
+ var friend1 = {
+    _id:0,
+    user1_id:'1',
+    user2_id:'2',
+    friend_status:'2'
 };
-var newUser2 = {
-     _id: 2,
-     username             : 'winnie26',
-    user_password        :  'winnie',
-    user_email           :  'winnie@yahoo.com',
-    user_fname           : 'winnie',
-    user_lname           : 'flores',
-    user_gender           : 'Female',
-    user_birthDate          : '1996-11-17',
-    user_country           : 'Philippines',
-    user_location           : 'Cavite',
-    user_about           : 'rubiks battle is awesome haha',
-    user_since           : '2016-11-26',
-    user_avatar            : "/img/upload/img_2.jpg"
+var friend2 = {
+    _id:1,
+    user1_id:'3',
+    user2_id:'2',
+    friend_status:'2'
 };
-var newUser3 = {
-      _id: 3,
-     username             : 'candace12',
-    user_password        :  'candace',
-    user_email           :  'candace@yahoo.com',
-    user_fname           : 'candace',
-    user_lname           : 'Tapuro',
-    user_gender           : 'Female',
-    user_birthDate          : '1996-11-17',
-    user_country           : 'Philippines',
-    user_location           : 'Cavite',
-    user_about           : 'rubiks battle is awesome haha',
-    user_since           : '2016-11-26',
-    user_avatar            : "/img/upload/img_3.jpg"
+var friend3 = {
+    _id:2,
+     user1_id:'4',
+    user2_id:'2',
+    friend_status:'2'
 };
- var newUser4 = {
-     _id: 4,
-     username             : 'fauni12',
-    user_password        :  'fauni',
-    user_email           :  'fauni@yahoo.com',
-    user_fname           : 'Madel',
-    user_lname           : 'Fauni',
-    user_gender           : 'Female',
-    user_birthDate          : '1996-11-17',
-    user_country           : 'Philippines',
-    user_location           : 'Cavite',
-    user_about           : 'rubiks battle is awesome haha',
-    user_since           : '2016-11-26',
-    user_avatar            : "/img/upload/img_4.jpg"
-};
+// var msgArchive = [msgArchive1, msgArchive2, msgArchive3];
+var friends = [friend1,friend2,friend3];
 
-       
-var people = [ newUser1, newUser2, newUser3, newUser4 ];
-
-people.forEach(function(data){
-    new user_model(data)
+friends.forEach(function(data){
+     new friends_model(data)
     .save(function(err,data){
         console.log(data);
     });
 });
 
-user_model.find()
-            .select()
-            .limit(2)
-.exec(function(err,data){
 
-    data.forEach(function(data){
-            console.log(data);
-    });
-        // console.log(data);
-});
+
+
+
+
+
+
 
 
 
@@ -256,6 +215,8 @@ mongoose.connection.db.dropCollection('foo', function(err, result) {...});
 mongoose.connection.db.dropDatabase(function(err, result) {...});
 
 //new archive msg
+
+
 
  var msgArchive1 = {
     _id:0,

@@ -1,0 +1,358 @@
+<div style="visibility: hidden">
+    <!--############################# invite dialog ######################################-->
+    <div class="md-dialog-container lg-modal" id="inviteDialog" style=''>
+      <md-dialog layout-padding style='background-color:#000000;color:#ffffff; width:300px;' >
+           
+                   <div layout="row" layout-align="center center" style='border-bottom:1px solid red;'>
+                     <img src="
+                      {{inviteData._id==0 ? 'img/user/pvb.png':
+                      (inviteData._id==-1 ? 'img/user/p.png':'img/user/pvp.png')}}
+                  " style='width:25px; height:25px; background-color:#a4a4a4;
+                                    border:1px solid #ffffff; margin-right:10px;'></img>
+                                    <font style='color:#ffffff; font-size:15px;'> <strong>
+                                            {{inviteData._id==0 ? 'Versus Computer':
+                                            (inviteData._id==-1 ? 'Single Player':'Battle PvP')}}
+                                            <!-- {{(inviteData._id==-1 ? 'Single Player':'')}} -->
+                                           <!--  {{inviteData._id!=0 && invitedata._id!='-1' ? 'Battle PvP':''}} -->
+                                    </strong> </font>
+                    </div>
+                 
+                        <!-- <div layout="row"  align='center' style='border:0px solid #ffffff;'>
+                                 <div flex layout="column" align='right' style=' border:0px solid #ffffff;' >
+                                        <div flex></div>
+                                         <div flex style='border:0px solid #ffffff;' ><span class='glyphicon glyphicon-fire'></span> Opponent: </div>
+                                          
+                                </div>
+                                <div flex layout="column" align='center' style='border:0px solid #ffffff;' >
+                                        <div flex><img src='{{inviteData.user_avatar}}' style='width:30px; height:30px;'></img></div>
+                                        <div flex><strong>{{inviteData.username}}</strong></div>
+                                          
+                                </div>
+
+                         </div> -->
+                         <div layout="row"  align='center' style="display:
+                                           {{inviteData._id==0 ? 'none':
+                                            (inviteData._id==-1 ? 'none':'')}}
+                                            ; border:0px solid #ffffff;">
+                           <table align='center' style='; border:0px solid #ffffff'>
+                                    <tr style='border:0px solid #ffffff;'>
+                                        <td rowspan='2' >
+                                           <div  style='border:0px solid #ffffff; padding-right:10px;' ><span class='glyphicon glyphicon-fire'></span> Opponent: </div>
+                                        </td>
+                                        <td>
+                                         <div flex align='center' ><img src='{{inviteData.user_avatar}}' style='width:30px; height:30px;'></img></div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                             <div flex><strong>{{inviteData.username}}</strong></div>
+                                        </td>
+                                       
+
+                                    </tr>
+                                </table>
+                        </div>
+                          <div layout="row"   style='border:0px solid #ffffff;'>
+                                 <div  flex layout="column" align='center' style='  border:0px solid #ffffff;' >
+                                         <div  style='border:0px solid #ffffff;' >
+                                            <strong><span class='glyphicon glyphicon-cog'></span> Game options</strong>
+                                         </div>
+                                          
+                                </div>
+                               
+                          </div>
+                         <div layout="row" align='center'  style='border:0px solid #ffffff;'>
+                                     <table style='border:0px solid #ffffff;  margin-left:20px; '>
+                                        <tr >
+                                            <td style='padding-right:10px; width:50%; padding-bottom:10px;'>
+                                                <font style='font-size:15px; color:#ffffff'>Cube type: </font>
+                                            </td>
+                                            <td style='padding-right:0px; padding-bottom:10px;'>
+                                          <select id='cubeType'  ng-model='root.cubeType' 
+                                         style='color:#ffffff; background-color:#000000' >
+                                                  <option value="3x3x3">3x3x3</option>
+                                                  <option value="2x2x2">2x2x2</option>
+                                                </select>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style='padding-right:10px;  padding-bottom:10px;'>
+                                                <font style='font-size:15px; color:#ffffff'>Room: </font>
+                                            </td>
+                                            <td style='padding-right:0px; border:0px solid #ffffff; padding-bottom:10px;'>
+                        <select
+                              ng-model='root.roomType' style='color:#ffffff; background-color:#000000'>
+                                                          <option value="(Public)">(Public)</option>
+                                                          <option value="(Private)">(Private)</option>
+                                                    </select>
+                                            </td>
+
+                                        </tr>
+                                       
+                                        <tr  style="display:{{root.roomType=='(Private)' ? '':'none'}}" >
+                                            <td style='padding-right:10px; padding-bottom:10px;'>
+                                                <font style='font-size:15px; color:#ffffff'>Keyword: </font>
+                                            </td>
+                                            <td style='padding-right:00px; padding-bottom:10px;'>
+                                            <input id='requestKeyword' ng-model='root.inviteKeyword' autofocus style='width:80px; color:#ffffff; background-color:#000000' maxlength='12'></input>
+
+                                            </td>
+                                        </tr>
+                                    </table>
+                                          
+                                   
+                         
+                          </div>
+                            <div style="{{inviteDisplay === 1 ? '' : 'display:none'}}">
+                                <div layout='row' layout-align='center' >
+                           
+                                 <progress-arc
+                                        size="70"
+                                        stroke="#a4a4a4"
+                                        stroke-width="100"
+                                        complete="inviteTimer"
+                                       counter-clockwise="">
+                                    </progress-arc>
+                                  </div>
+                                <div layout='row' layout-align='center' style='padding-top:10px;'>
+                           
+
+                                    <font id='divWaiting' style='font-size:15px; color:#00FF40;'>
+                                          <strong>    Waiting for confirmation .. </strong>
+                                     </font>
+                                   
+                                        
+                                </div>
+                          </div>
+                                 <center  style="font-size:15px; color:red; display:{{root.declineModal===1? '':'none'}}">
+                                    <font> <strong>  Opponent declined the request. </strong></font>
+                                 </center>
+                                  <center  style="font-size:15px; color:red; display:{{root.notAvailableModal===1? '':'none'}}">
+                                    <font> <strong>  Battle request is not available now </strong></font>
+                                 </center>
+                          <div layout='row' align='center'>
+                                <div flex>
+                                    <!-- <md-button class="md-raised md-warn" style='font-size:12px;'>Send Request</md-button> -->
+                        <button ng-click='sendRequest();'  ng-disabled="inviteDisplay === 1 ||  root.declineModal === 1 ? 'disabled' : '' " class='btn btn-success btn-md'><strong>
+                            {{inviteData._id==0 || inviteData._id==-1 ? 'Start now!':'Send Request'}}
+
+                            
+                            <!-- Send Request -->
+                                </strong></button>
+                                     <button id='btnCancel' ng-click="cancelGameReq()" class='btn btn-default btn-md'>Cancel</button>
+                                     
+                                </div>
+
+                                 
+                          </div>
+      </md-dialog>
+    </div>
+<!--############################# invite dialog ######################################-->
+
+<!--############################# received dialog ######################################-->
+
+
+    <div class="md-dialog-container lg-modal" id="receivedDialog" style=''>
+      <md-dialog layout-padding style='background-color:#000000;color:#ffffff; width:300px;' >
+           
+                   <div layout="row" layout-align="center center" style='border-bottom:1px solid red;'>
+                     <img src='img/user/pvp.png' style='width:25px; height:25px; background-color:#a4a4a4;
+                                    border:1px solid #ffffff; margin-right:10px;'></img>
+                                    <font style='color:#ffffff; font-size:15px;'> <strong>
+                                        Battle PvP
+                                    </strong> </font>
+                    </div>
+                 
+                       <!--  <div layout="row"  align='center' style='border:0px solid #ffffff;'>
+                                 <div flex layout="column" align='right' style=' border:0px solid #ffffff;' >
+                                        <div flex></div>
+                                         <div flex style='border:0px solid #ffffff;' ><span class='glyphicon glyphicon-fire'></span> Opponent: </div>
+                                          
+                                </div>
+                                <div flex layout="column" align='center' style='border:0px solid #ffffff;' >
+                                        <div flex><img src='img/user/userDefault.png' style='width:30px; height:30px;'></img></div>
+                                        <div flex><strong>winnie26</strong></div>
+                                          
+                                </div>
+                         </div> -->
+                            <center style='margin-top:20px; '>
+                                     <b id='requestUsernameR' style='font-size:20; color:#ffffff'> 
+                                      <img style='height:30px; width:30px;' src='{{receivedData.user_avatar}}'></img>
+                                {{receivedData.username}}</b><br>
+                                    <font style='font-size:15px; color:#ffffff; margin-left:5px; '>
+                                        invited you to a game
+                                    </font></center>
+
+                          <div layout="row"   style='border:0px solid #ffffff;'>
+                                 <div  flex layout="column" align='center' style='  border:0px solid #ffffff;' >
+                                         <div  style='border:0px solid #ffffff;' >
+                                           <strong><span class='glyphicon glyphicon-cog'></span> Game options</strong>
+                                         </div>
+                                          
+                                </div>
+                               
+                          </div>
+                         <div layout="row" layout-align='center'  style='border:0px solid #ffffff;'>
+                                     <table style='border:0px solid #ffffff;  margin-left:20px; '>
+                                        <tr >
+                                            <td style='padding-right:10px; width:50%; padding-bottom:10px;'>
+                                                <font style='font-size:15px; color:#ffffff'>Cube type: </font>
+                                            </td>
+                                            <td style='padding-right:0px; padding-bottom:10px;'>
+                                                 <span class='glyphicon glyphicon-th'></span> {{root.cubeType}}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style='padding-right:10px;  padding-bottom:10px;'>
+                                                <font style='font-size:15px; color:#ffffff'>Room: </font>
+                                            </td>
+                                            <td style='padding-right:0px; border:0px solid #ffffff; padding-bottom:10px;'>
+                                                   <span class='glyphicon glyphicon-eye-open'></span> {{root.roomType}}
+                                            </td>
+
+                                        </tr>
+                                        <tr style="display:{{root.roomType=='(Private)' ? '':'none'}}" >
+                                            <td style='padding-right:10px; padding-bottom:10px;'>
+                                                <font style='font-size:15px; color:#ffffff'>Keyword: </font>
+                                            </td>
+                                            <td style='padding-right:00px; padding-bottom:10px;'>
+                                                ' {{root.inviteKeyword}} '
+
+                                            </td>
+                                        </tr>
+                                    </table>
+                                          
+                         
+                          </div>
+                            <div style="display:{{inviteDisplay === 1 ? 'block' : 'none'}}">
+                            <center>   
+                                <progress-arc
+                                        size="70"
+                                        stroke="#a4a4a4"
+                                        stroke-width="100"r
+                                        complete="receivedTimer"
+                                       counter-clockwise="">
+                                    </progress-arc>
+                                </center>
+                            <center>
+                              
+                                 
+                                   
+                                        </font> </center>
+                                </div>
+                          <div layout='row' align='center'>
+                                <div flex>
+                                    <!-- <md-button class="md-raised md-warn" style='font-size:12px;'>Send Request</md-button> -->
+                                    <button ng-click='acceptGameReq();' class='btn btn-success btn-md'><strong>Accept</strong></button>
+                                     <button id='btnCancel' ng-click="declineGameReq()" class='btn btn-danger btn-md'>Decline</button>
+                                </div>
+
+                                 
+                          </div>
+      </md-dialog>
+    </div>
+
+ <!--############################# received dialog ######################################-->
+
+                    <!-- online friends dialog -->
+     <div class="md-dialog-container lg-modal" id="friendsDialog" style=''>
+      <md-dialog layout-padding style=' width:700px; border:0px solid;' >
+            <md-toolbar style='padding:0px;'>
+             <div class='md-toolbar-tools' style='background-color:#848484'>
+                 <span flex></span>
+              <span class='glyphicon glyphicon-fire'></span>
+                  <span style='margin-left:10px'></span>Play with your friends!
+
+                  <!-- <label style='font-size:14px'>All friends online</label> -->
+                <span flex></span>
+                <md-button class="md-icon-button" ng-click="cancel()">
+                  <md-icon md-svg-src="/img/svg/ic_close_black_24px.svg" aria-label="Close dialog"></md-icon>
+                </md-button>
+              </div>
+            </md-toolbar>
+
+    <!-- <md-input-container class="md-icon-float md-block" style='border-bottom:0px solid #d8d8d8; margin:0px; padding-top:0px; margin-bottom:0px; padding-bottom:0px;' align='center'> -->
+
+   
+          <div layout='row' layout-align='center center'style='border-bottom:1px solid #d8d8d8; '>
+                <label style='color:#a4a4a4' flex='33'><span class='glyphicon glyphicon-asterisk'></span> 
+                    All friends online</label> 
+                <!-- <div flex></div> -->
+                <a href='/profile/friends'  ng-click='cancel()'><span class='glyphicon glyphicon-glyphicon glyphicon-list'></span>
+                    View all here</a>
+                
+          </div>
+   <div layout='row'>
+        <md-input-container flex='100' class="md-icon-float  " style='margin-bottom:0px; border:0px solid;'>
+      <label>Username</label>
+      <md-icon md-svg-src="img/svg/ic_account_circle_black_24px.svg" class="name"></md-icon>
+      <input ng-model="inputPlayUsername" ng-init="inputPlayUsername=''" type="text" >
+        </md-input-container>
+ 
+    </div>
+
+
+     <div  layout='row' layout-wrap style='overflow:scroll; overflow-x: hidden;' >
+         <md-list-item class="clickCard" layout-wrap style='border:0px solid;' layout-align='center center'>
+    
+        <md-card   ng-repeat="item in friendsData" ng-if=
+        "onlineList.indexOf(item._id.toString())>-1 && item.username.indexOf(inputPlayUsername.toString())>-1"
+         ng-click='inviteDialog(item)'
+         class="md-whiteframe-5dp"  flex="30"  layout >
+         <table style='border:0px solid; table-layout:fixed;'>
+                        <tr>
+                        <td rowspan='2'>  <img src="{{item.user_avatar}}"  style='width:45px; height:45px; border:0px solid #d8d8d8; padding:5px;'></img>
+                         </td>
+                        <td><font style='font-size:20px; color:#6e6e6e'>{{item.username}}</font> 
+                            
+                        </td>
+                        </tr>
+                        <tr>
+                            <td><font style='font-size:13px; color:#6E6E6E;'>
+                                         {{item.user_country}}
+                                </font></td>
+                               
+                        </tr>
+                    </table>
+                    <span flex></span>
+                    <svg width="25" height="25" style='padding-top:0px;'>
+                               <circle cx="12.5" cy="12.5" r="5"   fill="LightGreen" />
+                      </svg> 
+
+        </md-card>
+
+
+  
+    </md-list-item>
+      <!-- <div flex></div> -->
+          
+        <!-- <div flex></div> -->
+   
+   </div>
+
+    <i align='center' >If you have no friends online, click <a href='/invite' ng-click='cancel()'>here</a> to invite others!</i>
+
+
+
+
+
+
+  </md-dialog>
+    </div>
+
+            <!-- online friends dialog -end  -->
+
+
+
+
+
+
+
+
+
+
+
+</div>
+
+
+       

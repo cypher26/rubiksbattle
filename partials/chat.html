@@ -75,15 +75,17 @@
 									    	
 									    		<tr ng-repeat-start="item in msg_convo"  height='30px;' style='border-top:1px solid #F2F2F2;'>
 													    			<td rowspan='2' style='width:40px; vertical-align:top; padding-top:10px;'> 
-															    		<img src='/img/user/robotDefault.png'
+															    		<img src="
+										    		{{item.msg_from.username === userInfo.username ? item.msg_from.user_avatar:''}}
+								    				{{item.msg_to.username === userInfo.username ? item.msg_from.user_avatar:''}}"
 															    		 style='border:1px solid; height:30px; width:30px; margin-right:0px;'></img>
 													    			</td>
 								    			<td><b><font style="font-size:14px; color:
-								    				{{item.msg_from.username === username ? '':'red'}}
-								    				{{item.msg_to.username === username ? '':'blue'}}
+								    				{{item.msg_from.username === userInfo.username ? '':'red'}}
+								    				{{item.msg_to.username === userInfo.username ? '':'blue'}}
 								    				;">
-								    				{{item.msg_from.username === username ? '':item.msg_from.username}}
-								    				{{item.msg_to.username === username ? '':'You'}}
+								    				{{item.msg_from.username === userInfo.username ? '':item.msg_from.username}}
+								    				{{item.msg_to.username === userInfo.username ? '':'You'}}
 								    			</font></b></td>
 													    			<td align='right'>
 													    					<font style='font-size:13px; color:#6E6E6E;'> 
@@ -100,7 +102,9 @@
 
 													    			</tr>
 								    			<tr ng-repeat-end >
-														    			<td style='color:#6E6E6E;' colspan='2'><font style='font-size:12px;'>{{item.msg_text}}  </font></td>
+														    			<td style='color:#6E6E6E;' colspan='2'><font style='font-size:12px;'>{{item.msg_text}}   
+														    		
+														    			</font></td>
 													    			
 												</tr >
 												

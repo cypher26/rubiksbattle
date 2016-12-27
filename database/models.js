@@ -13,7 +13,13 @@ var fs = require('fs'); //file edit
 
 mongoose.Promise = global.Promise;
 
-var mongoStr = "mongodb://localhost/rubiksbattle";
+
+//without internet
+var mongoStr = "mongodb://127.0.0.1/rubiksbattle";
+
+
+// var mongoStr = "mongodb://localhost/rubiksbattle";
+
 // var mongoStr = 'mongodb://rubiksbattle_user:rubiksbattledbpassword@jello.modulusmongo.net:27017/eja4timI';
 
 
@@ -45,13 +51,14 @@ var Schema = mongoose.Schema;
         user_email           :  String,
         user_fname           : String,
         user_lname           : String,
-        user_gender           : String,
-        user_birthDate          : Date,
+        // user_gender           : String,
+        // user_birthDate          : Date,
         user_country           : String,
-        user_location           : String,
+        // user_location           : String,
         user_about           : String,
         user_since           : Date,
         user_avatar          : String,
+        user_score            : Number
       
     });
 
@@ -61,9 +68,9 @@ var Schema = mongoose.Schema;
      
         msg_text            : String,
         msg_dateTime        :  Date,
-        msg_status           :  String,
-        msg_from           :  { type: Number, ref: 'user_collections' },
-        msg_to           :  { type: Number, ref: 'user_collections' }
+        msg_status          :  String,
+        msg_from            :  { type: Number, ref: 'user_collections' },
+        msg_to              :  { type: Number, ref: 'user_collections' }
         
 });
  var archive_msg_collections = Schema({
@@ -73,6 +80,41 @@ var Schema = mongoose.Schema;
         
 });
 
+var friends_collections = Schema({
+     
+        user1_id            : { type: Number, ref: 'user_collections' },
+        user2_id            : { type: Number, ref: 'user_collections' },
+        friend_status       :  String,
+        friend_action       : { type: Number, ref: 'user_collections' }
+        
+});
+
+
+var game_collections = Schema({
+     
+        reqFrom_id       : { type: Number, ref: 'user_collections' },
+        reqTo_id         : { type: Number, ref: 'user_collections' },
+        cubeType         : String,
+        roomType         : String,
+        reqKeyword       : String,
+        reqDate          : Date,   // date created
+        // reqTime          : Number,  // req time e.g 60 secs
+        reqStatus        : String
+             
+});
+
+
+var archive_game_collections = Schema({
+     
+        game_id          : { type: Number, ref: 'game_collections' },
+        p1_moves         : String,
+        p2_moves         : String,
+        scrambleMoves    : String,
+        endedTime        : String,
+        gameWinner       : { type: Number, ref: 'user_collections' },  
+        winnerBy         : String,  
+             
+});
 
 
 
@@ -80,23 +122,152 @@ var Schema = mongoose.Schema;
 user_collections.plugin(autoIncrement.plugin,'user_collections');
 msg_collections.plugin(autoIncrement.plugin,'msg_collections');
 archive_msg_collections.plugin(autoIncrement.plugin,'archive_msg_collections');
-
+friends_collections.plugin(autoIncrement.plugin,'friends_collections');
+game_collections.plugin(autoIncrement.plugin,'game_collections');
+archive_game_collections.plugin(autoIncrement.plugin,'archive_game_collections');
 
 var user_model = mongoose.model('user_collections',user_collections); 
 var msg_model = mongoose.model('msg_collections',msg_collections); 
 var archive_msg_model = mongoose.model('archive_msg_collections',archive_msg_collections);
+var friends_model = mongoose.model('friends_collections',friends_collections);
+var game_model = mongoose.model('game_collections',game_collections);
+var archive_game_model = mongoose.model('archive_game_collections',archive_game_collections);
+
+//reset from start
+[user_model,msg_model,archive_msg_model,friends_model,game_model,archive_game_model].forEach(function(data){
+  data.remove({}, function(err) { 
+   console.log(data + ' removed') 
+  });
+});
+
+
+var newUser1 = {
+    _id: 1,
+     username             : 'jester26',
+    user_password        :  'jester',
+    user_email           :  'jestercaporado@yahoo.com',
+    user_fname           : 'jester',
+    user_lname           : 'caporado',
+    user_gender           : 'Male',
+    user_birthDate          : '1996-11-17',
+    user_country           : 'Philippines',
+    user_location           : 'Cavite',
+    user_about           : 'rubiks battle is awesome haha',
+    user_since           : '2016-11-26',
+    user_avatar            : "/img/upload/img_1.jpg"
+};
+var newUser2 = {
+     _id: 2,
+     username             : 'winnie26',
+    user_password        :  'winnie',
+    user_email           :  'winnie@yahoo.com',
+    user_fname           : 'winnie',
+    user_lname           : 'flores',
+    user_gender           : 'Female',
+    user_birthDate          : '1996-11-17',
+    user_country           : 'Philippines',
+    user_location           : 'Cavite',
+    user_about           : 'rubiks battle is awesome haha',
+    user_since           : '2016-11-26',
+    user_avatar            : "/img/upload/img_2.jpg"
+};
+var newUser3 = {
+      _id: 3,
+     username             : 'candace12',
+    user_password        :  'candace',
+    user_email           :  'candace@yahoo.com',
+    user_fname           : 'candace',
+    user_lname           : 'Tapuro',
+    user_gender           : 'Female',
+    user_birthDate          : '1996-11-17',
+    user_country           : 'Philippines',
+    user_location           : 'Cavite',
+    user_about           : 'rubiks battle is awesome haha',
+    user_since           : '2016-11-26',
+    user_avatar            : "/img/upload/img_3.jpg"
+};
+ var newUser4 = {
+     _id: 4,
+     username             : 'fauni12',
+    user_password        :  'fauni',
+    user_email           :  'fauni@yahoo.com',
+    user_fname           : 'Madel',
+    user_lname           : 'Fauni',
+    user_gender           : 'Female',
+    user_birthDate          : '1996-11-17',
+    user_country           : 'Philippines',
+    user_location           : 'Cavite',
+    user_about           : 'rubiks battle is awesome haha',
+    user_since           : '2016-11-26',
+    user_avatar            : "/img/upload/img_4.jpg"
+};
+ var newUser5 = {
+     _id: 0,
+     username             : 'Computer',
+    user_password        :  'computerpassword',
+    user_email           :  'computer@yahoo.com',
+    user_fname           : 'Computer_v1',
+    user_lname           : '',
+    user_gender           : 'Male',
+    user_birthDate          : '1996-11-17',
+    user_country           : 'Philippines',
+    user_location           : 'Cavite',
+    user_about           : 'Beat me!',
+    user_since           : '2016-11-26',
+    user_avatar            : "/img/user/robotDefault.png"
+};
+ var newUser6 = {
+     _id: -1,
+     username             : 'SinglePlayer',
+    user_password        :  'singleplayerpassword',
+    user_email           :  'singleplayer@yahoo.com',
+    user_fname           : 'single_v1',
+    user_lname           : '',
+    user_country           : 'Philippines',
+    user_about           : 'Beat me!',
+    user_since           : '2016-11-26',
+    user_avatar            : "/img/user/robotDefault.png",
+    user_score          : 1500
+
+};
+
+       
+var people = [ newUser1, newUser2, newUser3, newUser4, newUser5 ,newUser6];
+
+people.forEach(function(data){
+    new user_model(data)
+    .save(function(err,data){
+        console.log(data);
+    });
+});
 
 
 
 
 
+module.exports.abandonGame = function(game_id,callback){
+     game_model.update(
+    { _id: game_id }, 
+    {  'reqStatus': 'abandon' },
+      callback
+    );
+}
 
 
 
 
 
+module.exports.createGame = function(data,callback){
+        console.log('create game');
+      new game_model(data)
+      .save(callback);
+}
 
-
+module.exports.createArchiveGame = function(data,callback){
+        console.log('create archive game');
+      new archive_game_model(data)
+      .save(callback);
+}
 
 
 
@@ -139,10 +310,9 @@ module.exports.insertAvatar = function(user_id,pathStr,callback){
   user_model.update(
     { _id: user_id }, 
     {  'user_avatar': pathStr },
-      function(err,data){
-          if (err) throw err;
-          console.log(data);
-      }
+       function(err,data){
+           user_model.find({_id:user_id}).exec(callback);
+       }
     );
 }
 
@@ -173,14 +343,14 @@ module.exports.seenMsg = function(user_id,user2_id,callback){
 
 
 module.exports.deleteInbox = function(user1,user2,callback){
-     let requests = user1.reduce((promiseChain, mainItem, index) => {
+     var requests = user1.reduce((promiseChain, mainItem, index) => {
               return promiseChain.then(() => new Promise((mainResolve) => {
 
                          module.exports.viewMsg(mainItem,user2,function(err,data){
                                filterId = data.map(function(data) { return data._id; });
 
 
-                                    let requests = filterId.reduce((promiseChain, item, index) => {
+                                    var requests = filterId.reduce((promiseChain, item, index) => {
                                         return promiseChain.then(() => new Promise((resolve) => {
                                               delChat = {
                                               user_id:user2,
@@ -283,7 +453,6 @@ module.exports.viewInbox = function(user_id,mainCallback){
 
 };
 
- 
 
 
 function sortByKey(array, key) {
@@ -293,21 +462,124 @@ function sortByKey(array, key) {
     });
 }
 
+module.exports.friend_status = function(user1,user2,callback){
+//user1 is viewer
+    friends_model.findOne().and([
+                          { $or : [{'user1_id':user1},{'user2_id':user1}]},
+                          { $or : [{'user1_id':user2},{'user2_id':user2}]}
+                      ]).exec(callback);
+}
 
-module.exports.viewUser = function(callback){
+module.exports.editFriendStatus = function(user1,user2,friend_stat,callback){
+    switch (friend_stat){
+        case '0': //insert request
+              insertStat();
+          break;
+        case '1': //remove friend
+        case '3': //cancel request
+              deleteStat();
+          break;
+       case '2':  //already friends
+                friends_model.update({
+                   $and: [
+                        { $or : [{'user1_id':user1},{'user2_id':user1}]},
+                        { $or : [{'user1_id':user2},{'user2_id':user2}]}
+                   ]},{  'friend_status': '1' }, callback
+                );
+          break;
+     
+    }
+    function insertStat (){
+          new friends_model({
+              user1_id:user1,
+              user2_id:user2,
+              friend_status:'2'
+          }).save(callback);
+    }
+    function deleteStat (){
+          friends_model.remove({
+                   $and: [
+                        { $or : [{'user1_id':user1},{'user2_id':user1}]},
+                        { $or : [{'user1_id':user2},{'user2_id':user2}]}
+                   ]},callback
+                );
+    }
+   
+}
+
+
+module.exports.viewFriends = function (user_id,callback){
+      friends_model.find
+                    ({$and: [
+                        { $or : [{'user1_id':user_id},{'user2_id':user_id}]},
+                        { $or : [{'friend_status':'1'}]}
+                   ]})
+                  .exec(function(err,data){
+                      
+                        filterId = data.map(function(data){
+                              if (data.user1_id == user_id) return data.user2_id;
+                              if (data.user2_id == user_id) return data.user1_id;
+                        });
+                        user_model.find({ _id: { $in:filterId}}).exec(callback);
+                  });
+}
+
+
+module.exports.viewMembers = function(userFind,user_id, callback){
+  console.log('viewMembers');
      user_model
         .find()
-        .select({'username':1,'_id':1})
-        .exec(callback);
+        .and([
+              {$or: [{username:new RegExp(userFind, "i")}]},
+              {$or: [{_id:{$nin:user_id}}]}
+          ])
+        // .select({'username':1,'_id':1})
+        .exec(function(err,s_data){
+            var requests = s_data.reduce((promiseChain, item, index, tempItem) => {
+                return promiseChain.then(() => new Promise((resolve) => {
+                            tempItem[index] = item.toObject();
+                            module.exports.friend_status(user_id,item._id,function(err,data){
+
+                                   if (data==null) tempItem[index].status = '0';
+                                  //if user request becomes cancel request
+                                  else if (data.user1_id==user_id && data.friend_status=='2')
+                                       tempItem[index].status='3';
+                                  else tempItem[index].status=data.friend_status;
+
+                                  resolve(s_data);
+                            });
+                 }));
+
+            }, Promise.resolve()).then(function(data){
+              // console.log(data);
+                callback(data);
+            });
+          
+        });
+      // user_model.find()
+      //               .and([
+      //                     { $or: [{'user1_id':user_id}] }
+      //                 ])
+      //               .exec(function(err,data){
+      //                   console.log(data);
+      //               });
 
 }
+
+
+
+// module.exports.viewMembers('','2',function(err,data){
+
+// });
 
 module.exports.ifTakenEmail = function (email,callback){
     user_model
         .find()
         .and([
-          { $or: [{'user_email': email}] }
-        ])
+          // { $or: [{'user_email': email}] }
+          { $or: [{"user_email":{ $regex: new RegExp('^'+ email + '$', "i") } }] 
+
+        }])
         .exec(callback);
 }
 
@@ -317,8 +589,9 @@ module.exports.ifTakenUsername = function (username,callback){
     user_model
         .find()
         .and([
-          { $or: [{'username': username}] }
-        ])
+          // { $or: [{'username': username}] }
+          { $or: [{"username":{ $regex: new RegExp('^'+ username + '$', "i") } }] 
+          }])
         .exec(callback);
 }
 
@@ -346,6 +619,27 @@ module.exports.getUserInfo = function (user_id,callback){
         ])
         .exec(callback);
 }
+
+
+module.exports.getGameInfo = function (user_id,callback){
+    game_model
+        .findOne()
+        .populate('reqFrom_id reqTo_id')
+        .and([
+                  { $or: [{'_id': user_id}] }
+                ])
+        .exec(callback);
+}
+
+
+
+module.exports.viewAllGames = function(callback){
+    game_model
+      .find()
+      .populate('reqFrom_id reqTo_id')
+      .exec(callback);
+};
+
 // exports.getUserId('user1','userpassword',function(err,data){
 //     console.log(data);
 // });
@@ -353,14 +647,18 @@ module.exports.getUserInfo = function (user_id,callback){
 module.exports.createUser = function (user_info,callback){
      new user_model(user_info)
         .save(function(err,mainData){
-
+          if (err) console.log('error in createuser ');
+         
            fs.readFile('public/img/user/userDefault.png', function (err, data) {
-            if (err) throw err;
+            if (err) throw console.log('err in readFile');
+            console.log('readFile');
             fs.writeFile('public/img/upload/img_'+mainData._id+'.jpg', data, function (err) {
-                if (err) throw err;
+                if (err) throw console.log('err in writeFile');
                // push avatar pathStr in user
-                module.exports.insertAvatar(mainData,'/img/upload/img_' + mainData._id + '.jpg',function(err,data){
-                    callback(err,mainData,mainData._id);
+                module.exports.insertAvatar(mainData,'/img/upload/img_' + mainData._id + '.jpg',function(err,userData){
+                  if (err) console.log('err in insertAvatar');
+                  console.log(userData);
+                    callback(err,userData);
                 });;
 
                
@@ -369,6 +667,25 @@ module.exports.createUser = function (user_info,callback){
 
         });  
 }
+
+module.exports.getUsersById = function (ids,callback){
+    user_model
+        .find({
+          _id:{$in:ids}
+        })
+        .exec(callback);
+}
+
+module.exports.has_game = function(id,callback){
+    game_model
+        .findOne({$and: [
+                        { $or : [{'reqFrom_id':id},{'reqTo_id':id}]},
+                        { $or : [{'reqStatus':'ongame'}]}
+                ]})
+        .exec(callback);
+}
+
+
 
 
 // var data = {

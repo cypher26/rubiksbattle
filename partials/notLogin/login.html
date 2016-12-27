@@ -1,6 +1,6 @@
 
 			<img id='imgPrimary' src='img/primaryLogo.png' style='width:220px;
-				 position:absolute; height:170px;  right:100px; top:100px;  border:0px solid;'></img>
+				 position:absolute; height:170px;  left:571px; top:20px;  border:0px solid;  z-index:9999;' ></img>
 		<div id='mainRow' style='border:0px solid;' > 
 			<!-- 	<ol class="breadcrumb">
 			 <li><a href="#">  <img  style='height:50px; width:100px;'
@@ -12,7 +12,7 @@
 				
 				
 				<script>
-				$('#imgPrimary').css({left: (($('body').width()/2)-($('#imgPrimary').width()/2)) + "px", top:'20px' });
+				// $('#imgPrimary').css({left: (($('body').width()/2)-($('#imgPrimary').width()/2)) + "px", top:'20px' });
 			   </script>
 			<div class='col-xs-4' style='border:0px solid'></div>
 			<div class='col-xs-4' style='border:0px solid;' align='center'>
@@ -54,17 +54,23 @@
 					
 			
 				</div>
-				<div class='row' style='border:0px solid; margin-bottom:5px; ' align='center'>
+				<!-- <div class='row' style='border:0px solid; margin-bottom:5px; ' align='center'>
 					<div class='col-xs-1'></div>
-					<div class='col-xs-5'>
-							<button id='btnLogin' ng-click='loginScopeFunc()'class='form-control btn-success'>Login</button>
-						</div>
+					<div class='col-xs-5' style='border:1px solid;'>
+							<md-button class='md-raised md-primary' flex='100' id='btnLogin' ng-click='loginScopeFunc()'>Login</md-button>
+					</div>
 						<div class='col-xs-5'>
 							<button ng-click='register()' class='form-control btn-default' style='background-color:#f2f2f2;'>Register</button>
 						</div>
 					<div class='col-xs-1'></div>
 					
 			
+				</div> -->
+				<div layout='row' style='border:0px solid;' layout-align='center'>
+				 	<md-button class='md-raised md-primary' ng-click='loginScopeFunc()' style='width:160px;'><span class='glyphicon glyphicon-fire'></span> Login</md-button>
+					<md-button class='md-raised' ng-click='register()' style='width:160px;'>Register</md-button>
+			
+				
 				</div>
 				<div class='row' style='border:0px solid;'>
 						<a id='btnReset' href='#'><font style=' font-size:12px; color:#848484;'>Forgot Password?</font></a>

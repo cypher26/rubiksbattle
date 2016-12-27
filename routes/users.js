@@ -4,7 +4,11 @@ var bodyParser =require('body-parser');
 var session = require('express-session');
 var  path = require('path');
 
+var requestIp = require('request-ip'); //local ip
 
+var externalip = require('externalip'); //external ip
+
+var where = require('node-where');
 
 router.use(bodyParser.json()); 
 router.use(bodyParser.urlencoded({extended:false}));
@@ -13,7 +17,8 @@ router.use(bodyParser.urlencoded({extended:false}));
 
 var models = require('../database/models');
 
-	
+	const net = require('net');
+
 
 
 
@@ -93,51 +98,97 @@ router.post('/login',function(req,res,next){
 		// res.redirect(307,'register');
 		// next();		
 });
+function timeNow(){
+	     var today = new Date();
+                        var dd = today.getDate();
+                        var mm = today.getMonth()+1; //January is 0!
+                        var yyyy = today.getFullYear();
+
+                        if(dd<10) {
+                            dd='0'+dd
+                        } 
+
+                        if(mm<10) {
+                            mm='0'+mm
+                        } 
+
+                        today = yyyy+'-'+mm+'-'+dd;
+                        // alert(today);
+                        var dt = new Date();
+                        var time = dt.getHours() + ":" + dt.getMinutes() + ":" + dt.getSeconds();
+
+        return today;
+}
 router.post('/register',function(req,res,next){
 
 	console.log('checkRegister');
-		console.log(req.body.username 
-			+ " " + req.body.password 
-			+ " " + req.body.email 
-			+ " " + req.body.firstname
-			+ " " + req.body.lastname
-			+ " " + req.body.gender
-			+ " " + req.body.birth
-			+ " " + req.body.country
-			+ " " + req.body.location
-			+ " " + req.body.about
-			+ " " + req.body.since
-				);
-		// console.log(req.body);
-				console.log('user.js');
-				res.send();
+			
+	country = '';
+     (function() {
+           return new Promise(function(resolve, reject){
+               	externalip(function (err, ip) {
+				  console.log('ip 123= ' +ip); // => 8.8.8.8
+
+				  	if (ip !=undefined){
+						where.is(ip, function(err, result) {
+				  				// console.log('country = ' + result.get('country'));
+				  				country = result.get(('country'));
+				  				resolve();
+						});
+				  	}else{
+				  		country = 'Philippines';
+			  		    resolve();
+				  	}
+				});
+              
+           });
+     })().then(function() {
+         return new Promise(function(resolve, reject){
 
 
-			var newUser = {
+
+         		// console.log('c = ' + country);
+         		// console.log('t = ' + Date.now());
+
+                var newUser = {
 					    username             : req.body.username,
 					    user_password        : req.body.password,
 					    user_email           : req.body.email,
-					    user_fname           : req.body.firstname,
-					    user_lname           : req.body.lastname,
-					    user_gender          : req.body.gender,
-					    user_birthDate       : req.body.birth,
-					    user_country         : req.body.country,
-					    user_location        : req.body.location,
-					    user_about           : req.body.about,
-					    user_since           : req.body.since,
-   					
-				};
+					    user_country         : country,
+					    user_since           : timeNow(),
+					    user_score			 : 1500 //initial score for players
+   				};
+
+console.log('hahahaha');
+					// create user
+					models.createUser(newUser,function(err,mainData){
+						// console.log('hihi');
+						if (err) throw err;
+							// console.log (typeof id);
+							// console.log('user created ' + mainData + ' id=' + mainData._id);
+							req.session.user_id = mainData['_id'];
+							req.session.userInfo =mainData;
+							console.log('mainData._id = ' + mainData['_id']);
+							console.log('session = ' + req.session.user_id + " " + req.session.userInfo);
+							res.send();
+							 resolve();
+							//500 error
+							//200 success 
 
 
-				// create user
-			models.createUser(newUser,function(err,mainData,id){
-				if (err) throw err;
+					});
 				
-					console.log('user created ' + mainData + ' ' + id);
-				
+               
+           });
+     });
 
-			});
-				
+
+
+		 // var clientIp = requestIp.getClientIp(req);
+
+		 //  console.log('client ip = ' + clientIp);
+
+			
 
 
 				
@@ -168,7 +219,7 @@ router.post('/deleteInbox',function(req,res,next){
 });
 router.post('/deleteChat',function(req,res,next){
 		
- 		    let requests = req.body.chat_id.reduce((promiseChain, item, index) => {
+ 		    var requests = req.body.chat_id.reduce((promiseChain, item, index) => {
               return promiseChain.then(() => new Promise((resolve) => {
             		 		delChat = {
 								    user_id:req.session.user_id,
@@ -206,7 +257,11 @@ router.post('/userLogin',function(req,res,next){
 					if (data.length == 0){
 							res.send({exist:false})
 					}else{
+						// console.log(typeof data[0]._id);	
 						req.session.user_id = data[0]._id;
+
+						console.log(req.session.user_id);
+						req.session.userInfo = data[0];
 
 						console.log("id = " + data[0]._id);
 						res.send({exist:true})
@@ -219,9 +274,17 @@ router.post('/userLogin',function(req,res,next){
 
 });
 router.post('/getUserInfo',function(req,res,next){
-		models.getUserInfo(req.session.user_id,function(err,data){
-				res.send({userInfo:data});
+		models.getUserInfo(req.session.user_id,function(err,user_data){
+				//get computer info for computer opponent
+				models.getUserInfo('0',function(err,computer_data){
+					//get self info for single player
+						models.getUserInfo('-1',function(err,self_data){
+							res.send({userInfo:user_data,computerInfo:computer_data,selfInfo:self_data});
+						});
+						
+				});
 		});
+
 });
 router.post('/getChatInfo',function(req,res,next){
 		models.getUserInfo(req.body.user_id,function(err,data){
@@ -230,7 +293,7 @@ router.post('/getChatInfo',function(req,res,next){
 });
 router.post('/checkUserIfTaken',function(req,res,next){
 
-			console.log('checkUser');
+			// console.log('checkUser');
 				models.ifTakenUsername(req.body.username,function(err,data){
 					if (err) console.log(err);
 					if (data.length == 0){
@@ -254,6 +317,8 @@ router.post('/checkEmailIfTaken',function(req,res,next){
 				});
 });
 router.post('/viewInbox',function(req,res,next){
+
+
 
 			console.log('view inbox');
 		models.viewInbox(req.session.user_id,function(data){
@@ -292,41 +357,130 @@ router.post('/viewMsg',function(req,res,next){
 		});
 });
 
+router.post('/viewMembers',function(req,res,next){
+		console.log('view invite');
+		models.viewMembers(req.body.findStr,req.session.user_id,function(data){
+		   res.send({user_data:data});
+		});
+});
+
+router.post('/viewFriends',function(req,res,next){
+	console.log('viewFriends');
+		models.viewFriends(req.session.user_id,function(err,data){
+        	res.send({friendsData:data});
+		});
+});
+
+router.post('/editFriendStatus',function(req,res,next){
+		// console.log('editFriendStatus');
+		models.editFriendStatus(req.session.user_id,req.body.user_id,req.body.friend_status,function(data){
+			console.log('success edit');
+		   res.send();
+		});
+});
+
+router.post('/getGameInfo',function(req,res,next){
+		models.getGameInfo(req.body.id,function(err,data){
+			// console.log('success get data');
+			
+		   res.send({gameData:data});
+		});
+	
+});
 
 
 
 
-		
+router.post("/liveAuthen",function(req,res,next){
+	console.log('live authen');
+		models.getGameInfo(req.body.id,function(err,data){
+			
+			//put session after guessing keyword
+			if (data.reqKeyword ==req.body.keyword){
+				req.session.livePrivate = 'private'+req.body.id;
+			}
+			res.send();
+   				// 
+   				
+		});
+});
+
+router.get('/invalid',function(req,res,next){
+	res.render('invalid');
+});
+
+router.get('/live',function(req,res,next){
+	
+	// for no back of page
+	res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate');
+
+
+	models.getGameInfo(req.query.id,function(err,data){
+			if (data==null || !req.session.user_id || data.reqStatus=='abandon') res.redirect('/');
+			else if (data.roomType == '(Private)'){
+
+				 //if have a session of access private or user is a player or room
+				if (req.session.livePrivate == 'private'+req.query.id ||
+					[data.reqFrom_id._id,data.reqTo_id._id].indexOf(req.session.user_id)>-1) { 
+					
+					//destroy session after open
+					req.session.livePrivate = undefined;
+					res.render('live');
+
+				}
+				else res.render('live_private');
+   		 	}else{
+   		 		res.render('live');
+   		 	}
+
+    });
+		 
+});
+
+
+function has_game(req,res,next){
+		models.has_game(req.session.user_id,function(err,data){
+		    if (data!=null){
+		    	return data._id;
+		    }else{
+		    	return false;
+		    }
+		});
+	
+}
+
+
+
+
 
 function testAuthentication(req,res, next){
-	console.log('test authentication');
-	user_authenticate = true;
-	has_game = false;
-	// req.session.user_id = '2';
-	if (!req.session.user_id){
+	
+	// has_game = false;
+	// req.session.user_id = '1';
+	if (req.session.user_id==undefined){
 	// if (false){
 		return next(); // logout system
-	}
-	else if(has_game){
-		res.render('live');
 	}else{
-		res.render('index');
-		// res.redirect('/');
+		//redirect if has game
+		models.has_game(req.session.user_id,function(err,data){
+		    if (data!=null){
+		    	res.redirect("live?id="+data._id+"");
+		    }else{
+	    		res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate');
+				res.render('index'); //enter the site if no games
+		    }
+		});
+
 	}
 
 	
 	
 }
-// router.get('/',function(req,res,next){
-// 	res.render('index');
-// });
-
-
 
 
 router.all('*',testAuthentication, function(req, res, next) { // Just send the index.html for other files to support HTML5Mode
      // res.sendFile('/webpages/login.html', { root: __dirname + "/.." });
-     console.log(new Date().toTimeString() + " *");
+     // console.log(new Date().toTimeString() + " *");
   // res.redirect('/about');
      // res.render('login');
       // res.sendFile('/webpages/index.html', { root:   __dirname + "/.." });
@@ -340,7 +494,7 @@ router.all('*',testAuthentication, function(req, res, next) { // Just send the i
 
 
 router.get('/',function(req,res){
-	console.log('render login');
+	// console.log('render login');
 
 	res.render('login');
 	// res.redirect('/login');
@@ -355,7 +509,7 @@ router.get('/',function(req,res){
 
 router.get('*', function(req, res, next){
 	 // res.sendFile('/views/login.html', { root:  __dirname  +"/.." });
-	 console.log('404 route');
+	 // console.log('404 route');
 	 	res.redirect('/');
 	// res.redirect('/login');
 	 

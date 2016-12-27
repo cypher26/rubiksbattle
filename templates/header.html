@@ -1,73 +1,75 @@
 <div class='row' >
-   
-<nav class="navbar navbar-default" role="navigation">
-   
-        <!-- <div class="navbar-header"> -->
-            <!-- <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
-                <span class="sr-only">Toggle navigation</span>
-                <span class="icon-bar">asdf</span>
-                <span class="icon-bar">asdf</span>
-                <span class="icon-bar">asdf</span>
-            </button> -->
-            <!-- You'll want to use a responsive image option so this logo looks good on devices - I recommend using something like retina.js (do a quick Google search for it and you'll find it) -->
-            <!-- <a class="navbar-brand" href="/">Rubik's Battle</a> -->
-         <!--   <img id='imgPrimary' style='position: absolute; top:0px; left:50px; z-index:9999;
-                           height:100px; width:130px;' src="/img/primaryLogo.png">   -->
-        <!-- </div> -->
-
-        <!-- Collect the nav links, forms, and other content for toggling -->
-           
-            <ul class="nav navbar-nav " bsActiveLink>
-                
-                <li > <a class="navbar-brand" href="#">   </a> </li>
-
-                <li  set-active style="margin-left:130px;"><a  href="/" >Home</a>
-                </li>
-                <li  set-active  ><a href="/play">Play</a>
-                </li>
-                <li  set-active ><a href="/profile">Profile</a>
-                </li>
-                <li  set-active ><a href="/invite">invite</a>
-                </li>
-                <script>
-
-                </script>
-               <!--  <li><a href="/faq">FAQ</a>
-                </li>
-                <li><a href="/contact">Contact</a>
-                </li>
-                <li class="dropdown">
-                    <a class="dropdown-toggle" data-toggle="dropdown">Blog <b class="caret"></b></a>
-                    <ul class="dropdown-menu">
-                        <li><a href="/blog">List of Posts</a>
-                        </li>
-                        <li><a href="/blog/post">View One Post</a>
-                        </li>
-                    </ul>
-                </li -->
-            </ul>
-             <popupbutton is-open="isOpen"></popupbutton>
-            <ul class="nav navbar-nav navbar-right">
-                           <li><a href="#" id='btnHelp' style='margin-right:0px;'>Help</a></li>
-                            <li><a  ng-click='logout()' style='margin-right:0px;'>
-                                <span class="glyphicon glyphicon-log-out"></span> logout</a></li>
-                            <li><a href="profile" style='margin-right:0px;'>
-                                {{userInfo.username}} 
-                                 </a></li>
-                            <li><a class="navbar-brand dropdown-toggle" style='margin-right:20px;' data-toggle='dropdown' role='button' href="#" >
-                                 <img style='height:30px; width:30px;'  src='{{userInfo.user_avatar}}'>  
-                                 <span id='spanRequestCount' class="badge" style='background-color:#2FEA1C;'></span></img></a> 
-                                    <ul class='dropdown-menu' style='border:1px solid; width:350px;  padding:5px;'>
-                                    <li style=' margin-bottom:5px;'>
-                                        <center>
-                                            <table id='ulListFriend' style='margin:5px; width:100%; border:0px solid'>
-                                            </table>
-                                        </center>
-                                    </li>
-             </ul>
-      
-        <!-- /.navbar-collapse -->
     
-    <!-- /.container -->
-</nav>
+  <md-content class="md-padding" style='padding-left:140px; background-color:#ffffff; padding-top:0px; margin-bottom:8px;'>
+    <md-nav-bar md-selected-nav-item="" nav-bar-aria-label="navigation links" style='border:0px solid;'>
+     
+      <md-nav-item md-nav-href="/" style=''>
+        <md-button class="md-raised" style='margin:0px; '><md-icon style='fill:black'  md-svg-src="/img/svg/ic_home_black_24px.svg" aria-label="android "></md-icon> Home</md-button></md-nav-item></md-nav-item>
+
+      <md-nav-item md-nav-href="/play" style=''>
+       <md-button class="md-raised" style='margin:0px;'><md-icon style='fill:black'  md-svg-src="/img/svg/ic_local_play_black_24px.svg" aria-label="android "></md-icon> Play</md-button></md-nav-item></md-nav-item>
+     </md-nav-item>
+      <md-nav-item md-nav-href="/profile" >
+       <md-icon style='fill:CornflowerBlue'  md-svg-src="/img/svg/ic_person_pin_black_24px.svg" aria-label="android "></md-icon> 
+      <b>Profile</b></md-nav-item>
+      <md-nav-item md-nav-href="/invite" >
+       <md-icon style='fill:CornflowerBlue'  md-svg-src="/img/svg/ic_find_replace_black_24px.svg" aria-label="android "></md-icon> 
+      <b>Invite</b></md-nav-item>
+      <span flex> </span>
+        
+       <md-menu-bar>
+        <md-menu>
+                 <button ng-click=""> 
+            
+                <md-icon style='fill:#BDBDBD' md-svg-src="/img/svg/ic_live_help_black_24px.svg" aria-label="android "></md-icon> 
+                        <font color='#848484'>Help</font>
+                      </button>
+                <md-menu-content>
+                   
+                 </md-menu-content>
+
+
+         </md-menu>
+        <md-menu>
+                 <button ng-click="$mdOpenMenu()" style='font-color:#848484'> 
+                <md-icon style='fill:#BDBDBD' md-svg-src="/img/svg/ic_exit_to_app_black_24px.svg" aria-label="android "></md-icon> 
+                        <font color='#848484'>Logout</font></button>
+                <md-menu-content>
+                    <md-menu-item>
+                            <md-button ng-click='logout()'>
+                            Are you sure you want to <b>Logout</b>?
+                            </md-button>
+                    </md-menu-item>
+                 </md-menu-content>
+                 
+
+         </md-menu>
+
+
+      </md-menu-bar>
+      <span flex='10'> </span>
+
+    
+
+
+    <label style='font-size:18px; '><span >{{userInfo.username}}</span>     <br>
+        <center>
+               <div class="tabs tabs-striped">
+  <span style='color:#bdbdbd'>
+    <i class="glyphicon glyphicon-envelope" style='font-size:14px;'><a><span class="badge">1</span></a></i>
+
+   
+    <i class="glyphicon glyphicon-user" style='font-size:14px; '><a><span class="badge" >23</span></a></i>
+  </span>
+  </div>
+        </center>
+     </label>
+
+        <img src="{{userInfo.user_avatar}}" style='width:50px; border:1px solid; height:50px; margin-left:10px; border-radius:50%;' class="md-user-avatar" alt="image caption"></img>
+
+
+
+    </md-nav-bar>
+  </md-content>
+
 </div>

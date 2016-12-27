@@ -1,3 +1,4 @@
+<!-- <!DOCTYPE html> -->
 <html ng-app="webApp">
 <head>
 
@@ -28,11 +29,44 @@
 <script src="/node_modules/angular/angular.js"></script>
 <script src="/js/angular-route.min.js"></script>
 
+    <!-- angular material -->
+        <link rel="stylesheet" href="/node_modules/angular-material/angular-material.css">
+       
+       <script src="/node_modules/angular-aria/angular-aria.js"></script> 
+        <script src="/node_modules/angular-animate/angular-animate.js"></script> 
+        <script src="/node_modules/angular-material/angular-material.js"></script>
+
+        <script src="/node_modules/angular-messages/angular-messages.js"></script>
+    <!-- angular material -->
+
+        <style>
+        svg { 
+            fill: inherit;
+        }
+      </style>
+           <script>
+
+   
+            $(document).ready(function() {
+               var screenWidth = $(window).width();
+               $("body").css('width', 1366 + 'px');
+             
+            });
+        </script>
+
+
 	
 
 </head>
 
-<body  >
+<body  style='position:absolute;
+    top: 0; 
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: 0;
+    padding: 0;
+   '>
         <div ng-view></div>
 		<script src='/js/login.js'></script>
 </body>

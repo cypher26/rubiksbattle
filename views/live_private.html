@@ -1,0 +1,66 @@
+<html ng-app='webApp'>
+<head>
+	<base href="/">
+</head>
+
+<body ng-controller='liveCtrl'>
+
+</body>
+
+</html>
+<script src="/node_modules/angular/angular.js"></script>
+<script src="/js/angular-route.min.js"></script>
+     <link rel="stylesheet" href="/node_modules/angular-material/angular-material.css">
+       
+       <script src="/node_modules/angular-aria/angular-aria.js"></script> 
+        <script src="/node_modules/angular-animate/angular-animate.js"></script> 
+        <script src="/node_modules/angular-material/angular-material.js"></script>
+<script>
+	var app = angular.module('webApp', ['ngMaterial','ngRoute']);
+
+
+app.config(['$routeProvider','$locationProvider', function ($routeProvider,$locationProvider) {
+  $locationProvider.html5Mode(true);
+
+    // .otherwise("/404", {templateUrl: "partials/404.html", controller: "PageCtrl"});
+   
+}]);
+
+	app.controller('liveCtrl', function ( $scope, $location, $http,$mdDialog,$window) {
+			    $scope.showPrompt = function(ev) {
+                                  // Appending dialog to document.body to cover sidenav in docs app
+                                        var confirm = $mdDialog.prompt()
+                                          .title('This room is private!')
+                                          .textContent('Please type the keyword to enter .. ')
+                                          .placeholder('keyword')
+                                          .ariaLabel('keyword')
+                                          // .initialValue('Buddy')
+                                          .targetEvent(ev)
+                                          .cancel('Back')
+                                          .ok('Enter');
+                                          
+
+                                        $mdDialog.show(confirm).then(function(result) {
+                                        		// console.log('res = ' + result + " " + $location.search()['id']);
+										        $http.post('/liveAuthen',{keyword:result,id:$location.search()['id']}).
+										          success(function(data) {
+										             $window.location.reload();
+										          }).error(function(data) {
+										              // console.log("error in posting");
+										        });
+
+
+
+                                        }, function() {
+                                        		  $window.location.href = "/";
+
+                                        });
+                                  };
+                               
+                               $scope.showPrompt();
+                               // alert('data ' + {{data}});
+       // alert('data = ' + !{data});
+	});
+
+
+</script>
