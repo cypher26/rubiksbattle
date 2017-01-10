@@ -194,6 +194,32 @@ console.log('hahahaha');
 				
 });
 router.post('/createMsg',function(req,res,next){
+	if (req.body.username != undefined){
+			// models.getUserInfo()
+			models.getUserInfoByUsername(req.body.username,function(err,data){
+			    // console.log(data);
+			    if (data == null) res.status(500).send(); 
+			    else{
+			    	var newMsg = {
+								   msg_text :req.body.msg,
+								   msg_dateTime: new Date(),
+								   msg_status: "unseen",
+								   msg_from:req.session.user_id,
+								   msg_to:data._id
+							};
+
+						// create user
+						models.createMsg(newMsg,function(err,create_data){
+							if (err) throw err;
+							// console.log('created ' + data);
+							res.send({id:data._id});
+
+						});
+			    }
+			});
+
+	}else{
+
 		var newMsg = {
 				   msg_text :req.body.msg,
 				   msg_dateTime: new Date(),
@@ -205,10 +231,11 @@ router.post('/createMsg',function(req,res,next){
 		// create user
 		models.createMsg(newMsg,function(err,data){
 			if (err) throw err;
-			console.log('created ' + data);
+			// console.log('created ' + data);
 			res.send();
 
 		});
+	}
 });
 router.post('/deleteInbox',function(req,res,next){
 		
@@ -251,7 +278,7 @@ router.post('/checkPassIfTaken',function(req,res,next){
 });
 router.post('/userLogin',function(req,res,next){
 
-			console.log('userLogin');
+			// console.log('userLogin');
 				models.getUserId(req.body.username,req.body.password,function(err,data){
 					if (err) console.log(err);
 					if (data.length == 0){
@@ -274,6 +301,19 @@ router.post('/userLogin',function(req,res,next){
 
 });
 router.post('/getUserInfo',function(req,res,next){
+	if (req.body.id != undefined){
+		models.getUserInfo(Number(req.body.id),function(err,user_data){
+				//get computer info for computer opponent
+				models.getUserInfo('0',function(err,computer_data){
+					//get self info for single player
+						models.getUserInfo('-1',function(err,self_data){
+							res.send({userInfo:user_data,computerInfo:computer_data,selfInfo:self_data});
+						});
+						
+				});
+		});
+
+	}else{
 		models.getUserInfo(req.session.user_id,function(err,user_data){
 				//get computer info for computer opponent
 				models.getUserInfo('0',function(err,computer_data){
@@ -285,6 +325,9 @@ router.post('/getUserInfo',function(req,res,next){
 				});
 		});
 
+
+	}
+		
 });
 router.post('/getChatInfo',function(req,res,next){
 		models.getUserInfo(req.body.user_id,function(err,data){
@@ -306,7 +349,7 @@ router.post('/checkUserIfTaken',function(req,res,next){
 });
 router.post('/checkEmailIfTaken',function(req,res,next){
 
-			console.log('checkEmail');
+			// console.log('checkEmail');
 		models.ifTakenEmail(req.body.email,function(err,data){
 					if (err) console.log(err);
 					if (data.length == 0){
@@ -320,7 +363,7 @@ router.post('/viewInbox',function(req,res,next){
 
 
 
-			console.log('view inbox');
+			// console.log('view inbox');
 		models.viewInbox(req.session.user_id,function(data){
 			 // data.sort(function(a, b) { 
 		  //     return a._id - b._id  ||  a.name.localeCompare(b.name);
@@ -343,7 +386,7 @@ router.post('/viewInbox',function(req,res,next){
 router.post('/seenMsg',function(req,res,next){
 
 		models.seenMsg(req.body.user_id,req.session.user_id,function(err,data){
-			console.log('seenMsg');
+			// console.log('seenMsg');
 			if (err) console.log(err); else res.send();
 		});
 
@@ -351,24 +394,56 @@ router.post('/seenMsg',function(req,res,next){
 
 
 router.post('/viewMsg',function(req,res,next){
-		console.log('view msg');
+		// console.log('view msg');
 		models.viewMsg(req.body.user,req.session.user_id,function(err,data){
 		   res.send({msg:data});
 		});
 });
 
+router.post('/viewSpecificMember',function(req,res,next){
+		models.viewSpecificMember(req.body.member_id,req.session.user_id,function(data){
+			// console.log(data);
+			if (data == undefined) {
+				res.status(500).send();
+				console.log('error specific member');
+			}
+			else res.send({userInfo:data[0]});
+		});
+
+});
+
 router.post('/viewMembers',function(req,res,next){
-		console.log('view invite');
+		// console.log('view invite');
 		models.viewMembers(req.body.findStr,req.session.user_id,function(data){
+
 		   res.send({user_data:data});
 		});
 });
 
+router.post('/viewFriendRequest',function(req,res,next){
+	models.viewMembers('',req.session.user_id,function(data){
+		//if friend request
+	    var filterFriendReq = data.filter(function(e){
+	        if (e.status === '2') return e;
+		});
+		
+	   res.send({user_data:filterFriendReq});
+	});
+});
+
+
 router.post('/viewFriends',function(req,res,next){
-	console.log('viewFriends');
+	if (req.body.id != undefined){ //if member is selected
+		models.viewFriends(Number(req.body.id),function(err,data){
+        	res.send({friendsData:data});
+		});
+	}else{
 		models.viewFriends(req.session.user_id,function(err,data){
         	res.send({friendsData:data});
 		});
+
+	}
+		
 });
 
 router.post('/editFriendStatus',function(req,res,next){
@@ -382,12 +457,163 @@ router.post('/editFriendStatus',function(req,res,next){
 router.post('/getGameInfo',function(req,res,next){
 		models.getGameInfo(req.body.id,function(err,data){
 			// console.log('success get data');
-			
+				
 		   res.send({gameData:data});
 		});
 	
 });
 
+router.post('/getArchiveGameInfo',function(req,res,next){
+
+
+		models.getArchiveGameInfo(req.body.id,function(err,data){
+				console.log(data);
+			if (data == null) res.status(500).send();
+			else res.send({archiveGameData:data});
+		});
+
+});
+
+router.post('/getUserArchiveGameInfo',function(req,res,next){
+		if (req.body.id != undefined){ //if member is selected
+			models.getUserArchiveGameInfo(Number(req.body.id),function(err,data){
+				res.send({archiveUserGameData:data});
+			});
+		}else{
+			models.getUserArchiveGameInfo(req.session.user_id,function(err,data){
+				res.send({archiveUserGameData:data});
+			});
+
+		}
+
+		
+});
+
+
+
+
+router.post('/getHighscoreList',function(req,res,next){
+
+		models.getHighscoreList(function(err,data){
+				// console.log(data);
+	
+			 res.send({highscoreList:data});
+		});
+
+});
+
+router.post('/getSingleList',function(req,res,next){
+
+		models.getSingleList(req.body.cubeType,function(data){
+				// console.log(data);
+				res.send({singleList:data});
+		});
+
+});
+
+router.post('/getAverageList',function(req,res,next){
+
+		models.getAverageList(req.body.cubeType,function(data){
+				// console.log(data);
+				res.send({averageList:data});
+		});
+
+});
+
+
+router.post('/getUserRankHighscore',function(req,res,next){
+		if (req.body.id != undefined){ //if member is selected
+			models.getUserRankHighscore(Number(req.body.id),function(user_score,rank){
+    			res.send({userRankHighscore: {user_score:user_score,rank:rank} });
+			});
+		}else{
+			models.getUserRankHighscore(req.session.user_id,function(user_score,rank){
+    			res.send({userRankHighscore: {user_score:user_score,rank:rank} });
+			});
+		}
+});
+
+router.post('/getUserRankSingle',function(req,res,next){
+	if (req.body.id != undefined){ //if member is selected
+		models.getUserRankSingle(Number(req.body.id),req.body.cubeType,function(endedTime,rank){
+		     res.send({userRankSingle: {endedTime:endedTime,rank:rank} });
+		});
+	}else{
+		
+		models.getUserRankSingle(req.session.user_id,req.body.cubeType,function(endedTime,rank){
+		    res.send({userRankSingle: {endedTime:endedTime,rank:rank} });
+		});
+	}
+		
+});
+
+router.post('/getUserRankAverage',function(req,res,next){
+	if (req.body.id != undefined){ //if member is selected
+		models.getUserRankAverage(Number(req.body.id),req.body.cubeType,function(endedTime,rank){
+		    res.send({userRankAverage: {endedTime:endedTime,rank:rank} });
+		});
+	}else{
+		models.getUserRankAverage(req.session.user_id,req.body.cubeType,function(endedTime,rank){
+		    res.send({userRankAverage: {endedTime:endedTime,rank:rank} });
+		});
+	}
+		
+});
+
+
+router.post('/getMemberSince',function(req,res,next){
+	if (req.body.id != undefined){ //if member is selected
+		models.getMemberSince(Number(req.body.id),function(err,data){
+   	 		res.send({user_since:data[0].user_since});
+		});
+	}else{
+		models.getMemberSince(req.session.user_id,function(err,data){
+	   	 	res.send({user_since:data[0].user_since});
+		});
+	}
+});
+
+
+
+
+router.post('/updateFullName',function(req,res,next){
+		models.updateFullName(req.session.user_id,req.body.fullName,function(err,data){
+   				res.send({user_data:data});
+			});	
+});
+
+
+router.post('/getAllUserStats',function(req,res,next){
+
+	if (req.body.id != undefined){ //if member is selected
+		models.getAllUserStats(Number(req.body.id),function(data2,data3){
+		    res.send({data2:data2.won_lost_by, data3:data3.won_lost_by});
+		});
+	} 
+	else{
+		models.getAllUserStats(req.session.user_id,function(data2,data3){
+		    res.send({data2:data2.won_lost_by, data3:data3.won_lost_by});
+		});
+	}
+});
+
+
+
+
+
+router.post('/getUserRating',function(req,res,next){
+		var tempP1,tempP2; //temp user rating container
+		models.getRating(req.body.ids,function(err,data){
+
+				// console.log(data);
+					data.forEach(function(item){
+					if (item._id == req.body.ids[0]) tempP1 = item.user_score;
+					if (item._id == req.body.ids[1]) tempP2 = item.user_score;
+					});
+					// console.log('1 = ' + tempP1 + " 2 = " + tempP2 );
+					res.send({userRating:[tempP1,tempP2]})
+		});
+});
 
 
 
@@ -436,6 +662,7 @@ router.get('/live',function(req,res,next){
     });
 		 
 });
+
 
 
 function has_game(req,res,next){

@@ -21,7 +21,8 @@
 								    <div id="compose" class="tab-pane fade in active" style='background-color:#FFFFFF; 
 								    border:0px solid; padding:10px;' align=''>
 								   		<div class='row' style='border:0px solid; padding-right:50px;' align='right' >
-								   				<input id='toggleFriends' type='checkbox'></input> Toggle friends list
+								   				<!-- <input id='toggleFriends' type='checkbox'></input>  -->
+								   				<a href='#' ng-click='toggleFriendsList()'>Toggle friends list</a>
 								   		</div>
 
 								    		<hr style='margin-top:0px;'>
@@ -42,14 +43,81 @@
 											    				<td rowspan='2'  
 											    				style='padding-right:10px; width:10%; padding-left:20px;'><font style='color:#6E6E6E;'>To:</font></td>
 											    				<td>
-																<div class="input-group" style='width:100%;'>
-											                    <span class="input-group-addon"><span class="glyphicon glyphicon-user"></span></span>
+															<div class="input-group" style='width:100%;'>
+											                    <span class="input-group-addon">
+											                    <span class="glyphicon glyphicon-user"></span></span>
 
-											                   <input id='inputUsername' value='123' type='text' class='form-control' placeholder='Username'>
+											                <!--    <input id='inputUsername' value='123' type='text' class='form-control' placeholder='Username'> -->
 															
 											                   
 											                    
-											                </div></td>
+					  
+					     <!-- md-selected-item-change="itemChange(item._id)"
+					              	 md-search-text-change="searchChange(searchText)"					            -->
+      <md-autocomplete  md-autofocus md-input-id = "toggleAuto" 
+ 		     md-no-cache="true"
+        	md-search-text="searchText"
+     		 md-items="item in queryFriendsData(searchText)"
+         	 md-item-text="item.username"
+
+         	  md-selected-item="item._id"
+       		md-min-length="0"
+         	
+          placeholder="Username">
+        <md-item-template>
+
+             <span class="item-title" >
+                <span style="font-style:italic; color:{{onlineList.indexOf(item._id.toString())>-1 ? 'green':'red'}}; margin-right:20px;">
+
+                {{onlineList.indexOf(item._id.toString())>-1 ? 'Online':'Offline'}}
+                </span>
+	         <!--  	  <svg width="25" height="25" style='padding-top:5px;'>
+                               <circle cx="12.5" cy="12.5" r="5"   fill="{{onlineList.indexOf(item._id.toString())>-1 ? 'LightGreen':'Red'}}" /> 
+                      </svg> -->
+	            <img src="{{item.user_avatar}}" style='border:0px solid #d8d8d8; height:30px; width:30px; margin-right:0px;'></img> 
+	            <span> {{item.username}} </span>
+
+	          </span> 	  
+        </md-item-template>
+    
+      </md-autocomplete>
+
+      <!-- <div ng-controller="DemoCtrl as ctrl" layout="column" ng-cloak>
+  <md-content class="md-padding">
+    <form ng-submit="$event.preventDefault()">
+      <p>Use <code>md-autocomplete</code> to search for matches from local or remote data sources.</p>
+      <md-autocomplete
+          ng-disabled="ctrl.isDisabled"
+          md-no-cache="ctrl.noCache"
+          md-selected-item="ctrl.selectedItem"
+          md-search-text-change="ctrl.searchTextChange(ctrl.searchText)"
+          md-search-text="ctrl.searchText"
+          md-selected-item-change="ctrl.selectedItemChange(item)"
+          md-items="item in ctrl.querySearch(ctrl.searchText)"
+          md-item-text="item.display"
+          md-min-length="0"
+          placeholder="What is your favorite US state?">
+        <md-item-template>
+          <span md-highlight-text="ctrl.searchText" md-highlight-flags="^i">{{item.display}}</span>
+        </md-item-template>
+        <md-not-found>
+          No states matching "{{ctrl.searchText}}" were found.
+          <a ng-click="ctrl.newState(ctrl.searchText)">Create a new one!</a>
+        </md-not-found>
+      </md-autocomplete>
+      <br/>
+      <md-checkbox ng-model="ctrl.simulateQuery">Simulate query for results?</md-checkbox>
+      <md-checkbox ng-model="ctrl.noCache">Disable caching of queries?</md-checkbox>
+      <md-checkbox ng-model="ctrl.isDisabled">Disable the input?</md-checkbox>
+
+      <p>By default, <code>md-autocomplete</code> will cache results when performing a query.  After the initial call is performed, it will use the cached results to eliminate unnecessary server requests or lookup logic. This can be disabled above.</p>
+    </form>
+  </md-content>
+</div> -->
+   
+           </div>
+
+											                </td>
 											    			</tr>
 											    			<tr>
 											    			<td><i><font style='font-size:13px; color:#6E6E6E;'>
@@ -58,13 +126,17 @@
 											    			<tr>
 											    				<td rowspan='2'  
 											    				style='padding-right:10px; width:10%; padding-left:20px;'><font style='color:#6E6E6E;'>Message:</font></td>
-											    				<td><textarea id='inputMessage' style='height:200px; margin-top:10px; width:100%;'></textarea></td>
+											    				<td><textarea my-enter="btnSend()"ng-model='inputMessage' style='height:200px; margin-top:10px; width:100%;'></textarea></td>
 											    			</tr>
 											    			<tr>
 											    			<td style='padding-top:10px;'><font style='font-size:13px; color:#6E6E6E;'>
 											    						<center>
-											    					<button id='btnSend' class='btn btn-xs btn-primary'>
-											    						Send Message</button> <button id='btnClear'>Clear</button>
+					    				<!-- 	<button ng-disabled = "true" ng-click='btnSend()'id='btnSend' class='btn btn-xs btn-primary'>
+											    						Send Message</button>  -->
+	    						<md-button ng-disabled = "!(searchText.length>0) || !(inputMessage.length>0)" ng-click='btnSend()' class='md-raised' style='color:blue;'><strong>Send Message</strong></md-button>
+								    							<md-button ng-click='clearText()' class='md-raised' >Clear</md-button>
+
+											    						<!-- <button id='btnClear'>Clear</button> -->
 											    					</center>
 											    				</font></td>
 															</tr>

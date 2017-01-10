@@ -1,29 +1,181 @@
 					
 
 				<div ng-include='"templates/top_template.html"' ></div>
+<style> /*for online circle*/
+				.menuSide {text-align:center;  border:1px solid; padding:0px; padding-bottom:0px;position:relative;
+					margin-right:10px;}
+					.menu_labelSide {width:154px; border:0px solid; color:#FFFFFF;  float:left; position:absolute; top:180px; left:210px;}
 
+					.photoStyle{max-width:125px; border:0px; margin:auto;}
+			</style>	
 					<div class="col-xs-3" style='border:0px solid;'>
-						<div class='col-xs-12' style='border:0px solid; background-color:#FFFFFF; padding-left:0px;'>
-						  						<center>
-						  							<a href=''><img style='height:200px; width:200px; border:0px solid;' 
-						  								src='{{userInfo.user_avatar}}'/></a>
+						<div class='col-xs-12' style='border:0px solid; background-color:#FFFFFF; padding-left:0px; text-align:center;' >
+						  					
+						  							<!-- <a href=''><img style='height:200px; width:200px; border:0px solid;' 
+						  								src='{{userInfo.user_avatar}}'/></a> -->
+
+					  								<!-- <div class="menuSide" > -->
+												    <img src="{{side.avatar}}"  style='width:200px; height:200px;' />
+													    <span class="menu_labelSide" style="display:{{isMember?'':'none'}}">
+													           <svg width="25" height="25" style='position: relative; top:-11px; left:-28px; z-index: 3;' >
+		                               <circle cx="15.5" cy="15.5" r="20"   fill="{{onlineList.indexOf(isMember_id.toString())>-1 ? 'LightGreen':'Red'}}" />
+													           </svg> 
+													    </span>                                            
+													<!-- </div> -->
+
 						  						</center>
-					  						</div>
-					  						<div class='col-xs-12' style='border:0px solid; background-color:#FFFFFF; margin-top:10px;'>
-					  							<center><b><font style='font-size:25px'>"123</font></b><br>
-					  							<b><font style='color:#6E6E6E'>jester</font><br></b>
-					  							<span class='glyphicon glyphicon-home'></span> <font style='color:#6E6E6E'>"asdfasdf
-					  						</font><br>
-					  							</center>
-					  						</div>
-					  			<script> </script>
+  						</div>
+					  						<div  class='col-xs-12' style='border:0px solid; background-color:#FFFFFF; margin-top:10px;'>
+					  							<div layout='row' layout-align='center'>
+					  							<b><font style='font-size:25px'>{{side.username}}</font></b>
+					  							</div>
+				  							<div layout='row' style='padding-bottom:10px;'  layout-align='center center'>
+					  							<div  style="  display: table-cell; vertical-align: bottom; padding-left:{{isMember?'0':'20'}}px; ">
+
+					  							<span  style="display:{{!edit?'':'none'}}">
+					  							
+					  							<b ><font style='color:#6E6E6E; font-size:17px;'>{{side.fullName}} </font> </b>
+
+				  								</span>
+					  							
+					  							<span style="display:{{edit?'':'none'}}">
+											       <input ng-model="inputFullName" ng-change="inputFullNameFunc(inputFullName)" type="text" maxlength='20' my-enter='updateFullName(inputFullName)' placeholder="Enter your name here">
+											        
+											    </span>
+
+											    <span style="display:{{isMember?'none':''}}">
+											    <md-icon style="fill:blue; display:{{!validName?'':'none'}}" ng-click="edit=!edit" md-svg-src="/img/svg/ic_border_color_black_24px.svg" ></md-icon>
+												
+												<md-icon style="fill:green; display:{{validName?'':'none'}}" ng-click="updateFullName(inputFullName)" md-svg-src="/img/svg/ic_check_black_24px.svg"></md-icon>
+												</span>
+											      
+
+										<!-- 			<md-button class="md-icon-button launch" style='margin-left:0px; padding-left:0px;' ><md-icon style='fill:black'  md-svg-src="/img/svg/ic_border_color_black_24px.svg" aria-label="android "></md-icon></md-button>  -->
+					  							</div>
+					  					
+	  										</div>
+					  						
+					  						
+										          
+										        
+									          <div layout='row' layout-align='center'>
+					  							<span class='glyphicon glyphicon-home' style='margin-right:5px;'></span> <font style='color:#6E6E6E'>{{side.country}}
+					  							</div>
+					  						</font>
+					  						
+					  						</div
+>					  			<script> </script>
 						
 	  					
 	  						<div class="col-xs-12" style='border:0px solid; background-color:#FFFFFF; margin-top:10px;'>
-	  						
-	  						 <span style='margin-right:10px;' class='glyphicon glyphicon-envelope'></span> <font style='color:#6E6E6E'><a href='/profile/messages'>Messages</a>
+	  							
+	  				
+							  <style>
+							  		.custom-padding{
+							  			
+							  				   border:0px solid;
+							  				   margin-right:1px;
+							  				   padding:0px;
+							  		}
+							  </style>
+							  <md-list flex style="display:{{!isMember?'none':''}}; border:0px solid; padding:0px;" >
+							   <md-list-item  style='color:blue' >
+								   
+							   	 <md-button flex class='md-primary custom-padding'
+							          ng-click="inviteDialog(isMemberInfo)"
+							          md-autofocus
+							       >
+							        <md-icon md-svg-src="/img/svg/fire.svg" class='custom-padding'> </md-icon>
+									CHALLENGE TO A PLAY
+							       
+							      </md-button>
+							
+					         
+
+							  </md-list-item>
+							
+							   <md-list-item >
+								   
+							   	 <md-button flex  
+							          ng-click="redirectParam('/profile/create',isMemberInfo.username)"
+							       
+							          >
+							        <md-icon md-svg-src="/img/svg/envelope.svg" class='custom-padding'> </md-icon>
+							        <span class="md-inline-list-icon-label">Send a message</span>
+							      </md-button>
+							 
+							  </md-list-item>
+							    <md-list-item >
+								   
+							   	 <md-button flex 
+							          ng-click='changeMemberFriendStatus(isMemberInfo._id,isMemberInfo.status)'
+							         
+							         >
+      <md-icon md-svg-src="			{{isMemberInfo.status==='0' ? '/img/svg/add-user.svg':''}}
+			    					{{isMemberInfo.status==='1' ? '/img/svg/remove-user.svg':''}}
+			    					{{isMemberInfo.status==='2' ? '/img/svg/add-user.svg':''}}
+			    					{{isMemberInfo.status==='3' ? '/img/svg/remove-user.svg':''}}" class='custom-padding'> </md-icon>
+							        <span class="md-inline-list-icon-label"></span>
+							       	{{isMemberInfo.status==='0' ? 'Add to Friends List':''}}
+			    					{{isMemberInfo.status==='1' ? 'Remove from friends list':''}}
+			    					{{isMemberInfo.status==='2' ? 'Accept Friend Request':''}}
+			    					{{isMemberInfo.status==='3' ? 'Cancel Friend Request':''}}
+							        </span>
+							      </md-button>
+							
+							  </md-list-item>
+
+							  </md-list>
+
+
+
+
+						  <md-list flex style="display:{{isMember?'none':''}}" >
+							
+							   <md-list-item >
+								   
+							   	 <md-button flex  
+							          ng-click="redirect('/profile/messages')"
+							       
+							          >
+							        <md-icon md-svg-src="/img/svg/envelope.svg" class='custom-padding'> </md-icon>
+							        <span class="md-inline-list-icon-label">Messages</span>
+							      </md-button>
+							 
+							  </md-list-item>
+
+							   <md-list-item >
+								   
+							   	 <md-button flex  
+							          ng-click="listItemClick($index)"
+							       
+							          >
+							        <md-icon md-svg-src="/img/svg/ic_settings_black_24px.svg" class='custom-padding'> </md-icon>
+							        <span class="md-inline-list-icon-label">Edit account</span>
+							      </md-button>
+							 
+							  </md-list-item>
+						  </md-list>
+							 <!--  <div layout='row'>
+							  		<md-button flex class='custom-padding'
+							          ng-click="listItemClick($index)"
+							          md-autofocus='false'
+							          class="md-list-item-content" >
+							        <md-icon md-svg-src="/img/svg/fire.svg"> </md-icon>
+
+							        Challenge to a play</span>
+							      </md-button>
+							  </div>
+							  <div layout='row'>
+							  		<md-button flex>Test</md-button>
+							  </div>
+							  <div layout='row'>
+							  		<md-button flex>Test</md-button>
+							  </div> -->
+
+	  						<!--  <span style='margin-right:10px;' class='glyphicon glyphicon-envelope'></span> <font style='color:#6E6E6E'><a href='/profile/messages'>Messages</a>
 	  						 <span id='spanInboxCount' ></span></font><br>
-	  						 <span style='margin-right:10px;' class='glyphicon glyphicon-cog'></span> <font style='color:#6E6E6E'><a href='/profile/edit'>Edit Profile</a></font><br>
+	  						 <span style='margin-right:10px;' class='glyphicon glyphicon-cog'></span> <font style='color:#6E6E6E'><a href='/profile/edit'>Edit Profile</a></font><br> -->
 	  								
 	  						</div>
 	  						 <div class="col-xs-12" style=' margin-top:10px;'></div>

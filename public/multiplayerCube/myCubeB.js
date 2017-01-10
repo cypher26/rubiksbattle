@@ -7,7 +7,7 @@
 	var geometry, material, m, solidC;
 	var rafAnimate;
 	var dimension;
-	var speed = 1;
+	var speed = 50;
 	var delayTime=0;
 	var primaryLogo,lpu;
 	var container;

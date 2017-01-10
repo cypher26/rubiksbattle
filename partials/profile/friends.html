@@ -9,10 +9,10 @@
 		  						<div class="container col-xs-12" style='border:0px solid;' >
 								 
 								  <ul class="nav nav-tabs">
-								    <li><a data-toggle="" href="/profile"><span class='glyphicon glyphicon-pencil'>
+								    <li><a data-toggle="" href="{{isMember?'/member/'+isMember_id:'/profile'}}"><span class='glyphicon glyphicon-pencil'>
 								    </span> About Me</a></li>
-								    <li><a data-toggle="" href="/profile/games"><span class='glyphicon glyphicon-signal'></span> Games</a></li>
-								  	<li class="active" style='border-top:4px solid #a4a4a4; '><a href="/profile/friends"><span class='glyphicon glyphicon-user'>
+								    <li><a data-toggle="" href="{{isMember?'/member/games/'+isMember_id:'/profile/games'}}"><span class='glyphicon glyphicon-signal'></span> Games</a></li>
+								  	<li class="active" style='border-top:4px solid #a4a4a4; '><a href="{{isMember?'/member/friends/'+isMember_id:'/profile/friends'}}"><span class='glyphicon glyphicon-user'>
 								    </span> Friends</a></li>
 								  </ul>
 
@@ -29,9 +29,9 @@
 											    	</div> -->
 											    	  <div layout='row'>
     <md-input-container flex='75' class="md-icon-float  " style='margin-bottom:0px; border:0px solid;'>
-      <label>Username</label>
+      <label>Search username</label>
       <md-icon md-svg-src="img/svg/ic_account_circle_black_24px.svg" class="name"></md-icon>
-      <input ng-model="inputFriendsUsername" ng-init="inputFriendsUsername=''" type="text" >
+      <input ng-model="inputFriendsUsername"  ng-init="inputFriendsUsername=''" type="text" >
         </md-input-container>
  		
         <div flex></div>
@@ -49,8 +49,8 @@
 				<div class='row' style='border:0px solid;' >
 			              		<div id='divFriends' class='col-xs-12' style='border:1px solid #d8d8d8; padding:20px;
 								height:300px; overflow:scroll; overflow-x: hidden; '>
-									<center style="display:{{friendsData.length == 0 ? '':'none'}}"><i>There is no friends to display, click 
-										<b><a href='/invite' >here</a></b> to invite others!</i></center>
+									<center style="display:{{friendsData.length == 0 ? '':'none'}}"><i>There is no friends to display<span style="display:{{isMember?'none':''}}">, click 
+										<b><a href='/invite' >here</a></b> to invite others!</span></i></center>
 
 									<div class='row' style='border-bottom:1px solid #d8d8d8; margin-bottom:5px; padding-bottom:5px;'
 									   ng-repeat="item in friendsData" ng-if=
@@ -65,24 +65,30 @@
  -->
 
 
-			<div class="menu">
+<div class="menu">
     <img src="{{item.user_avatar}}" class="" style='width:60px; height:60px;' />
-    <span class="menu_label">
+  <!--   <span class="menu_label">
            <svg width="25" height="25" style='position: relative; top:-11px; left:-28px; z-index: 3;' >
 	                               <circle cx="12.5" cy="12.5" r="8"   fill="{{onlineList.indexOf(item._id.toString())>-1 ? 'LightGreen':'Red'}}" />
            </svg> 
-    </span>                                            
+    </span>       -->                                      
 </div>
 																</td>
 																<td style='border:0px solid' >
-															    <a href='../member?id="+resArray[1]+"'> 
+
+						
+													    <a href="/member/{{item._id}}"> 
 								    						<font style='font-size:20px; color:#6E6E6E;'> {{item.username}}</font>		</a>
+								    						 <svg width="25" height="25" style='padding-top:5px;'>
+                               <circle cx="12.5" cy="12.5" r="5"   fill="{{onlineList.indexOf(item._id.toString())>-1 ? 'LightGreen':'Red'}}"  /> 
+											    		  	
+                      </svg> 
 				    										 </td>
 								                            </tr>
 								                            <tr>
 								                            	<td>
 								                            		 <font style='font-size:13px; color:#6e6e6e;'>
-							    								{{item.user_gender}} - {{item.user_location}}, {{item.user_country}}
+							    							{{item.user_country}}
 									    				
 								                            	</td>
 
@@ -95,13 +101,13 @@
 								     				</div>
 								     				<!-- ng-repeat="i in getNumber(150) track by $index"  -->
 													<div class='col-xs-4'  style='border:0px solid;'>
-											     				<a href='../member?id="+resArray[1]+"'>
+											     				<a href="/member/{{item._id}}">
 									    						<font style='font-size:13px; color:#6E6E6E;'>
 									    							<span class='glyphicon glyphicon-info-sign'></span>
 									    						View Profile</font>
 									    						</a>
 									    						<br>
-									    						<a href='../create.php?id="+resArray[1]+"'>
+									    						<a href="/profile/create?name={{item.username}}">
 									    						<font style='font-size:13px; color:#6E6E6E;'>
 									    							<span  class='glyphicon glyphicon-comment'></span>
 									    						Send a message</font>
@@ -125,11 +131,11 @@
 							    						</div>
 													</div>
 							 <script>
-							   $('#tblFriends').scrollTableBody({rowsToDisplay:7});
-							   	var e = jQuery.Event("keypress");
-																e.which=13;
-																$('#searchUser').trigger(e);
-																$('#searchKeyword').html('');
+							   // $('#tblFriends').scrollTableBody({rowsToDisplay:7});
+							   // 	var e = jQuery.Event("keypress");
+										// 						e.which=13;
+										// 						$('#searchUser').trigger(e);
+										// 						$('#searchKeyword').html('');
 
 							  </script>
 													

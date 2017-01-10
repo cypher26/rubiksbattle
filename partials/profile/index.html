@@ -10,192 +10,113 @@
   							
 		  						<div class="container col-xs-12" style='border:0px solid;' >
 								 
-								  <ul class="nav nav-tabs">
-								    <li class="active"><a data-toggle="" href="/profile"><span class='glyphicon glyphicon-pencil'>
-								    </span> About Me</a></li>
-								    <li><a href="/profile/games"><span class='glyphicon glyphicon-signal'></span> Games</a></li>
-								  	<li><a href="/profile/friends"><span class='glyphicon glyphicon-user'>
-								    </span> Friends</a></li>
-								  </ul>
+			  <ul class="nav nav-tabs">
+			    <li class="active" style='border-top:4px solid #a4a4a4;' ><a data-toggle="" h
+		    			ref="{{isMember?'/member/'+isMember_id:'/profile'}}"><span class='glyphicon glyphicon-pencil'>
+			    </span> About Me</a></li>
+			    <li><a href="{{isMember?'/member/games/'+isMember_id:'/profile/games'}}"><span class='glyphicon glyphicon-signal'></span> Games</a></li>
+			  	<li><a href="{{isMember?'/member/friends/'+isMember_id:'/profile/friends'}}"><span class='glyphicon glyphicon-user'>
+			    </span> Friends</a></li>
+			  </ul>
 
 								  		<div class="tab-content">
 											    <div id="about" class="tab-pane fade in active" style='background-color:#FFFFFF; padding:10px;'>
-											      
-											    	<div class='row' style='border:0px solid; padding:20px;'>
-											    		<div class='col-xs-6' style='border:1px solid #f2f2f2;
-											    		border-right:1px solid #d8d8d8;'>
-										    			 			<ul class="nav nav-pills">
-																	    <li class="active"><a data-toggle="tab" href="#3x3x3">
-													    					<span class='glyphicon glyphicon-th'></span> 3x3x3
-													    				</a></li>
-																	    <li><a data-toggle="tab" href="#2x2x2"<button class='btn btn-xs btn-default'>
-											    							<span class='glyphicon glyphicon-th-large'></span> 2x2x2
-											    						</button></a></li>
-																	  	
-																	  </ul>
-														   <div class="tab-content" style='border:0px solid;'>
-								 								<div id="3x3x3" class="tab-pane fade in active" 
-								 								style='border:0px solid #d8d8d8; padding:10px;
-								 								background-color:#f2f2f2'>
-									 									
+											     	<div layout='row'  layout-padding style='padding-bottom:0px;'>
+									  			<div flex='33'>
+							  			
+							  				<strong> <span class='glyphicon glyphicon-stats'></span> Player stats </strong>
+										     		
+										     		
+									  			</div>
+												 <div flex='33'>
+												 	<strong> <span class='glyphicon glyphicon-calendar'></span> Member since:  </strong>{{user_since}}
+											     		
+											     </div>
+											     	<div flex='33' layout-align='center center' align='center' 
+											     	style='background-color:#f2f2f2; border-left:60px solid #d8d8d8; border-right:60px solid #D8D8D8;'>
+										     			<strong> <span class='glyphicon glyphicon-star'></span> Rating: <b style='color:#848484; '> {{userRankHighscore.user_score}}</b> <b style='color:orange; margin-left:7px; font-size:17px;'># {{userRankHighscore.rank}} </b>  </strong>
+										     		</div>
+											     	</div>
+											     <style>
+											     	#radar {
+													height: 65px;
+width:160px;
+-moz-border-radius: 25px 10px / 10px 25px;
+border-radius: 25px 10px / 10px 25px;
+														/*background-color:#f2f2f2;*/
+														/*border:2px solid #d8d8d8;*/
+											
+														padding-bottom:10px;
+														/*margin-right:10px;*/
+													}
+													.radar-bg{
+													
+														height: 5em;
+														width: 12em;
+														-moz-border-radius: 1em 4em 1em 4em;
+														border-radius: 1em 4em 1em 4em;
 
-						 									<table style='font-size:15px;'>
-						 										<tr>
-						 											<td></td><td></td>
-					 											<td style='padding-left:30px'>
-					 											<span class='glyphicon glyphicon-globe'></span>
-					 											<strong> Rank</strong></td>
-						 										</tr>
-						 										<tr>
-						 											<td style='padding:10px;'>
-						 												<span class='glyphicon glyphicon-flash'> </span>
-																      <b style='margin-left:5px;'> Personal Best:</b> 
-						 											</td>
-						 											<td >
-						 												 <font style='color:#848484; 
-																      margin-left:15px;'><b>
-																    123
-																						  </b></font>
-												 											</td>
-												 											<td style='padding-left:30px;'>
-												 												<center ># 123</center>
-																		   
-																     
-															
-						 											</td>
-						 										</tr>
-						 										<tr>
-						 											<td style='padding:10px;'>
-						 												   <span class='glyphicon glyphicon-fire'> </span>
-																    	  <b style='margin-left:5px;'>Average Time:</b> 
-						 											</td>
-						 											<td>
-						 												<font style='color:#848484;
-																       margin-left:15px;'><b>
-																      					123
-																						  </b></font>
-												 											</td>
-												 											<td style='padding-left:30px;'>
-												 												<center># 123</center>
+													}
+											     </style>
+										    	<div layout='row' style='border:0px solid; padding:20px;'>
+									    		<div flex='65' class="md-whiteframe-1dp radar-bg" style='width:600px; height:290px; background-color:#fafafa; border-top:1px solid #d8d8d8' align='left' >
+											    		<!-- <canvas id="myChart" ></canvas> -->
 
-						 											</td>
-						 										</tr>
-						 										<tr>
-						 											<td style='padding:10px'>
-						 												<span class='glyphicon glyphicon-flag'> </span>
-															   	   <b style='margin-left:5px;'>Races:</b>
-						 											</td>
-						 											<td>
-				 												<font style='color:#04B404;
-																				   	    margin-left:15px;'>123 wins</font> |
-																				   	   <font style='color:#FE2E2E'> 123 lose</font>
-																				   	   </td>
-										 											<td style='padding-left:30px;'>
-										 													<center># 123</center>
-										 											</td>
 
-						 												
-						 											
-						 										</tr>
-						 									
-						 									</table>
-								 									
-								 								</div>
-								 								<div id="2x2x2" class="tab-pane fade" style='border:0px solid #d8d8d8;
-								 								background-color:#f2f2f2; padding:10px;'>
-								 										<table style='font-size:15px;'>
-						 										<tr>
-						 											<td></td><td></td>
-					 											<td style='padding-left:30px'>
-					 											<span class='glyphicon glyphicon-globe'></span>
-					 											<strong> Rank</strong></td>
-						 										</tr>
-						 										<tr>
-						 											<td style='padding:10px;'>
-						 												<span class='glyphicon glyphicon-flash'> </span>
-																      <b style='margin-left:5px;'> Personal Best:</b> 
-						 											</td>
-						 											<td >
-						 												 <font style='color:#848484; 
-																      margin-left:15px;'><b>
-																    	
-																						  </b></font>
-												 											</td>
-												 											<td style='padding-left:30px;'>
-												 												<center>
-																		 
-						 											</td>
-						 										</tr>
-						 										<tr>
-						 											<td style='padding:10px;'>
-						 												   <span class='glyphicon glyphicon-fire'> </span>
-																    	  <b style='margin-left:5px;'>Average Time:</b> 
-						 											</td>
-						 											<td>
-						 												<font style='color:#848484;
-																       margin-left:15px;'><b>   
-																    	 			123
-																						  </b></font>
-												 											</td>
-												 											<td style='padding-left:30px;'>
-												 												<center>
+											    		<canvas id="radar" class="chart chart-radar" 
+														  chart-data="radarData" chart-colors='radarColors' chart-series='radarSeries' chart-options="radarOptions" chart-labels="radarLabels" chart>
+														</canvas> 
 
-						 											</td>
-						 										</tr>
-						 										<tr>
-						 											<td style='padding:10px'>
-						 												<span class='glyphicon glyphicon-flag'> </span>
-															   	   <b style='margin-left:5px;'>Races:</b>
-						 											</td>
-						 											<td>
-						 											<font style='color:#04B404;
-																				   	    margin-left:15px;'>123 wins</font> |
-																				   	   <font style='color:#FE2E2E'> 123 lose</font>
-																				   	   </td>
-										 											<td style='padding-left:30px;'>
-										 													<center># 123</center>
-										 											</td>
 
-						 										</tr>
-						 									
-						 									</table>
-								 								</div>
-								 							</div>
-								   
-												    		
-										    			</div>
+														</div>
+
+														<div flex='5'></div>
+												<div flex='30' style=' border:0px solid' align='left' layout-padding  class="md-whiteframe-1dp">
+												
+													<div layout='row' layout-align='center' style='background-color:#CEE3F6'> 
+													<strong>
+															<span style='margin-right:5px' class='glyphicon glyphicon-th'></span>3x3x3
+															</strong>
+
+													</div>
+													<div layout='row' style='border:0px solid'>
+														<span class='glyphicon glyphicon-flash' style='margin-right:5px;'></span> Best time: <div flex></div><b style='color:#848484; '>
+														{{convertTimeComplete(userRankSingle3.endedTime)}} </b><b style='color:orange; margin-left:7px; font-size:17px;'># {{userRankSingle3.rank}} </b>
+													</div>
+													<div layout='row'style='border:0px solid'>
+														<span class='glyphicon glyphicon-fire' style='margin-right:5px;'></span> 	All time average: <div flex></div><b style='color:#848484; '>
+														{{convertTimeComplete(userRankAverage3.endedTime)}}
+														 </b><b style='color:orange; margin-left:7px; font-size:17px;'># {{userRankAverage3.rank}} </b> 
+													</div>
+													<md-divider style='margin-top:20px;'></md-divider>
+													<md-divider></md-divider>
+													
+													<div layout='row' layout-align='center' style='background-color:#F8E0E6'> 
+															<span style='margin-right:5px' class='glyphicon glyphicon-th-large'></span>2x2x2
+													</div>
+														<div layout='row' style='border:0px solid'>
+														<span class='glyphicon glyphicon-flash' style='margin-right:5px;'></span> Best 	time: <div flex></div><b style='color:#848484; '>
+														{{convertTimeComplete(userRankSingle2.endedTime)}}
+														 </b><b style='color:orange; margin-left:7px; font-size:17px;'># {{userRankSingle2.rank}} </b>  
+													</div>
+													<div layout='row'style='border:0px solid'>
+														<span class='glyphicon glyphicon-fire' style='margin-right:5px;'></span> 	All time average: <div flex></div><b style='color:#848484; '>
+														{{convertTimeComplete(userRankAverage2.endedTime)}}
+														</b><b style='color:orange; margin-left:7px; font-size:17px;'># {{userRankAverage2.rank}} </b> 
+													</div>
+
+													
+												</div>
+											  	</div>
+
+											    <!-- 	<div class='row' style='border:0px solid; padding:10px;'>
 											    		
-											    		<div class='col-xs-6' style='border-top:1px solid #f2f2f2'>
-
-											    		  <h3 style='color:#6E6E6E'></h3>
-													      <span class='glyphicon glyphicon-calendar'> </span>
-													      <b style='margin-left:10px;'>Member since:</b> 
-													      
-													   
-													     	 <h3 style='color:#6E6E6E'></h3>
-													      <span class='glyphicon glyphicon-gift'> </span>
-													      <b style='margin-left:10px;'>Birthday:</b> 
-													     
-													     
-
-											     
-											    		</div>
-											    	</div>
-
-											    	<div class='row' style='border:0px solid'>
-											    		<div class='col-xs-12' style='border:0px solid'>
-											    		 <hr style='border:1px solid #d8d8d8;'>
-											    		  <p>
-											      	  
-
-											       			 
-														
-											      	Ako'y isang pogi na napakapogi HAHAAHA call me jester na pogi talaga shet grabe HAHAHAHA another next new line</p>
+											    		<p></p>
 											    
-											    		</div>
+											    		
 
 											    	</div>
-											    
+											     -->
 
 											   
 											    </div>

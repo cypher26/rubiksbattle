@@ -107,7 +107,7 @@
                     <span id='spanRefresh' style='cursor:default;' onClick='location.reload();'>
                         <span class='glyphicon glyphicon-refresh' style='margin-left:200px'></span> Refresh</span>
                             </div>
-                            <div class='panel-body' style='border:0px solid; padding:0px; padding-bottom:0px;'>
+                            <div class='panel-body' style='border:0px solid; padding:0px; padding-bottom:0px;' align='center'>
 
                                     
                                 
@@ -117,14 +117,14 @@
                                           <uib-tab><uib-tab heading>123</uib-tab heading>Tab 1 content</uib-tab>
                                           <uib-tab heading="Small Button">Tab 2 content</uib-tab>
                                         </uib-tabset> -->
-                                         <div class='col-xs-5'>
+                                         <div class='col-xs-5' style="display:{{radioSelected == 'Left' ? 'none':''}};">
                                             <uib-tabset type='pills' style='border:0px solid; margin-top:5px;'>
-                                               <uib-tab  select='show3()'>
+                                               <uib-tab select="selectCubeType('3x3x3')">
                                                 <uib-tab-heading>
                                                  <span class='glyphicon glyphicon-th'></span> 3x3x3
                                                 </uib-tab-heading>
                                               </uib-tab>
-                                               <uib-tab >
+                                               <uib-tab select="selectCubeType('2x2x2')">
                                                 <uib-tab-heading>
                                                   <span class='glyphicon glyphicon-th-large'></span> 2x2x2
                                                 </uib-tab-heading>
@@ -132,14 +132,19 @@
                                               </uib-tab>
                                             </uib-tabset>
                                         </div>
-                                        <div class='col-xs-7'>
+                                        <div class="col-xs-{{radioSelected == 'Left' ? '12':'7'}}">
                                            <div class="btn-group" style='margin-top:10px;'>
-                                              <label class="btn btn-default"  ng-model="radioModel" uib-btn-radio="'Left'">Highscore</label>
-                                              <label class="btn btn-default" ng-model="radioModel" uib-btn-radio="'Middle'">Single</label>
-                                              <label class="btn btn-default" ng-model="radioModel" uib-btn-radio="'Right'">Average</label>
+                          <label class="btn btn-default"  ng-model="radioSelected" ng-change="changeRadio(radioSelected)" uib-btn-radio="'Left'"  
+                          uib-popover="Highest user rating" popover-placement='top' popover-trigger="'mouseenter'">Highscore</label>
+                          <label class="btn btn-default" ng-model="radioSelected" ng-change="changeRadio(radioSelected)" uib-btn-radio="'Middle'" 
+                            uib-popover="Fastest solve of cube" popover-placement='top' popover-trigger="'mouseenter'">Single</label>
+                            <label class="btn btn-default" ng-model="radioSelected" ng-change="changeRadio(radioSelected)" uib-btn-radio="'Right'"
+                              uib-popover="All time average" popover-placement='left' popover-trigger="'mouseenter'">
+                              Average
+                              
+                              </label>
                                           </div>
                                         </div>
-                                
                                      <script>
                                 $(document).ready(function(){
                                    // $('#tblLeader').scrollTableBody({rowsToDisplay:10});
@@ -155,19 +160,23 @@
                                       <tr>
                                         <th ><center>Rank</center></th>
                                         <th><center>User</center></th>
-                                        <th><center>Average Time <a data-toggle="tooltip" data-placement="right" title="User's overall average time in solving the cube" style='cursor:default;'>(?)</a></center></th>
+                                        <th><center>
+                                {{radioSelected == 'Left'?'Rating':''}}
+                               {{radioSelected == 'Middle'?'Best Time':''}}
+                                {{radioSelected == 'Right'?'Average Time':''}}
+                                         <a data-toggle="tooltip" data-placement="right" title="User's overall average time in solving the cube" style='cursor:default;'>(?)</a></center></th>
                                       </tr>
                                     </thead>
 
                                     <tbody >
-                                      <tr align='center' ng-repeat="i in getNumber(150) track by $index">
-                                          <td class='tdRank'>{{$index+1}}</td>
-                                          <td><img src='img/user/userDefault.png' 
-                                            style='width:20px; height:20px;'><a href='member?id=$row[aliasId]'  style='color:#000000;'>
-                                              jester
+                                      <tr  ng-repeat="item in leaderboardDisplay  |  orderBy:(radioSelected == 'Left' ?'-user_score':'+endedTime') track by $index">
+                                          <td class='tdRank' align='center'>{{$index+1}}</td>
+                                          <td style='padding-left:50px;'><img src="{{radioSelected == 'Left' ? item.user_avatar:item.userInfo.user_avatar}}" 
+                                            style='width:20px; height:20px;'><a href="/member/{{item._id}}"  style='color:#000000;'>
+                                              {{radioSelected == 'Left' ? item.username:item.userInfo.username}}
                                            </a></td>
-                                          <td class='tdTime'> 
-                                               <font>1:00</font>
+                                          <td class='tdTime' align='center'> 
+                                               <font>{{radioSelected == 'Left' ? item.user_score:convertTimeComplete(item.endedTime)}}</font>
                                           </td>
                                       </tr>
                                       

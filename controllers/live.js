@@ -8,7 +8,7 @@
 
 
 var app = angular.module('webApp', [
-  'ngRoute','luegg.directives','ngMaterial','720kb.tooltips'
+  'ngRoute','luegg.directives','ngMaterial','720kb.tooltips','ui.bootstrap'
 ]);
 
 
@@ -58,12 +58,89 @@ app.config(['$routeProvider','$locationProvider', function ($routeProvider,$loca
 }]);
 
 
+app.directive('focusMe', ['$timeout', '$parse', function ($timeout, $parse) {
+    return {
+        //scope: true,   // optionally create a child scope
+        link: function (scope, element, attrs) {
+            var model = $parse(attrs.focusMe);
+            scope.$watch(model, function (value) {
+                console.log('value=', value);
+                if (value === true) {
+                    $timeout(function () {
+                        element[0].focus();
+                    });
+                }
+            });
+            // to address @blesh's comment, set attribute value to 'false'
+            // on blur event:
+            element.bind('blur', function () {
+                // console.log('blur');
+                $timeout(function(){
+                      //any code in here will automatically have an apply run afterwards
+                       scope.$apply(model.assign(scope, false));
+                  });
 
+               
+            });
+        }
+    };
+}]);
 
   // console.log(doSomething.test2("R U"));
-app.controller('liveCtrl', function ( $scope, $location, $http,$q, $window, $rootScope,$timeout,socket,$mdDialog) {
+app.controller('liveCtrl', function ($scope, $location, $http,$q, $window, $rootScope,$timeout,socket,$mdDialog,$sce,$mdSidenav,$mdToast,$interval) {
+
+$scope.showBlur = function(){
+  console.log($scope.gameStatus);
+  if ($scope.gameStatus == 'onGame'){
+    $scope.showToast();
+  }
+}
+
+$scope.hideToast = function(){
+  $mdToast.cancel();
+}
+
+
+ $scope.showToast = function () {
+    var el = angular.element(document.getElementById('userControl'));
+    
+    var toast = $mdToast.simple()
+    // .content(message)
+    .action('Click here to enable keyboard controls')
+    // .highlightAction(true)
+    .hideDelay(0)
+    .position('top left')
+    .parent(el);
+
+    $mdToast.show(toast).then(function(response) {
+      if ( response == 'ok' ) {
+        // alert('You clicked the \'UNDO\' action.');
+        $scope.ifFocus = true;
+      }
+    });
+  };
+
+
+  $scope.cubeList = ['up_b','down_b','left_b','right_b','front_b','back_b','m_b','e_b','s_b','x','y','z'];
+
+  $scope.tileCss = {
+                    'background': 'grey', 'height':'20px'
+              }
+   $scope.toggleLeft = buildToggler('left');
+    $scope.toggleRight = buildToggler('right');
+
+    function buildToggler(componentId) {
+      return function() {
+        $mdSidenav(componentId).toggle();
+      }
+    }
+
+     $scope.htmlPopover = $sce.trustAsHtml("<span class='glyphicon glyphicon-fire'></span> Click here to begin!");
+      $scope.yearNow = new Date().getFullYear();
 
       //############################-dialogs-#####################################//
+
+
     $scope.showConfirmAbandon = function(ev) {
        console.log('testing');
         // Appending dialog to document.body to cover sidenav in docs app
@@ -102,12 +179,21 @@ app.controller('liveCtrl', function ( $scope, $location, $http,$q, $window, $roo
             .ok('Got it!')
             .targetEvent(ev);
 
+            $interval(function(){
+                console.log('abandon');
+                if(!(angular.element(document.body).hasClass('md-dialog-is-showing'))) { 
+                   console.log('insert');
+                     $mdDialog.show(confirm).then(function(){
+                        // console.log('abandon');
+                        $window.location.href ="/";
+                    });
+                 }
+            },1000);
+
       
-        $mdDialog.show(confirm).then(function(){
-            // console.log('abandon');
-            $window.location.href ="/";
-        })
+       
     };
+
 
 
     // setTimeout(function(){
@@ -130,6 +216,9 @@ app.controller('liveCtrl', function ( $scope, $location, $http,$q, $window, $roo
 
           
 
+   $scope.cancel = function() {
+      $mdDialog.cancel();
+    };
 
 
  
@@ -168,8 +257,92 @@ app.controller('liveCtrl', function ( $scope, $location, $http,$q, $window, $roo
 
   //################################################# sockets #########################################################
 
+$scope.btnTest = function(){
+    
+        // Appending dialog to document.body to cover sidenav in docs app
+        // Modal dialogs should fully cover application
+        // to prevent interaction outside of dialog
+        // confirm = $mdDialog.alert()
+        //     // .parent(angular.element(document.querySelector('#popupContainer')))
+        //     .clickOutsideToClose(false)
+        //     // .title('Click here to enable keyboard controls')
+        //     // .textContent('You can now leave the room.')
+        //     .ariaLabel('Alert Dialog Demo')
+        //     .ok('Click here to enable keyboard controls')
+        //     .hasBackdrop(false)
+        //     // .clickOutsideToClose(false);
+        //     // .targetEvent(ev);
 
-  // alert($location.search()['id']);
+      
+        // $mdDialog.show(confirm).then(function(){
+        //        // focus('player1');
+         
+        //     // $mdDialog.cancel();
+        // })
+
+
+}
+$scope.shouldDisplayPopover = function(){
+  return true;
+}
+// $scope.btnTest1 = function(){
+
+ 
+// }
+
+
+function loseDialogShow(){
+       $mdDialog.show({
+      contentElement: '#loseDialog',
+      clickOutsideToClose: true,
+      openFrom:{
+         top: -50,
+          width: 30,
+          height: 80
+      },
+      closeTo:{
+         top: -50,
+          width: 30,
+          height: 80
+      }
+
+      }).finally(function(){
+            socket.emit('reqRatingUpdate',{},function(){});
+       // $scope.inviteStatus =0;
+            // $rootScope.root.declineModal = 0;
+            // $rootScope.root.notAvailableModal = 0;
+    });
+
+}
+function wonDialogShow(){
+    $mdDialog.show({
+      contentElement: '#wonDialog',
+      clickOutsideToClose: true,
+      openFrom:{
+         top: -50,
+          width: 30,
+          height: 80
+      },
+      closeTo:{
+         top: -50,
+          width: 30,
+          height: 80
+      }
+     }).finally(function(){
+          socket.emit('reqRatingUpdate',{},function(){});
+       // $scope.inviteStatus =0;
+            // $rootScope.root.declineModal = 0;
+            // $rootScope.root.notAvailableModal = 0;
+    });
+
+}
+
+
+  socket.on('updateRating',function(data){
+      // alert(data);
+      $scope.pRating = data;
+
+  });
   socket.on('multipleLogin',function(data){
     console.log('data = ' + data + " id = " + $rootScope.userInfo._id);
     if (data == $rootScope.userInfo._id)
@@ -249,6 +422,11 @@ app.controller('liveCtrl', function ( $scope, $location, $http,$q, $window, $roo
                           disableCamera();
                           disableCamera1();
                           // alert($scope.gameStatus);
+
+
+                          //focus keyboard control
+                          $scope.ifFocus = true;
+
                       
 
                       //init algs
@@ -256,28 +434,59 @@ app.controller('liveCtrl', function ( $scope, $location, $http,$q, $window, $roo
                          allAlgP2 = '';
         });
 
-      socket.on('winnerUpdate',function(data,gameStatus,winnerUser,singleLose){
+      socket.on('winnerUpdate',function(winnerPerspective,gameStatus,winnerUser,singleLose,scoreDiff){
         
            $scope.btnP1 = true;
            $scope.btnP2 = true;
            
+            $scope.gameStatus = gameStatus;
+            
+            animation();
+            animation1();
 
-           if (singleLose == '1'){
+
+           $('#btnReady').tooltipster('open');
+
+           if (singleLose == '1'){ //for single player
               $scope.centerMsg = winnerUser.username + " lose!";
               $scope.gameStatusColor = 'red';
            }else{
              $scope.centerMsg = winnerUser.username + " won the game!";
              $scope.gameStatusColor = 'blue';
             }
-           $scope.gameStatus = gameStatus;
-            animation();
-            animation1();
 
-             $('#btnReady').tooltipster('open');
-             // $('#btnReady').mouseover();
-          // if ($scope.playerPerspective !='observer'){
-          //     if (winner)
-          // }
+
+        
+            
+            // if player1 won and p1 perspective
+            // if ([$rootScope.playerPerspective,winnerPerspective].indexOf('player1')>-1){
+            //     wonDialogShow();
+            //     $scope.wonDiff = 
+            // }
+
+            if ($rootScope.playerPerspective == 'player1'){
+              if (winnerPerspective == 'player1'){
+                  wonDialogShow();
+                try {   $scope.wonDiff = scoreDiff.p1; } catch(e){}
+              }else{
+                   loseDialogShow();
+                 try {  $scope.loseDiff = scoreDiff.p1; } catch(e){}
+              }
+            }else if ($rootScope.playerPerspective == 'player2'){
+             if (winnerPerspective == 'player2'){
+                  wonDialogShow();
+                try {   $scope.wonDiff = scoreDiff.p2; } catch(e){}
+              }else{
+                  loseDialogShow();
+                try {   $scope.loseDiff = scoreDiff.p2 } catch(e){}
+              }
+            }else{
+                 socket.emit('reqRatingUpdate',{},function(){});
+            }
+            //vice versa
+
+            $mdToast.cancel();
+            
 
 
       });
@@ -297,17 +506,48 @@ app.controller('liveCtrl', function ( $scope, $location, $http,$q, $window, $roo
 
 
 
+
             
       });
 
       //scramble init
 
 
+ $scope.convertTime = function(startVal,type){
+  var x =startVal; //max time 
+    
+        min = Math.floor( (x/100/60) % 60 );
+        sec = Math.floor( (x/100) % 60 );
+
+        switch(type){
+           case 'min':
+            return  (min.toString().length==1  ? '0'+min:min);
+           break;
+           case 'sec':
+            return  (sec.toString().length==1 ? '0'+sec:sec);
+           break;
+           case 'milli':
+            return  (x.toString().length >= 2 ? x.toString().slice(-2) : '0'+ x );
+           break;
+        }
+
+}
+
+  // console.log($scope.convertTime(123));
+  $scope.clockMin = '00';
+  $scope.clockSec = '00';
+  $scope.clockMilli = '00';
       socket.on('clockUpdate',function(data){
-               clock.setTime(data);
+               // clock.setTime(data);
+               // $scope.clock = $scope.convertTime(data);
+               $scope.clockMin = $scope.convertTime(data,'min');
+               $scope.clockSec = $scope.convertTime(data,'sec');
+               $scope.clockMilli = $scope.convertTime(data,'milli')
               // clock.flip();
 
       });
+
+
 
 
        socket.on('playerPixels1', function (data){
@@ -382,6 +622,7 @@ app.controller('liveCtrl', function ( $scope, $location, $http,$q, $window, $roo
                                   }
                                
                                   $rootScope.gameData = data.gameData;
+
                                   //add user and get game data 
                                   socket.emit('adduser', {id:$location.search()['id']},function (){
                                           //send user entered the room
@@ -389,9 +630,12 @@ app.controller('liveCtrl', function ( $scope, $location, $http,$q, $window, $roo
                                     
                                                resolve();
                                           });
+
                                            //update roomScore
                                            socket.emit('reqScoreUpdate',{},function(){});
 
+                                          // update rating
+                                          socket.emit('reqRatingUpdate',{},function(){});
 
 
                                   });
@@ -415,11 +659,25 @@ app.controller('liveCtrl', function ( $scope, $location, $http,$q, $window, $roo
                                  resolve();
                             });
                    });
-              }).then(function(){
+              }).then(function() {
+                 return new Promise(function(resolve, reject){
+
+                      if ( $rootScope.userInfo._id == $rootScope.gameData.reqFrom_id._id)
+                          $rootScope.playerPerspective = 'player1';
+                      else if ($rootScope.userInfo._id == $rootScope.gameData.reqTo_id._id)
+                          $rootScope.playerPerspective = 'player2';
+                      else $rootScope.playerPerspective = 'observer';
+
+                          $rootScope.$apply();
+                         resolve();
+                       
+                  });
+             }).then(function(){
                    return new Promise(function(resolve, reject){
                     //----------------------------------- cube 1
                     // console.log('one');
                     renderer = new THREE.WebGLRenderer();
+                    
                     renderer.setSize( document.getElementById("player1").offsetWidth, document.getElementById("player1").offsetHeight );
                     renderer.setClearColor( 0xbdbdbd, 1);
                     // renderer.setClearColor(0x000000,1);
@@ -466,13 +724,31 @@ app.controller('liveCtrl', function ( $scope, $location, $http,$q, $window, $roo
                   animation();
                   animation1();
 
+                label = document.getElementById('yourCube');        // Create a <button> element
+                t = document.createTextNode("Your cube");       // Create a text node
+                // label.appendChild(t);              
 
-                  //transparent
-                  // renderer.setClearColor( 0x000000, 1);
+                label.style.position = 'absolute';
+                label.style.top =10;
+                label.style.left = '280px';     
+
+             if ($rootScope.gameData.reqTo_id._id != '-1'){
+                if ($rootScope.playerPerspective!='observer')
+                  document.getElementById($rootScope.playerPerspective).appendChild(label);  
+
+              } 
+            // }
+           
+
+            
+
+
+                  // transparent
+                  // renderer.setClearColor( 0x2e2e2e, 1);
                   // material.transparent =true;
                   // renderer.render(scene,camera);
 
-                  // renderer1.setClearColor( 0x000000, 1);
+                  // renderer1.setClearColor( 0x2e2e2e, 1);
                   // material1.transparent =true;
                   // renderer1.render(scene1,camera1);
 
@@ -482,20 +758,7 @@ app.controller('liveCtrl', function ( $scope, $location, $http,$q, $window, $roo
                   // ------------------- end ------------------
                     resolve();
                });
-              }).then(function() {
-                 return new Promise(function(resolve, reject){
-
-                      if ( $rootScope.userInfo._id == $rootScope.gameData.reqFrom_id._id)
-                          $rootScope.playerPerspective = 'player1';
-                      else if ($rootScope.userInfo._id == $rootScope.gameData.reqTo_id._id)
-                          $rootScope.playerPerspective = 'player2';
-                      else $rootScope.playerPerspective = 'observer';
-
-                          $rootScope.$apply();
-                         resolve();
-                       
-                  });
-             }).then(function(){
+              }).then(function(){
                  return new Promise(function(resolve, reject){
                       ///////############## - Reconnect - ###########################
                     // console.log('recon = ' + $scope.gameStatus);
@@ -597,9 +860,9 @@ app.controller('liveCtrl', function ( $scope, $location, $http,$q, $window, $roo
 
 
 
-$scope.initTest = function(){
-  console.log('initTest');
-}
+// $scope.initTest = function(){
+//   console.log('initTest');
+// }
       
      
   
@@ -620,7 +883,62 @@ $scope.initTest = function(){
           // execPerm('R U R');
           // init('1');
       }
-      
+   
+      $scope.moveClick = function(alg){
+         console.log(alg);
+
+         if ($rootScope.playerPerspective=='player1' && $scope.gameStatus == 'onGame'  && 
+          !simulateIfSolve(allMovesP1 + " " + allAlgP1)){
+
+              if (!$scope.shift){
+                if (['X','Y','Z'].indexOf(alg) > -1){
+                  checkNotation(alg.toLowerCase());
+                }else{
+                  checkNotation(alg.toUpperCase());
+            }
+              }
+              if ($scope.shift){
+                
+                if (['X','Y','Z'].indexOf(alg) > -1){
+                  checkNotation(alg.toLowerCase() + 'p');
+                }else{
+                  checkNotation(alg + 'p');
+                }
+              }
+
+
+
+
+          }
+           if ($rootScope.playerPerspective=='player2' && $scope.gameStatus == 'onGame'  && 
+          !simulateIfSolve(allMovesP2 + " " + allAlgP2)){
+
+              if (!$scope.shift){
+                if (['X','Y','Z'].indexOf(alg) > -1){
+                  checkNotation1(alg.toLowerCase());
+                }else{
+                  checkNotation1(alg.toUpperCase());
+            }
+              }
+              if ($scope.shift){
+                
+                if (['X','Y','Z'].indexOf(alg) > -1){
+                  checkNotation1(alg.toLowerCase() + 'p');
+                }else{
+                  checkNotation1(alg + 'p');
+                }
+              }
+
+
+
+
+          }
+
+
+         console.log('shift ' + $scope.shift);
+      }
+
+
       $scope.keydown = function(e){
 
         

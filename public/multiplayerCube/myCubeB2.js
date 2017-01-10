@@ -9,7 +9,7 @@
 
 	var rafAnimate1;
 	var dimension1 = 3;
-	var speed1 = 100;
+	var speed1 = 50;
 	var delayTime1=0;
 
 		var primaryLogo1,lpu1;

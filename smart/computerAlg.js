@@ -669,7 +669,7 @@ function execEdgeBufferAlg(str){
 										for (i=1;i<edge.length;i++){
 											if (edgeCheck[i]==0){
 													edgeLetter = edge[i].charAt(0);
-													console.log('edge = ' + edgeLetter);
+													// console.log('edge = ' + edgeLetter);
 													if ( (z%2 == 0 && edgeLetter == 'C')){ edgeLetter='W';
 													  	for (var x=0;x<edgeArray.length;x++){
 													  		if (edgeLetter == edgeArray[x][1]){

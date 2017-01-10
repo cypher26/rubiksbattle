@@ -49,8 +49,7 @@ var Schema = mongoose.Schema;
         username             : String,
         user_password        :  String,
         user_email           :  String,
-        user_fname           : String,
-        user_lname           : String,
+       user_fullName          : String,
         // user_gender           : String,
         // user_birthDate          : Date,
         user_country           : String,
@@ -133,115 +132,202 @@ var friends_model = mongoose.model('friends_collections',friends_collections);
 var game_model = mongoose.model('game_collections',game_collections);
 var archive_game_model = mongoose.model('archive_game_collections',archive_game_collections);
 
-//reset from start
-[user_model,msg_model,archive_msg_model,friends_model,game_model,archive_game_model].forEach(function(data){
-  data.remove({}, function(err) { 
-   console.log(data + ' removed') 
-  });
-});
 
+// //default users
+// var newUser1 = {
+//     _id: 1,
+//      username             : 'jester26',
+//     user_password        :  'jester',
+//     user_email           :  'jestercaporado@yahoo.com',
+//     user_fullName          : 'jester caporado',
+//     user_country           : 'Philippines',
+//     user_location           : 'Cavite',
+//     user_about           : 'rubiks battle is awesome haha',
+//     user_since           : '2016-11-26',
+//     user_avatar            : "/img/upload/img_1.jpg",
+//      user_score              :1500
+// };
+// var newUser2 = {
+//      _id: 2,
+//      username             : 'winnie26',
+//     user_password        :  'winnie',
+//     user_email           :  'winnie@yahoo.com',
+//      user_fullName          : 'winnie flores',
+//     user_country           : 'Philippines',
+//     user_location           : 'Cavite',
+//     user_about           : 'rubiks battle is awesome haha',
+//     user_since           : '2016-11-26',
+//     user_avatar            : "/img/upload/img_2.jpg",
+//      user_score            :1500
+// };
+// var newUser3 = {
+//       _id: 3,
+//      username             : 'candace12',
+//     user_password        :  'candace',
+//     user_email           :  'candace@yahoo.com',
+//     user_fullName          : 'candace tapuro',
+//     user_country           : 'Philippines',
+//     user_location           : 'Cavite',
+//     user_about           : 'rubiks battle is awesome haha',
+//     user_since           : '2016-11-26',
+//     user_avatar            : "/img/upload/img_3.jpg",
+//      user_score            :1500
+// };
+//  var newUser4 = {
+//      _id: 4,
+//      username             : 'fauni12',
+//     user_password        :  'fauni',
+//     user_email           :  'fauni@yahoo.com',
+//      user_fullName          : 'Madel Fauni',
+//     user_country           : 'Philippines',
+//     user_about           : 'rubiks battle is awesome haha',
+//     user_since           : '2016-11-26',
+//     user_avatar            : "/img/upload/img_4.jpg",
+//      user_score            :1500
+// };
+//  var newUser5 = {
+//      _id: 0,
+//     username             : 'Computer',
+//     user_password        :  'computerpassword',
+//     user_email           :  'computer@yahoo.com',
+//       user_fullName          : 'computer_v1',
+//     user_country           : 'Philippines',
+//     user_about           : 'Beat me!',
+//     user_since           : '2016-11-26',
+//     user_avatar            : "/img/user/robotDefault.png",
+//     user_score            :1500
+// };
+//  var newUser6 = {
+//      _id: -1,
+//      username             : 'SinglePlayer',
+//     user_password        :  'singleplayerpassword',
+//     user_email           :  'singleplayer@yahoo.com',
+//     user_fullName          : 'single_v1',
+//     user_country           : 'Philippines',
+//     user_about           : 'Beat me!',
+//     user_since           : '2016-11-26',
+//     user_avatar            : "/img/user/robotDefault.png",
+//     user_score          : 1500
 
-var newUser1 = {
-    _id: 1,
-     username             : 'jester26',
-    user_password        :  'jester',
-    user_email           :  'jestercaporado@yahoo.com',
-    user_fname           : 'jester',
-    user_lname           : 'caporado',
-    user_gender           : 'Male',
-    user_birthDate          : '1996-11-17',
-    user_country           : 'Philippines',
-    user_location           : 'Cavite',
-    user_about           : 'rubiks battle is awesome haha',
-    user_since           : '2016-11-26',
-    user_avatar            : "/img/upload/img_1.jpg"
-};
-var newUser2 = {
-     _id: 2,
-     username             : 'winnie26',
-    user_password        :  'winnie',
-    user_email           :  'winnie@yahoo.com',
-    user_fname           : 'winnie',
-    user_lname           : 'flores',
-    user_gender           : 'Female',
-    user_birthDate          : '1996-11-17',
-    user_country           : 'Philippines',
-    user_location           : 'Cavite',
-    user_about           : 'rubiks battle is awesome haha',
-    user_since           : '2016-11-26',
-    user_avatar            : "/img/upload/img_2.jpg"
-};
-var newUser3 = {
-      _id: 3,
-     username             : 'candace12',
-    user_password        :  'candace',
-    user_email           :  'candace@yahoo.com',
-    user_fname           : 'candace',
-    user_lname           : 'Tapuro',
-    user_gender           : 'Female',
-    user_birthDate          : '1996-11-17',
-    user_country           : 'Philippines',
-    user_location           : 'Cavite',
-    user_about           : 'rubiks battle is awesome haha',
-    user_since           : '2016-11-26',
-    user_avatar            : "/img/upload/img_3.jpg"
-};
- var newUser4 = {
-     _id: 4,
-     username             : 'fauni12',
-    user_password        :  'fauni',
-    user_email           :  'fauni@yahoo.com',
-    user_fname           : 'Madel',
-    user_lname           : 'Fauni',
-    user_gender           : 'Female',
-    user_birthDate          : '1996-11-17',
-    user_country           : 'Philippines',
-    user_location           : 'Cavite',
-    user_about           : 'rubiks battle is awesome haha',
-    user_since           : '2016-11-26',
-    user_avatar            : "/img/upload/img_4.jpg"
-};
- var newUser5 = {
-     _id: 0,
-     username             : 'Computer',
-    user_password        :  'computerpassword',
-    user_email           :  'computer@yahoo.com',
-    user_fname           : 'Computer_v1',
-    user_lname           : '',
-    user_gender           : 'Male',
-    user_birthDate          : '1996-11-17',
-    user_country           : 'Philippines',
-    user_location           : 'Cavite',
-    user_about           : 'Beat me!',
-    user_since           : '2016-11-26',
-    user_avatar            : "/img/user/robotDefault.png"
-};
- var newUser6 = {
-     _id: -1,
-     username             : 'SinglePlayer',
-    user_password        :  'singleplayerpassword',
-    user_email           :  'singleplayer@yahoo.com',
-    user_fname           : 'single_v1',
-    user_lname           : '',
-    user_country           : 'Philippines',
-    user_about           : 'Beat me!',
-    user_since           : '2016-11-26',
-    user_avatar            : "/img/user/robotDefault.png",
-    user_score          : 1500
-
-};
+// };
 
        
-var people = [ newUser1, newUser2, newUser3, newUser4, newUser5 ,newUser6];
-
-people.forEach(function(data){
-    new user_model(data)
-    .save(function(err,data){
-        console.log(data);
-    });
-});
+// var people = [ newUser1, newUser2, newUser3, newUser4, newUser5 ,newUser6];
 
 
+
+// var friend1 = {
+//     _id:0,
+//     user1_id:'1',
+//     user2_id:'2',
+//     friend_status:'1'
+// };
+// var friend2 = {
+//     _id:1,
+//     user1_id:'1',
+//     user2_id:'3',
+//     friend_status:'1'
+// };
+// var friend3 = {
+//     _id:2,
+//      user1_id:'1',
+//     user2_id:'4',
+//     friend_status:'1'
+// };
+// // var msgArchive = [msgArchive1, msgArchive2, msgArchive3];
+// var friends = [friend1,friend2,friend3];
+
+
+
+
+//    (function() {
+//            return new Promise(function(resolve, reject){
+
+//             //reset from start
+//         [user_model,msg_model,archive_msg_model,friends_model,game_model,archive_game_model].forEach(function(data){
+//           data.remove({}, function(err) { 
+//                resolve();
+//           });
+//         });
+               
+//            });
+//      })().then(function(){
+//       return new Promise(function(resolve,reject){
+//         var ctr = 0;
+//          people.forEach(function(data,index,array){
+//             new user_model(data)
+//             .save(function(err,data){
+//                 console.log(data);
+//                  ctr++;
+//                  if(ctr === array.length) {
+//               resolve();
+//               }
+//             });
+           
+            
+//         });
+
+//         });
+//      }).then(function() {
+//            return new Promise(function(resolve, reject){
+//             var ctr = 0;
+//                 friends.forEach(function(data,index,array){
+//              new friends_model(data)
+//             .save(function(err,data){
+//                 console.log(data);
+//                  ctr++;
+//                  if(ctr === array.length) {
+//               resolve();
+//                }
+//             });
+//         });
+          
+
+//            });
+//       });
+
+
+
+
+
+
+
+
+
+
+
+module.exports.getRating = function(id,callback){
+  user_model.find({ _id:{$in:id} }).exec(callback);
+}
+
+module.exports.setRating = function(id,value,callback){
+ user_model.update(
+    { _id: id }, 
+    {  'user_score': value },
+      callback
+    );
+}
+
+module.exports.getUserArchiveGameInfo = function(id,callback){
+    // archive_game_model.find({''})
+    game_model.find ({$and: [
+                        { $or : [{'reqFrom_id':id},{'reqTo_id':id}]},
+                        // { $or : [{'friend_status':'1'}]}
+                   ]},"reqFrom_id reqTo_id",{sort: {'_id': 'ascending'}}).exec(function(err,data){
+                          // console.log(data);
+                          archive_game_id = data.map(function(item){
+                              return item._id;
+                          });
+
+                          archive_game_model.find({ game_id:{$in:archive_game_id} }).populate({
+                                  path:'game_id',
+                                  populate:{
+                                      path:'reqFrom_id reqTo_id'
+                                  }
+                              }).lean().exec(callback);
+                      
+                   });
+} 
 
 
 
@@ -251,6 +337,7 @@ module.exports.abandonGame = function(game_id,callback){
     {  'reqStatus': 'abandon' },
       callback
     );
+
 }
 
 
@@ -258,13 +345,13 @@ module.exports.abandonGame = function(game_id,callback){
 
 
 module.exports.createGame = function(data,callback){
-        console.log('create game');
+        // console.log('create game');
       new game_model(data)
       .save(callback);
 }
 
 module.exports.createArchiveGame = function(data,callback){
-        console.log('create archive game');
+        // console.log('create archive game');
       new archive_game_model(data)
       .save(callback);
 }
@@ -273,15 +360,16 @@ module.exports.createArchiveGame = function(data,callback){
 
 
 
+
 module.exports.createMsg = function(data,callback){
-        console.log('create msg');
+        // console.log('create msg');
       new msg_model(data)
       .save(callback);
 }
 
 
 module.exports.deleteChat = function(data,callback){
-        console.log('delete chat');
+        // console.log('delete chat');
       new archive_msg_model(data)
       .save(callback);
 }
@@ -311,7 +399,7 @@ module.exports.insertAvatar = function(user_id,pathStr,callback){
     { _id: user_id }, 
     {  'user_avatar': pathStr },
        function(err,data){
-           user_model.find({_id:user_id}).exec(callback);
+           user_model.findOne({_id:user_id}).exec(callback);
        }
     );
 }
@@ -357,7 +445,8 @@ module.exports.deleteInbox = function(user1,user2,callback){
                                               msg_id:item
                                         };
                                         module.exports.deleteChat(delChat,function(err,data){
-                                          if (err) throw err; console.log('created ' + data);
+                                          if (err) throw err; 
+                                          // console.log('created ' + data);
                                             resolve();
                                         });
                                                  
@@ -394,7 +483,7 @@ module.exports.viewInbox = function(user_id,mainCallback){
         })
         .select('msg_to msg_from msg_text').populate('msg_to').populate('msg_from')
         .exec(function(err,data){
-              
+                
                     (function() {
                          
                            return new Promise(function(resolve, reject){
@@ -404,7 +493,12 @@ module.exports.viewInbox = function(user_id,mainCallback){
                      })().then(function(mergeIds) {
                          
                        return new Promise(function(resolve, reject){
-                           
+                            // if no inbox
+
+                            // if (data == null) console.log('no laman'); 
+                          
+                            // console.log(' d = ' + data)
+
                                  data.forEach(function(i_data,index,array){
                                        if ((i_data.msg_from._id != user_id) && (!(mergeIds.indexOf(i_data.msg_from._id) > -1))){
                                             mergeIds.push(i_data.msg_from._id);
@@ -525,6 +619,40 @@ module.exports.viewFriends = function (user_id,callback){
 }
 
 
+module.exports.viewSpecificMember = function(member_id,user_id,callback){
+      user_model
+        .find({_id:Number(member_id)})
+       
+        // .select({'username':1,'_id':1})
+        .exec(function(err,s_data){
+          if (s_data == undefined) callback();
+          else
+          // else console.log('s = ' + s_data);
+            var requests = s_data.reduce((promiseChain, item, index, tempItem) => {
+                return promiseChain.then(() => new Promise((resolve) => {
+                            tempItem[index] = item.toObject();
+                            module.exports.friend_status(user_id,item._id,function(err,data){
+
+                                   if (data==null) tempItem[index].status = '0';
+                                  //if user request becomes cancel request
+                                  else if (data.user1_id==user_id && data.friend_status=='2')
+                                       tempItem[index].status='3';
+                                  else tempItem[index].status=data.friend_status;
+
+                                  resolve(s_data);
+                            });
+                 }));
+
+            }, Promise.resolve()).then(function(data){
+              // console.log(data);
+
+                callback(data);
+            });
+          
+        });
+}
+
+
 module.exports.viewMembers = function(userFind,user_id, callback){
   console.log('viewMembers');
      user_model
@@ -534,6 +662,7 @@ module.exports.viewMembers = function(userFind,user_id, callback){
               {$or: [{_id:{$nin:user_id}}]}
           ])
         // .select({'username':1,'_id':1})
+
         .exec(function(err,s_data){
             var requests = s_data.reduce((promiseChain, item, index, tempItem) => {
                 return promiseChain.then(() => new Promise((resolve) => {
@@ -565,6 +694,9 @@ module.exports.viewMembers = function(userFind,user_id, callback){
       //               });
 
 }
+
+
+
 
 
 
@@ -620,6 +752,18 @@ module.exports.getUserInfo = function (user_id,callback){
         .exec(callback);
 }
 
+module.exports.getUserInfoByUsername = function (username,callback){
+    user_model
+        .findOne()
+        .and([
+          { $or: [{username:new RegExp('^'+ username + '$', "i")}] } // for exact match case insensitive
+        ])
+        .exec(callback);
+}
+
+
+
+
 
 module.exports.getGameInfo = function (user_id,callback){
     game_model
@@ -630,6 +774,375 @@ module.exports.getGameInfo = function (user_id,callback){
                 ])
         .exec(callback);
 }
+
+
+
+
+module.exports.getArchiveGameInfo = function(id,callback){
+   //lean edit the return data 
+  archive_game_model.findOne({'_id':id}).populate({
+        path:'game_id',
+        populate: {
+              path:'reqFrom_id reqTo_id'
+          }
+    }).lean().exec(callback);
+
+}
+
+
+
+module.exports.getUserStats = function(id,cubeType,callback){
+
+
+
+  (function() { //########### WON BY 
+           return new Promise(function(resolve, reject){
+                  game_model.find({$and: [
+                        { $or : [{'reqFrom_id':id},{'reqTo_id':id}] },
+                        { $or : [{'cubeType':cubeType}] },
+                      ]},'reqFrom_id reqTo_id cubeType').exec(function(err,data){
+
+                          var ids = data.map(function(e){
+                              return e._id;
+                          }); 
+
+                           archive_game_model.aggregate(
+                              [
+                                { $match: {'gameWinner':Number(id) , game_id:{$in:ids} } },
+                                { $project: {'winnerBy':1,'gameWinner':1}},
+                                { $group: {
+                                     // user_id:{$first:'$gameWinner'}, 
+                                     _id:"$winnerBy", count: { $sum: 1 }
+                                }}
+                              ],function(err,data){
+                                if (err) console.log(err);
+                                       // console.log(data);
+                                      var won_disconnection = data.filter(function(e){
+                                          if (e._id == 'disconnection') return e;
+                                      });
+                                       var won_time = data.filter(function(e){
+                                          if (e._id == 'time') return e;
+                                      });
+                                        var won_resignation = data.filter(function(e){
+                                          if (e._id == 'resignation') return e;
+                                      });
+
+                                      var w_dc = ((!isEmpty(won_disconnection) ? won_disconnection[0].count:0));
+                                      var w_tm = ((!isEmpty(won_time) ? won_time[0].count:0));
+                                      var w_rc = ((!isEmpty(won_resignation) ? won_resignation[0].count:0));
+                                   resolve([w_tm, w_dc, w_rc]);
+                              }
+                          );
+                      });
+
+               
+           });
+     })().then(function(won_by) { //########### lOST BY 
+           return new Promise(function(resolve, reject){
+                 game_model.find({$and: [
+                        { $or : [{'reqFrom_id':id},{'reqTo_id':id}]},
+                        { $or : [{'cubeType':cubeType}] }
+                      ]},'reqFrom_id reqTo_id cubeType').exec(function(err,data){
+                      // console.log(data);
+                          var ids = data.map(function(e){
+                              return e._id;
+                          }); 
+
+                         archive_game_model.aggregate(
+                            [
+                              { $match: {'game_id':{$in:ids},gameWinner:{$ne:Number(id)} }},
+                              { $project: {'winnerBy':1,'gameWinner':1}},
+                              { $group: {
+                                   // user_id:{$first:'$gameWinner'}, 
+                                   _id:"$winnerBy", count: { $sum: 1 }
+                              }}
+                            ],function(err,data){
+
+                                  // console.log(data);
+                                      var lost_disconnection = data.filter(function(e){
+                                          if (e._id == 'disconnection') return e;
+                                      });
+                                       var lost_time = data.filter(function(e){
+                                          if (e._id == 'time') return e;
+                                      });
+                                        var lost_resignation = data.filter(function(e){
+                                          if (e._id == 'resignation') return e;
+                                      });
+
+                                        // console.log(isEmpty(lost_time) + " " + isEmpty(lost_disconnection));
+                                      var l_dc = ((!isEmpty(lost_disconnection) ? lost_disconnection[0].count:0));
+                                      var l_tm = ((!isEmpty(lost_time) ? lost_time[0].count:0));
+                                      var l_rc = ((!isEmpty(lost_resignation) ? lost_resignation[0].count:0));
+                                      // console.log([l_tm, l_rc, l_dc]);
+
+                                      // console.log(won_by);
+
+                                        resolve({'won_lost_by':won_by.concat([l_tm, l_rc, l_dc])});
+
+                            }
+                        );
+                 });
+              
+
+           });
+      }).then(function(e_data) {
+         return new Promise(function(resolve, reject){
+                // console.log('won_lost_by = ' + e_data.won_lost_by);
+                 callback(e_data);
+                // resolve();
+
+           });
+     });
+
+     
+
+     
+
+
+      
+}
+module.exports.getAllUserStats = function(id,callback){
+      module.exports.getUserStats(id,'3x3x3',function(data3){
+           module.exports.getUserStats(id,'2x2x2',function(data2){
+                callback(data2,data3);
+           });
+      });
+}
+
+
+
+function isEmpty(obj) {
+
+    // null and undefined are "empty"
+    if (obj == null) return true;
+
+    // Assume if it has a length property with a non-zero value
+    // that that property is correct.
+    if (obj.length > 0)    return false;
+    if (obj.length === 0)  return true;
+
+    // If it isn't an object at this point
+    // it is empty, but it can't be anything *but* empty
+    // Is it empty?  Depends on your application.
+    if (typeof obj !== "object") return true;
+
+    // Otherwise, does it have any properties of its own?
+    // Note that this doesn't handle
+    // toString and valueOf enumeration bugs in IE < 9
+    for (var key in obj) {
+        if (hasOwnProperty.call(obj, key)) return false;
+    }
+
+    return true;
+}
+
+module.exports.getHighscoreList =function(callback){
+  user_model.find({'_id':{$nin:['-1','0']}},'username user_score user_avatar',{sort:{'user_score':'descending'}})
+  .lean()
+  .exec(callback);
+}
+
+
+module.exports.getUserRankHighscore = function(id,callback){
+    module.exports.getHighscoreList(function(err,data){
+        
+        data.forEach(function(e,index){
+          if (e._id == id.toString())  callback(e.user_score, (index+1));
+
+        });
+       // console.log(data);
+    });
+
+}
+
+
+
+
+
+module.exports.getSingleList =function(cubeType,callback){
+
+(function() {
+   return new Promise(function(resolve, reject){
+		game_model.find({ 'cubeType':cubeType},'cubeType','').exec(function(err,data){ resolve(data); });
+   	});
+ })().then(function(single_id) {
+    return new Promise(function(mainResolve, reject){
+			  archive_game_model.find({ 'game_id':{$in:single_id},'gameWinner':{$nin:['-1','0']},'winnerBy':'time' },'endedTime gameWinner winnerBy',{sort:{'endedTime':'ascending'}})
+			  .lean()
+			  .exec(function(err,data){
+			    var tempC =[]; // container to filter id of single time
+			    filterSingle = data.filter(function(item){
+			        if (tempC.indexOf(item.gameWinner)<0){
+			        tempC.push(item.gameWinner);
+			        return item;
+			        }
+			    });
+						var requests = filterSingle.reduce((promiseChain, item, index, tempItem) => {
+						                return promiseChain.then(() => new Promise((resolve) => {
+											//get user info per single list
+						                            module.exports.getUserInfo(item.gameWinner.toString(),function(err,data){
+						                            	tempItem[index].userInfo=data;	
+						                            	resolve();
+						                            });
+						                 }));
+									}, Promise.resolve()).then(function(){
+						            		 callback(filterSingle);
+						            		 mainResolve();
+						             });
+				});
+
+	 });
+ });
+
+
+}
+
+module.exports.getUserRankSingle = function(id,cubeType,callback){
+
+  console.log(id + " " + cubeType);
+  module.exports.getSingleList(cubeType,function(data){
+    // console.log(data);
+    // console.log(data.length);
+
+    var BreakException = {};
+
+
+    if (data.length ==0) callback(0,0);
+
+      try{
+        data.forEach(function(e,index){
+            // console.log(index);
+            if (e.gameWinner.toString() == id) {
+               callback(e.endedTime, (index+1));
+               throw BreakException;
+            }
+
+            if (e.gameWinner.toString() != id && (index == (data.length-1))) callback(0,0);
+        });
+      } catch(e){
+        if (e !== BreakException) throw e;
+      }
+  });
+}
+
+// module.exports.getUserRankSingle('2','3x3x3',function(data,rank){
+//       console.log(data,rank);
+// });
+
+
+module.exports.getMemberSince = function(id,callback){
+    user_model.find({_id:id.toString()},'username user_since').exec(callback);
+}
+
+
+module.exports.updateFullName =function(id,name,callback){
+      user_model.update(
+    { _id: id }, 
+    {  'user_fullName': name },
+       function(err,data){
+           user_model.findOne({_id:id}).exec(callback);
+       }
+    );
+}
+
+
+
+// module.exports.getUserRankSingle('1','3x3x3',function(endedTime,rank){
+//         console.log('e = ' + endedTime + " r = " + rank );
+
+//         // res.send({userRankSingle: {endedTime:endedTime,rank:rank} });
+// });
+
+
+
+module.exports.getAverageList = function(cubeType,callback){
+(function() {
+   return new Promise(function(resolve, reject){
+		game_model.find({ 'cubeType':cubeType},'cubeType','').exec(function(err,data){ resolve(data); });
+   	});
+ })().then(function(single_id) {
+    return new Promise(function(mainResolve, reject){
+			   archive_game_model.find({ 'gameWinner':{$nin:['-1','0']},'winnerBy':'time' },'endedTime gameWinner winnerBy',{'sort':{'endedTime':'ascending'}})
+			  .lean()
+			  .exec(function(err,averageList){
+			        module.exports.getSingleList(cubeType,function(singleList){
+			                singleList.forEach(function(item,i){
+
+			                    averageList.forEach(function(item1){
+			                        if (singleList[i].gameWinner==item1.gameWinner)
+			                        {
+			                           singleList[i].endedTime = (Number(singleList[i].endedTime) + Number(item1.endedTime))/2;
+			                        }
+			                    });
+			                });
+			            	var requests = singleList.reduce((promiseChain, item, index, tempItem) => {
+						                return promiseChain.then(() => new Promise((resolve) => {
+											//get user info per single list
+						                            module.exports.getUserInfo(item.gameWinner.toString(),function(err,data){
+						                            	tempItem[index].userInfo=data;	
+						                            	resolve();
+						                            });
+						 	            }));
+									}, Promise.resolve()).then(function(){
+						                  callback(singleList);
+						                  mainResolve();
+						             });
+
+			        });
+			  });
+
+
+	 });
+ });
+
+
+ }
+
+module.exports.getUserRankAverage =function(id,cubeType,callback){
+  module.exports.getAverageList(cubeType,function(data){
+      // console.log(data);
+        var sortedData = sortByKey(data,'endedTime');
+
+         var BreakException = {};
+            if (data.length ==0) callback(0,0);
+
+      try{
+          sortedData.forEach(function(e,index){
+            if (e.gameWinner.toString() == id) 
+            {
+              callback(e.endedTime, (index+1));
+               throw BreakException;
+            
+              }
+            if (e.gameWinner.toString() != id && (index == (data.length-1))) callback(0,0);
+          });
+          } catch(e){
+        if (e !== BreakException) throw e;
+      }
+
+  });
+}
+
+
+
+
+
+
+ // module.exports.getHighscoreList(function(err,data){
+ // 	console.log(data);
+ // });
+
+// module.exports.getSingleList('3x3x3',function(data){			
+// 	console.log(data);
+// });
+
+// module.exports.getAverageList('2x2x2',function(data){
+// 	console.log(data);
+// });
+
+
+
+
 
 
 

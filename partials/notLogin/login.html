@@ -28,7 +28,7 @@
 				<div class='row' style='border:0px solid; margin-bottom:20px;' align='center'>
 					<div class='col-xs-1'></div>
 					<div class='col-xs-10'>
-							<input id='inputUsername' ng-model='inputUsername' autocomplete="on" class='form-control' style='text-align:center; '></input></div>
+							<input id='inputUsername' ng-enter='loginScopeFunc()' ng-model='inputUsername' autocomplete="on" class='form-control' style='text-align:center; '></input></div>
 					<div class='col-xs-1'></div>
 					
 			
@@ -49,7 +49,7 @@
 				<div class='row' style='border:0px solid; margin-bottom:20px;' align='center'>
 					<div class='col-xs-1'></div>
 					<div class='col-xs-10'>
-							<input id='inputPassword' ng-model='inputPassword' type='password' class='form-control' style='text-align:center;'></input></div>
+							<input id='inputPassword' ng-enter='loginScopeFunc()' ng-model='inputPassword' type='password' class='form-control' style='text-align:center;'></input></div>
 					<div class='col-xs-1'></div>
 					
 			

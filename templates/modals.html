@@ -133,7 +133,7 @@
                           <div layout='row' align='center'>
                                 <div flex>
                                     <!-- <md-button class="md-raised md-warn" style='font-size:12px;'>Send Request</md-button> -->
-                        <button ng-click='sendRequest();'  ng-disabled="inviteDisplay === 1 ||  root.declineModal === 1 ? 'disabled' : '' " class='btn btn-success btn-md'><strong>
+                        <button ng-click='sendRequest();'  ng-disabled="inviteDisplay === 1 ||  root.declineModal === 1 ? 'disabled' : '' " class='btn btn-success btn-md' ><strong>
                             {{inviteData._id==0 || inviteData._id==-1 ? 'Start now!':'Send Request'}}
 
                             
@@ -199,7 +199,7 @@
                                                 <font style='font-size:15px; color:#ffffff'>Cube type: </font>
                                             </td>
                                             <td style='padding-right:0px; padding-bottom:10px;'>
-                                                 <span class='glyphicon glyphicon-th'></span> {{root.cubeType}}
+                                                 <span class="glyphicon glyphicon{{root.cubeType == '3x3x3'?'-th':'-th-large'}}"></span> {{root.cubeType}}
                                             </td>
                                         </tr>
                                         <tr>
@@ -207,7 +207,7 @@
                                                 <font style='font-size:15px; color:#ffffff'>Room: </font>
                                             </td>
                                             <td style='padding-right:0px; border:0px solid #ffffff; padding-bottom:10px;'>
-                                                   <span class='glyphicon glyphicon-eye-open'></span> {{root.roomType}}
+                                           <span class="glyphicon glyphicon-eye-{{root.roomType == '(Public)'?'open':'close'}}"></span> {{root.roomType}}
                                             </td>
 
                                         </tr>
@@ -240,10 +240,11 @@
                                    
                                         </font> </center>
                                 </div>
-                          <div layout='row' align='center'>
+                          <div layout='row' align='center' ng-init='receiveDialogAccept=false'>
                                 <div flex>
                                     <!-- <md-button class="md-raised md-warn" style='font-size:12px;'>Send Request</md-button> -->
-                                    <button ng-click='acceptGameReq();' class='btn btn-success btn-md'><strong>Accept</strong></button>
+                                    <!-- ng-click='acceptGameReq();'  -->
+                                    <button ng-model='receiveDialogAccept' ng-click='receiveDialogAccept = true; acceptGameReq();' ng-disabled = 'receiveDialogAccept' class='btn btn-success btn-md'><strong>Accept</strong></button>
                                      <button id='btnCancel' ng-click="declineGameReq()" class='btn btn-danger btn-md'>Decline</button>
                                 </div>
 
@@ -252,7 +253,7 @@
       </md-dialog>
     </div>
 
- <!--############################# received dialog ######################################-->
+ <!--############################# received dialog -end ######################################-->
 
                     <!-- online friends dialog -->
      <div class="md-dialog-container lg-modal" id="friendsDialog" style=''>
@@ -284,7 +285,7 @@
           </div>
    <div layout='row'>
         <md-input-container flex='100' class="md-icon-float  " style='margin-bottom:0px; border:0px solid;'>
-      <label>Username</label>
+      <label>Search username</label>
       <md-icon md-svg-src="img/svg/ic_account_circle_black_24px.svg" class="name"></md-icon>
       <input ng-model="inputPlayUsername" ng-init="inputPlayUsername=''" type="text" >
         </md-input-container>

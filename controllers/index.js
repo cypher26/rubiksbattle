@@ -7,15 +7,36 @@
  * Main AngularJS Web Application
  */
 var app = angular.module('webApp', [
-  'ngRoute','ui.bootstrap','ngProgress','ngSanitize','luegg.directives','ngFileUpload','ngMaterial','angular-progress-arc','fixed.table.header'
+  'chart.js','angularAwesomeSlider','ngRoute','ui.bootstrap','ngProgress','luegg.directives','ngFileUpload','ngMaterial','angular-progress-arc','fixed.table.header','rzModule'
 ]);
 
 
 app.config(function($mdThemingProvider) {
   $mdThemingProvider.theme('default')
+    // .dark();
     // .primaryPalette('pink')
     // .accentPalette('orange');
 });
+
+
+
+app.directive('initialisation',['$rootScope',function($rootScope) {
+            return {
+                restrict: 'A',
+                link: function($scope) {
+                    var to;
+                    var listener = $scope.$watch(function() {
+                        clearTimeout(to);
+                        to = setTimeout(function () {
+                           listener();
+                            
+
+                            $rootScope.$broadcast('initialised');
+                        });
+                    });
+                }
+            };
+        }]);
 
 
 
@@ -50,7 +71,7 @@ app.run(function ($rootScope, ngProgressFactory) {
     $rootScope.progressbar = ngProgressFactory.createInstance();
 
     $rootScope.progressbar.setColor("#bdbdbd");
-    // $rootScope.progressbar.setHeight('1px');
+    // $rootScope.progressbar.setHeight('3px');
     $rootScope.$on("$routeChangeStart", function () {
        $rootScope.progressbar.start();
     });
@@ -117,15 +138,24 @@ app.config(['$routeProvider','$locationProvider', function ($routeProvider,$loca
     // Pages
     .when("/play", {templateUrl: "partials/play.html", controller: "playCtrl"})
 
-    .when("/profile", {templateUrl: "partials/profile/index.html", controller: ""})
-    .when("/profile/games", {templateUrl: "partials/profile/games.html", controller: "homeCtrl"})
+    // .when("/profile", {templateUrl: "partials/profile/index.html", controller: ""})
+    .when("/profile", {templateUrl: "partials/profile/index.html", controller: "aboutCtrl"})
+    
+    .when("/profile/games", {templateUrl: "partials/profile/games.html", controller: "gamesCtrl"})
     .when("/profile/friends", {templateUrl: "partials/profile/friends.html", controller: "friendsCtrl"})
     .when("/invite", {templateUrl: "partials/invite.html", controller: "inviteCtrl"})
     .when("/profile/messages", {templateUrl: "partials/messages.html", controller: "msgCtrl"})
-    .when("/profile/create", {templateUrl: "partials/create.html", controller: "homeCtrl"})
+    .when("/profile/create", {templateUrl: "partials/create.html", controller: "createCtrl"})
+
+   // .when("/profile/create/:id", {templateUrl: "partials/create.html", controller: "createCtrl"})
+
     .when("/profile/edit", {templateUrl: "partials/edit.html", controller: "imageCtrl"})
     .when("/profile/messages/:id", {templateUrl: "partials/chat.html", controller: "chatCtrl"})
-          
+    .when("/archive/:id",{templateUrl:"partials/archive.html",controller:"archiveCtrl"})
+
+    .when("/member/:member_id",{templateUrl:"partials/profile/index.html",controller:"aboutCtrl" })
+    .when("/member/games/:member_id",{templateUrl:"partials/profile/games.html",controller:"gamesCtrl" })
+    .when("/member/friends/:member_id",{templateUrl:"partials/profile/friends.html",controller:"friendsCtrl" })
 
 
     .when("/404", {templateUrl: "partials/404.html", controller: ""})
@@ -137,23 +167,157 @@ app.config(['$routeProvider','$locationProvider', function ($routeProvider,$loca
 
 
 
+// app.controller('sliderCtrl',sliderCtrl);
+
+
+// function sliderCtrl($scope,$timeout,$rootScope){
+//                      vm = this; 
+
+
+//                      vm.slider_toggle = {
+//                       value: 30,
+//                       options: {
+//                         floor: 10,
+//                         ceil: 50,
+//                         step:10
+//                       }
+//                     };
+                    
+//                     $rootScope.sliderValue = vm.slider_toggle;
+
+                   
+//                     vm.refreshSlider = function () {
+//                         $timeout(function () {
+//                             $scope.$broadcast('rzSliderForceRender');
+//                         });
+//                     };
+// }
+
+
+
 app.controller('globalCtrl',function ($scope,$location,$http,$window,$rootScope,$route,
                                         $routeParams,socket,$mdDialog,$interval,$document,$timeout){
 
   console.log('globalCtrl');
+
+
+
+
+
 
       //sample looop
        $rootScope.getNumber = function(num) {
             return new Array(num);   
        }
 
+//--################################################### - MemberCtrl - #################################################
+
+$rootScope.changeMemberFriendStatus = function(id,status){
+      $http.post('/editFriendStatus',{user_id:id,friend_status:status}).
+          success(function(data) {
+
+             $rootScope.memberIni(function(){});
+
+              socket.emit('reqUpdateFriendReq',id,function(){
+                      // $scope.manageInbox = 0;
+                      // console.log('naguupdate naman');
+               });
+
+          }).error(function(data) {
+              console.log("error in changeFriendStatus'");
+        });
+
+}
+
+$rootScope.memberIni = function(callback){
+  $scope.isMember = false;
+
+
+
+
+      $http.post('/viewFriends',{id:$routeParams.member_id})
+          .success(function(data) {
+             $rootScope.friendsData = data.friendsData;
+             // console.log(data.friendsData);
+          }).error(function(data) {
+             
+        });
+          
+        try{
+           if ($rootScope.userInfo.user_fullName == undefined && ($routeParams.member_id == undefined)){
+                       $scope.edit = true;
+                    }else{
+                      $scope.edit=false;
+                    }
+        }catch(e){
+              //workaround for init userInfo then side userInfo
+        }
+                    // console.log('isEmpty = ' + ($rootScope.userInfo.user_fullName == undefined));
+                    // console.log('isMember = ' + ($routeParams.member_id == undefined));
+ 
+  if ($routeParams.member_id != undefined){
+      $scope.isMember = true;
+      $scope.isMember_id = $routeParams.member_id;
+
+
+
+
+      $http.post('/viewSpecificMember',{member_id:$routeParams.member_id}).
+            success(function(data) {
+
+              // console.log( data);
+                     $rootScope.side = {
+                        username : data.userInfo.username,
+                        avatar : data.userInfo.user_avatar,
+                        fullName : data.userInfo.user_fullName,
+                        country : data.userInfo.user_country
+                     } 
+
+                       $scope.isMemberInfo = data.userInfo;
+                       callback();
+            }).error(function(data) {
+                  alert('error');
+                  $window.location.href = "/";
+                  // callback();
+            });
+  }else{
+        $http.post('/getUserInfo',{}).
+            success(function(data) {
+              // console.log( data);
+                     $rootScope.side = {
+                        username : data.userInfo.username,
+                        avatar : data.userInfo.user_avatar,
+                        fullName : data.userInfo.user_fullName,
+                        country : data.userInfo.user_country
+                     } 
+                     callback();
+            }).error(function(data) {
+           
+          });
+  }
+
+
+
+
+  // console.log('im = ' + $scope.isMember);
+}
+
+
+//--################################################### - MemberCtrl - end - #################################################
+
+
 //--################################################### - init - #################################################
 
 // $window.location.href = "/live?id=111";
 
 
+$scope.redirect = function(loc){
+  $location.path(loc);
 
-
+}
+$scope.redirectParam = function(loc,param){
+  $location.path(loc).search({name:param});
+}
 
 $scope.gameInit = function(){
 
@@ -235,7 +399,7 @@ $scope.gameInit();
 
 
  $scope.sendRequest = function(){
-
+  $scope.inviteDisplay=1;
        var gameReq = {
               
                 reqFrom_id       : $rootScope.userInfo._id ,
@@ -269,6 +433,7 @@ $scope.gameInit();
                // $scope.gameInit();
                console.log(ifAvailable == 1 + "  =" + $rootScope.root.notAvailableModal);
           }else{
+       
               $scope.inviteDisplay=1;
 
           }
@@ -326,7 +491,7 @@ $scope.gameInit();
      //      console.log('online ' + data);
      //  });
      socket.on('updateOnlineUsers',function(data){
-          // console.log('Uonline ' + data);
+          console.log('Uonline ' + data);
           $rootScope.onlineList = data;
      });
       socket.emit('reqUpdateLiveGames',{},function(){ });
@@ -336,7 +501,7 @@ $scope.gameInit();
       // var data = !{JSON.stringify(onlineList)}; // <====
 
         $rootScope.liveGames = JSON.parse(onlineList);
-          console.log($rootScope.liveGames);
+          // console.log($rootScope.liveGames);
           // $rootScope.liveGames = onlineList;
           // console.log(bson.deserialize.onlineList);
      });
@@ -374,10 +539,62 @@ $scope.gameInit();
 
 
 
+    $rootScope.updateChat =function (){
+        $http.post('/viewMsg',{user:$routeParams.id}).
+        success(function(data) {
+                 $scope.msg_convo = data.msg;
+                 $scope.glued = true;
+        }).error(function(data) { 
+            console.log("error in view chat");
+        });
+    }
+      $rootScope.updateInbox = function(){
 
-$timeout(function(){
+          $http.post('/viewInbox',{}).
+          success(function(data) {
+              $scope.msg_text = data.inbox;
 
-    $scope.cancelGameReq = function(){
+              $scope.numMsg =0;
+             
+             
+
+            $scope.msg_text.forEach(function(item){
+                 if (item.msg_status === 'unseen' && item.msg_from.username != $rootScope.userInfo.username){
+                    $scope.numMsg++;
+                 }
+            
+             });
+              // $scope.glued = true;
+          }).error(function(data) {
+              console.log("error in view inbox");
+          });
+
+    }
+
+
+    $rootScope.updateFriendReq = function(){
+        $http.post('/viewFriendRequest',{findStr:''}).
+          success(function(data) {
+             // console.log(data.user_data);
+          
+                 $scope.viewMembers = data.user_data;
+            
+             
+                console.log('auto update friend req');
+
+              $scope.numFriends = 0;
+             $scope.viewMembers.forEach(function(e){
+                if (e.status ==='2') $scope.numFriends++;
+                // console.log(e.status);
+             });
+             
+            
+          }).error(function(data) {
+              console.log("error in members");
+       });
+    }
+
+     $scope.cancelGameReq = function(){
 
           if ($scope.inviteDisplay==0){
                 $mdDialog.hide();
@@ -389,8 +606,9 @@ $timeout(function(){
 
             });
           }
-          
     }
+          
+    
      $scope.declineGameReq = function(){
             socket.emit('declineGameReq',{gameData:$scope.gameData},function(){
                 console.log('success cancel game req');
@@ -399,6 +617,15 @@ $timeout(function(){
             });
             $scope.gameInit();
     }
+
+
+
+
+
+$timeout(function(){
+   $rootScope.updateInbox();
+   $rootScope.updateFriendReq();
+   
 
 
     socket.on('updateInvite',function (inc,user_data,game_data){
@@ -455,39 +682,28 @@ $timeout(function(){
         $window.location.href = "/live?id="+data
     });
 
-});
-  
-
-
-
-     $rootScope.updateChat =function (){
-        $http.post('/viewMsg',{user:$routeParams.id}).
-        success(function(data) {
-                 $scope.msg_convo = data.msg;
-                 $scope.glued = true;
-        }).error(function(data) { 
-            console.log("error in view chat");
-        });
-    }
+ 
              socket.on('updateChat',function (){
                   // $route.reload();
                   console.log('updateChat');
                   $rootScope.updateChat();
             });
 
-    $rootScope.updateInbox = function(){
+    
 
-          $http.post('/viewInbox',{}).
-          success(function(data) {
-              $scope.msg_text = data.inbox;
-             
-              // $scope.glued = true;
-          }).error(function(data) {
-              console.log("error in view inbox");
-          });
+   
 
-    }
-               socket.on('updateInbox',function (){
+});     
+
+
+
+              socket.on('friendReq',function (){
+                    // $route.reload();
+
+                  $rootScope.updateFriendReq();
+              });
+
+             socket.on('updateInbox',function (){
                     // $route.reload();
                     console.log('updateInbox');
                     $rootScope.updateInbox();
@@ -520,6 +736,14 @@ $timeout(function(){
           
         }
 
+      $http.post('/viewFriends',{id:$routeParams.member_id})
+          .success(function(data) {
+             $rootScope.friendsData = data.friendsData;
+             // console.log(data.friendsData);
+          }).error(function(data) {
+             
+        });
+
     
   
       $http.post('/getUserInfo',{}).
@@ -529,22 +753,58 @@ $timeout(function(){
               $rootScope.computerInfo = data.computerInfo;
               $rootScope.selfInfo = data.selfInfo;
 
-              // console.log($rootScope.selfInfo);
-              // console.log($rootScope.computerInfo);
-              // console.log($rootScope.userInfo);
+                 $rootScope.side = {
+                      username : data.userInfo.username,
+                      avatar : data.userInfo.user_avatar,
+                      fullName : data.userInfo.user_fullName,
+                      country : data.userInfo.user_country
+                   } 
+            
+
+
+                   // $rootScope.memberIni(function(){});
+                    //###################### side template ################
+
+                    $scope.edit = false;
+                    $scope.validName = false;
+
+
+
+
+                    $scope.fullName = $rootScope.userInfo.user_fullName;
+                    $scope.inputFullName = $scope.fullName;
+
+                    // console.log($rootScope.userInfo);
+                  
+                    $scope.inputFullNameFunc = function(e){
+                        if (e.length>0){
+                          $scope.validName = true;
+                        }else $scope.validName = false;
+                    }
+
+                    $scope.updateFullName = function(e){
+                        if ($scope.validName){
+                             $http.post('/updateFullName',{fullName:e})
+                              .success(function(data) {
+                                 $rootScope.userInfo = data.user_data;
+                                 alert('Success updating fullname!');
+                                 // $scope.edit = false;
+                                 $window.location.reload();
+                                 // console.log(data.friendsData);
+                              }).error(function(data) {
+                                
+                            });
+                        }
+
+                    }
+
+                    //###################### side template end ################
               
         }).error(function(data) {
             console.log("error in get user info");
         });
 
-         $http.post('/viewFriends',{})
-          .success(function(data) {
-             $rootScope.friendsData = data.friendsData;
-             // console.log(data.friendsData);
-          }).error(function(data) {
-              console.log("error in changeFriendStatus'");
-        });
-
+  
 
 
    
@@ -580,18 +840,380 @@ $timeout(function(){
 
       }
 
+$rootScope.convertTime = function(startVal,type){
+  var x =startVal; //max time 
     
-    
+        min = Math.floor( (x/100/60) % 60 );
+        sec = Math.floor( (x/100) % 60 );
 
-       
+        switch(type){
+           case 'min':
+            return  (min.toString().length==1  ? '0'+min:min);
+           break;
+           case 'sec':
+            return  (sec.toString().length==1 ? '0'+sec:sec);
+           break;
+           case 'milli':
+            return  (x.toString().length >= 2 ? x.toString().slice(-2) : '0'+ x );
+           break;
+        }
+
+}
+
+$rootScope.convertTimeComplete = function(startVal){
+    var x =parseInt(startVal); //max time 
+    
+        min = Math.floor( (x/100/60) % 60 );
+        sec = Math.floor( (x/100) % 60 );
+
+        displayMin = (min.toString().length==1  ? '0'+min:min+'');
+        displaySec = (sec.toString().length==1 ? '0'+sec:sec+'');
+        displayMilli =  (x.toString().length >= 2 ? x.toString().slice(-2) : '0'+ x );
+      
+      return (displayMin != '00'? displayMin+':':'')+displaySec+'.'+displayMilli;
+        // return displayMin + ":"+displaySec+"."+displayMilli;
+}
+
+
+
+
+
+
     $scope.yearNow = new Date().getFullYear();
-     
+    $scope.testStr = '';
+ 
+
+
+ 
+
+     //for archive playbacks
+
+ // console.log($rootScope.sliderValue);
+    $scope.p1Next = function(){
+        if ($scope.p1Index<$scope.arrP1Moves.length-2){
+         $scope.p1Index++;
+         p1Exec();
+        }
+    }
+    $scope.p1Back = function(){
+      if ($scope.p1Index>=0){
+        $scope.p1Index--;
+         p1Exec();
+      }
+    }
+    $scope.p1FastNext = function(){
+         $scope.p1Index = $scope.arrP1Moves.length -2;
+         p1Exec();
+    }
+    $scope.p1FastBack = function(){
+          $scope.p1Index = $scope.gameData.scrambleMoves.split(' ').length;
+          p1Exec();
+    }
+
+
+    function p1Exec(){
+           execPerm(concatAlgIndex($scope.arrP1Moves,$scope.p1Index));
+           init('1');
+    }
+
+    $scope.p1ClickAlg = function(index){
+          $scope.p1Index = index;
+          p1Exec();
+    }
+
+    
+    $scope.p1Timer;
+    $rootScope.funcP1Play = function(){
+        // alert($scope.p1Play);
+        $scope.p1Play=!$scope.p1Play;
+
+        console.log($scope.p1Play);
+        if ($scope.p1Play){
+
+          console.log('set time');
+          $scope.p1Timer = $interval(function(){
+
+              $scope.p1Index++;
+
+                   if ($scope.p1Index > $scope.arrP1Moves.length-2 ){
+                    $rootScope.funcP1Play();
+                      clearInterval($scope.p1Timer);
+                      return;
+                    }
+                      
+                p1Exec();
+                  console.log($rootScope.sliderValue);
+
+          },$rootScope.sliderValue);
+        }else{
+            console.log('cancel time');
+
+          $interval.cancel($scope.p1Timer);
+        }
+    }
+      // --end if p1
+
+    $scope.p2Next = function(){
+        if ($scope.p2Index<$scope.arrP2Moves.length-2){
+         $scope.p2Index++;
+         p2Exec();
+        }
+    }
+    $scope.p2Back = function(){
+
+      $scope.sliderSpeed = '10';
+      if ($scope.p2Index>=0){
+        $scope.p2Index--;
+         p2Exec();
+      }
+    }
+    $scope.p2FastNext = function(){
+         $scope.p2Index = $scope.arrP2Moves.length -2;
+         p2Exec();
+    }
+    $scope.p2FastBack = function(){
+          $scope.p2Index = $scope.gameData.scrambleMoves.split(' ').length;
+          p2Exec();
+    }
+
+    function p2Exec(){
+           execPerm1(concatAlgIndex($scope.arrP2Moves,$scope.p2Index));
+           init1('1');
+    }
+
+      $scope.p2ClickAlg = function(index){
+          $scope.p2Index = index;
+          p2Exec();
+    }
+    $scope.p2Timer;
+    $rootScope.funcP2Play = function(){
+        // alert($scope.p1Play);
+        $scope.p2Play=!$scope.p2Play;
+
+    
+        if ($scope.p2Play){
+
+          console.log('set time');
+          $scope.p2Timer = $interval(function(){
+
+              $scope.p2Index++;
+
+                   if ($scope.p2Index > $scope.arrP2Moves.length-2 ){
+                    $rootScope.funcP2Play();
+                      clearInterval($scope.p2Timer);
+                      return;
+                    }
+                      
+                p2Exec();
+                  console.log($rootScope.sliderValue);
+
+          },$rootScope.sliderValue);
+        }else{
+            console.log('cancel time');
+
+          $interval.cancel($scope.p2Timer);
+        }
+    }
+
+    ////for archive playbacks - end
+
+
+      //archive cube init
+     $rootScope.$on('initialised', function(){  
+       (function(){
+                    return new Promise(function(resolve,reject){
+                    //get game data
+                      $http.post('/getArchiveGameInfo',{id:$routeParams.id}).
+                        success(function(data) {
+                            $scope.gameData = data.archiveGameData;
+
+                            //get user rating
+                              $http.post('/getUserRating',{ids:[$scope.gameData.game_id.reqFrom_id._id,
+                                                                $scope.gameData.game_id.reqTo_id._id]}).
+                                  success(function(data) {
+                                      $scope.userRating = data.userRating;
+                                       resolve();
+                                  }).error(function(data) {
+                                      console.log("error in getUserRating");
+                                  });
+                       }).error(function(data) {
+                             $location.path('/');
+                        });
+         
+                   
+                    });
+             })().then(function(){
+                   return new Promise(function(resolve, reject){
+                        //set clock
+                        $scope.clockMin = '00';
+                        $scope.clockSec = '00';
+                        $scope.clockMilli = '00';
+
+                        $scope.clockMin = $scope.convertTime($scope.gameData.endedTime,'min');
+                        $scope.clockSec = $scope.convertTime($scope.gameData.endedTime,'sec');
+                        $scope.clockMilli = $scope.convertTime($scope.gameData.endedTime,'milli')
+
+                        //set dimension and backend matrix
+                        dimension1 = dimension = parseInt($scope.gameData.game_id.cubeType.charAt(0));
+                        initMatrixManip();
+                        initMatrixManip1();
+                        resolve();
+                  });
+
+            }).then(function(){
+                   return new Promise(function(resolve, reject){
+                    //----------------------------------- cube 1
+                    // console.log('one');
+                    renderer = new THREE.WebGLRenderer();
+                    
+                    renderer.setSize( document.getElementById("player1").offsetWidth, document.getElementById("player1").offsetHeight );
+                    renderer.setClearColor( 0xbdbdbd, 1);
+                    // renderer.setClearColor(0x000000,1);
+                 
+                    document.getElementById('player1').appendChild(renderer.domElement);
+
+                    material = new THREE.MeshBasicMaterial( {  transparent:false, opacity: 0.0,wireframe:false, color:0x000000  } );
+
+
+                    //Camera frustum vertical field of view.
+                    fov =0;
+
+                    // if ($rootScope.gameData.cubeType == '3x3x3'){
+                    if (dimension == 3){
+                      fov = 55;
+                    }else fov = 40; //if 2x2x2
+
+
+                 
+
+                     if ($scope.gameData.game_id.reqTo_id._id == -1){
+                      camera = new THREE.PerspectiveCamera( fov, 2.12, 1, 1000 );
+                    }else
+                      camera = new THREE.PerspectiveCamera( fov, 1.06, 1, 1000 );
+                  
+
+
+                      // camera = new THREE.PerspectiveCamera( fov, 1.06, 1, 1000 );
+                  
+                  
+                    init('0');
+                       // renderer.render(scene,camera);
+
+                  //----------------------------------- cube 2
+                    renderer1 = new THREE.WebGLRenderer();
+                    renderer1.setSize( document.getElementById("player2").offsetWidth, document.getElementById("player2").offsetHeight);
+                    
+                    renderer1.setClearColor( 0xbdbdbd, 1);
+                    
+
+                    material1 = new THREE.MeshBasicMaterial( {  transparent:false, opacity: 0.0,wireframe:false, color:0x000000  } );
+                    
+                    camera1 = new THREE.PerspectiveCamera( fov, 1.06, 0.1, 1000 );
+
+                    document.getElementById('player2').appendChild(renderer1.domElement);
+                        // console.log('two');
+
+                    init1('0');
+                     // renderer1.render(scene1,camera1);
+             
+
+                  //init cube moves 
+
+                         $scope.algColor = {
+                            'background-color':'yellow',
+                            'padding':'5px',
+
+                        }
+                        //for player 1
+                        $scope.p1Index = $scope.gameData.scrambleMoves.split(' ').length; //for alg index
+                        $scope.gameData.p1_moves = $scope.gameData.scrambleMoves + " <end-scramble> " + $scope.gameData.p1_moves;
+
+                        //for player 2
+                        $scope.p2Index = $scope.gameData.scrambleMoves.split(' ').length; //for alg index
+                        $scope.gameData.p2_moves = $scope.gameData.scrambleMoves + " <end-scramble> " + $scope.gameData.p2_moves;
+
+                        $scope.arrP1Moves = $scope.gameData.p1_moves.split(' '); // to distribute from objects
+                        $scope.arrP2Moves = $scope.gameData.p2_moves.split(' '); // to distribute from objects
+                                
+                                // $scope.p1Play = false;
+                
+                   execPerm(concatAlgIndex($scope.arrP1Moves,$scope.p1Index));
+                   init('1');
+
+                    execPerm1(concatAlgIndex($scope.arrP2Moves,$scope.p2Index));
+                    init1('1');
+
+
+
+
+                           //init cube moves - end 
+
+                      //transparent
+                  // renderer.setClearColor( 0x424242, 1);
+                  // material.transparent =true;
+                  // renderer.render(scene,camera);
+
+                  // renderer1.setClearColor( 0x424242, 1);
+                  // material1.transparent =true;
+                  // renderer1.render(scene1,camera1);
+
+             
+                    resolve();
+               });
+
+
+
+            
+            });
+    }); 
+
 });
 
+  //get the array and index alg, and concat
+ function concatAlgIndex(algList,index){
+                    var alg ='';
+                        for (var x =0;x<=index;x++){
+                          alg+=algList[x] + " ";
+                        }
+                      return alg;
+    }
+                        
+
+
+app.controller('archiveCtrl',function ($scope,$location,$http,$window,$rootScope,socket,$route,$routeParams){
+    $rootScope.sliderValue = "400";
+     $scope.options = {       
+        from: 1000,
+        to: 100,
+        step: 100,
+         css: {
+          background: {"background-color": "silver"},
+          before: {"background-color": "purple"},
+          default: {"background-color": "white"},
+          after: {"background-color": "green"},
+          pointer: {"background-color": "red"}          
+        }     
+        // dimension: " km",
+          
+      };
+
+      $scope.changeSlider = function(val){
+        console.log(val);
+        $rootScope.sliderValue = val;
+
+
+        $rootScope.funcP1Play();
+        $rootScope.funcP1Play();
+
+        $rootScope.funcP2Play();
+        $rootScope.funcP2Play();
+
+      }
+});
 app.controller('msgCtrl',function ($scope,$location,$http,$window,$rootScope,socket,$route,$routeParams){
    
 
- 
+ $scope.inputInboxUsername = '';
 
       console.log('msgCtrl');
     $scope.manageInbox = 0;
@@ -653,9 +1275,73 @@ app.controller('msgCtrl',function ($scope,$location,$http,$window,$rootScope,soc
 
 
 });
+app.controller('createCtrl',function ($timeout,$scope,$location,$http,$window,$routeParams,socket,$rootScope){
+    console.log('createCtrl');
+    $scope.searchText = '';
+
+      $rootScope.memberIni(function(){});
+
+  $timeout(function(){
+
+      if ($location.search().name !=undefined){
+        $scope.searchText = $location.search().name;
+      }
+      
+  });
+    
+
+    $scope.searchChange = function(s_keyword){ //search keyword
+      console.log(s_keyword);
+    }
+    $scope.itemChange = function(v_keyword){ //value keyword
+        console.log(v_keyword);
+    }
+
+    $scope.queryFriendsData = function(queryString){
+      var results = $rootScope.friendsData.filter(function(e){
+        if (e.username.toLowerCase().indexOf(queryString.toLowerCase())>-1) return e;
+      });
+      console.log(queryString);
+      // return $rootScope.friendsData;
+      return results;
+    }
+
+    $scope.toggleFriendsList = function(){
+
+      $scope.searchText = '';
+        document.querySelector('#toggleAuto').focus();
+    }
+
+    $scope.btnSend = function(){
+          // alert($scope.searchText + " " + $scope.inputMessage);
+
+
+    $http.post('/createMsg',{username:$scope.searchText,msg:$scope.inputMessage}).
+        success(function(data) {
+             socket.emit('reqUpdateChat',data.id,function(){
+                               $location.path('/profile/messages/'+data.id);
+             });
+                           
+        }).error(function(data) {
+           alert('Please insert a valid username');
+           $scope.searchText = '';
+        });
+
+    }
+
+    $scope.clearText = function(){
+          $scope.inputMessage = '';
+    // $scope.searchText = '';
+    }
+
+    $scope.inputMessage = '';
+    $scope.searchText = '';
+});
 app.controller('chatCtrl',function ($scope,$location,$http,$window,$routeParams,socket,$rootScope){
 
 
+
+    $rootScope.updateInbox();
       console.log('chatCtrl');
       $scope.manageChat = 0;
      $scope.btnManage = function(){
@@ -667,7 +1353,14 @@ app.controller('chatCtrl',function ($scope,$location,$http,$window,$routeParams,
     $http.post('/getChatInfo',{user_id:$routeParams.id}).
         success(function(data) {
               // alert(data.userInfo.username);
-              $scope.chat_user = data.userInfo.username;
+              try{
+                    $scope.chat_user = data.userInfo.username;
+              }catch(e){
+                    $window.location.href ="/";
+
+              }   
+         
+              
               $scope.chat_fullName = data.userInfo.user_fname + " " + data.userInfo.user_lname;
         }).error(function(data) {
             console.log("error in get user info");
@@ -733,18 +1426,59 @@ app.controller('chatCtrl',function ($scope,$location,$http,$window,$routeParams,
 
 
 app.controller('friendsCtrl',function ($scope,$location,$http,$window,$routeParams,socket,$rootScope){
-    console.log('friendsCtrl');
+   $rootScope.memberIni(function(){});
+
+ 
+
     
 });
 
+app.controller('gamesCtrl',function ($scope,$location,$http,$window,$routeParams,socket,$rootScope){
+ $rootScope.memberIni(function(){});
 
-app.controller('inviteCtrl',function ($scope,$location,$http,$window,$routeParams,socket,$rootScope){
+     $http.post('/getUserArchiveGameInfo',{id:$routeParams.member_id}).
+          success(function(data) {
+                // console.log(data.archiveUserGameData);
+                $scope.gameList = data.archiveUserGameData;
+          }).error(function(data) {
+              console.log('error in gamectrl');
+        });
+
+
+});
+app.controller('inviteCtrl',function ($route,$timeout,$scope,$location,$http,$window,$routeParams,socket,$rootScope){
+   $rootScope.memberIni(function(){});
+
    console.log('inviteCtrl');
    $scope.changeFriendStatus = function(user_id,friendStatus){
 
         $http.post('/editFriendStatus',{user_id:user_id,friend_status:friendStatus}).
           success(function(data) {
-             $scope.btnEnter($scope.inputUsername);
+             // $scope.btnEnter($scope.inputUsername);
+             $route.reload();
+             // console.log('update first');
+
+             socket.emit('reqUpdateFriendReq',user_id,function(){
+                      // $scope.manageInbox = 0;
+                      // console.log('naguupdate naman');
+               });
+
+             if (friendStatus == '2'){
+
+                console.log('accepted');
+                 $http.post('/createMsg',{msg:"accepted your friend request",user:user_id}).
+                      success(function(data) {
+                          // alert('testing');
+                             socket.emit('reqUpdateChat',user_id,function(){
+                                    $scope.inputMessage = '';  
+                             });
+                             
+                            
+                      }).error(function(data) { 
+                          console.log("error in view chat");
+                  });
+             }
+
           }).error(function(data) {
               console.log("error in changeFriendStatus'");
         });
@@ -755,13 +1489,17 @@ app.controller('inviteCtrl',function ($scope,$location,$http,$window,$routeParam
    $scope.btnEnter = function(str){
       $http.post('/viewMembers',{findStr:str}).
           success(function(data) {
-             console.log(data.user_data);
+             // console.log(data.user_data);
              $scope.viewMembers = data.user_data;
             
           }).error(function(data) {
               console.log("error in members");
       });
 
+   }
+   
+   if ($location.search().request!=undefined){
+        $rootScope.updateFriendReq();
    }
   
 
@@ -849,18 +1587,233 @@ app.directive('setActive',['$location', function ($location) {
 }]);
 
 
+app.config(['ChartJsProvider', function (ChartJsProvider) {
+    // Configure all charts
+   //  ChartJsProvider.setOptions({
+   //    chartColors: ['#8181F7', '#FF4000'],
+   //    responsive: false,
+   //    width:100,
+
+   // });
+   
+    // // Configure all line charts
+    // ChartJsProvider.setOptions('line', {
+    //   showLines: false
+    // });
+  }])
 
 
-app.controller('homeCtrl', function ( $scope, $location, $http,$route, ngProgressFactory ) {
+app.controller('aboutCtrl', function ( $scope, $location, $http,$route, ngProgressFactory,$sce,$rootScope,$routeParams ) {
+
+
+
+       $scope.radarLabels = ["Won by Time", "Won by resignation", "Won by disconnection",
+                        "lost by Time","Lost by resignation","Lost by disconnection"];
+
+      $scope.radarSeries = ['3x3x3','2x2x2'];
+
+      $scope.radarColors = ['#8181F7', '#FF4000'];
+
+      $scope.radarOptions =  {
+      //         scales: {
+      //             yAxes: [{
+                 
+      //                 ticks: {
+      //                     stepSize: 5
+      // // suggestedMin: 0,  
+      //                   // scaleBeginAtZero: true
+
+      //                 }
+
+      //             }]
+      //         },
+              legend: {
+                  display: true,
+                  labels: {
+                      fontColor: 'rgba(0, 0, 0, 1)'
+                  }
+              },
+
+          };
+
+
+     (function() {
+           return new Promise(function(resolve, reject){
+                
+                  $rootScope.memberIni(function(){
+
+                      resolve();
+                  });
+                   
+                
+           });
+     })().then(function() {
+           return new Promise(function(resolve, reject){
+                
+                  $http.post('/getAllUserStats',{id:$routeParams.member_id}).
+                      success(function(data) {
+                               $scope.radarData = [
+                                 data.data3,
+                                  data.data2
+                                ];
+                                    resolve();
+                                
+                      });
+           });
+      }).then(function() {
+           return new Promise(function(resolve, reject){
+                 $http.post('/getUserRankHighscore',{id:$routeParams.member_id}).
+                    success(function(data) {
+                          $scope.userRankHighscore = data.userRankHighscore;
+                           resolve();
+                    });
+
+               
+           });
+      }).then(function() {
+           return new Promise(function(resolve, reject){
+                $http.post('/getUserRankSingle',{id:$routeParams.member_id,cubeType:'3x3x3'}).
+        success(function(data) {
+              $scope.userRankSingle3 = data.userRankSingle;
+               resolve();
+
+        });
+               
+           });
+      }).then(function() {
+         return new Promise(function(resolve, reject){
+                $http.post('/getUserRankAverage',{id:$routeParams.member_id,cubeType:'3x3x3'}).
+        success(function(data) {
+     
+              $scope.userRankAverage3 = data.userRankAverage;
+                resolve();
+        });
+
+              
+           });
+     }).then(function() {
+         return new Promise(function(resolve, reject){
+                
+        $http.post('/getUserRankSingle',{id:$routeParams.member_id, cubeType:'2x2x2'}).
+        success(function(data) {
+              $scope.userRankSingle2 = data.userRankSingle;
+              resolve();
+
+        });
+
+     });
+     }).then(function() {
+         return new Promise(function(resolve, reject){
+               
+         $http.post('/getUserRankAverage',{id:$routeParams.member_id, cubeType:'2x2x2'}).
+          success(function(data) {
+        
+                $scope.userRankAverage2 = data.userRankAverage;
+                     resolve();
+
+          });
+
+       });
+     }).then(function() {
+         return new Promise(function(resolve, reject){
+               
+         $http.post('/getMemberSince',{id:$routeParams.member_id}).
+          success(function(data) {
+               $scope.user_since = $rootScope.convertToDate(data.user_since);
+            
+                     resolve();
+
+          });
+
+       });
+     });
+
+                
+        
+
+  
+    
+
+      
+
+
+
+
+
+
+});
+
+
+
+
+
+app.controller('homeCtrl', function ( $scope, $location, $http,$route, ngProgressFactory,$sce ,$rootScope) {
   console.log("home Controller reporting for duty.");
-  $scope.show3 = function(){
-      $scope.hahaha = ""
-  }
+ $rootScope.memberIni(function(){});
+
+
+  
+  $scope.radioSelected = 'Left';
+  $scope.cubeType = '3x3x3';
+
+$scope.selectCubeType = function(c){
+      $scope.cubeType = c;
+      $scope.changeRadio($scope.radioSelected);
+}
+
+$scope.changeRadio = function(val){
+
+  console.log($scope.cubeType);
+    switch(val){
+      case 'Left':
+        $http.post('/getHighscoreList',{}).
+        success(function(data) {
+                 $scope.leaderboardDisplay = data.highscoreList;
+              
+        }).error(function(data) { 
+            console.log("error in highscore");
+        });
+
+        break;
+      case 'Right':
+            
+             $http.post('/getAverageList',{cubeType:$scope.cubeType}).
+            success(function(data) {
+                 $scope.leaderboardDisplay = data.averageList;
+            }).error(function(data) { 
+            console.log("error in average");
+            });
+
+
+        break;
+      case 'Middle':
+             $http.post('/getSingleList',{cubeType:$scope.cubeType}).
+              success(function(data) {
+                       $scope.leaderboardDisplay = data.singleList;
+                     
+              }).error(function(data) { 
+                  console.log("error in single");
+            });
+
+        break;
+
+  }    
+}
+
+$scope.changeRadio('Left');
+
+    $scope.popoverContent = $sce.trustAsHtml("Best average of 5");
+
+     
+
+  
+
  
  
 });
-app.controller('playCtrl', function ( $scope, $location, $http ,$route) {
+app.controller('playCtrl', function ( $scope, $location, $http ,$route,$rootScope) {
    $scope.$route = $route;
+ $rootScope.memberIni(function(){});
 
 });
 

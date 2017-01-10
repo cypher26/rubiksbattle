@@ -1,6 +1,18 @@
 <div  role="alert" class="col-xs-12 alert alert" 
 style="background-image:url(img/back5.png); border:1px solid #d8d8d8; height:40px; padding:5px;" align=''>
-					<span class='well well-sm' style='height:20px; font-size:12px; margin:0px;'> <span class='glyphicon glyphicon-bookmark'></span>
+
+					<!-- <span class='well well-sm' style="height:20px; font-size:12px; margin:0px; "> <span class='glyphicon glyphicon-bookmark'></span>
 					 Welcome <strong>{{userInfo.user_fname}}</strong> <span style='font-size:16px;'><span id='spanUsername' ></span>!</span>
-					</span>
+					</span> -->
+
+
+						<span>
+							<center><span class='well well-sm' style="font-size:20px; width:500px; border-top:2px solid #d8d8d8; display:{{isMember?'none':''}}">	Welcome <b id='spanProfile'>{{userInfo.user_fullName.split(' ')[0]}}!</b><b></b></span></center>
+						</span>
+
+						<span>
+							<center><span class='well well-sm' style="font-size:20px; width:500px; border-top:6px solid #ff0000; display:{{!isMember?'none':''}}">	You visit <b id='spanProfile'>{{side.username}}</b><b>'s</b> profile.</span></center>
+						</span>
+
+	<!-- 				<center><span class='well well-sm' style='font-size:20px; width:500px; border-top:5px solid #ff0000;'>	You visit <b id='spanProfile'></b><b>'s</b> profile</span></center> -->
 </div>

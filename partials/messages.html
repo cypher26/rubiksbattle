@@ -18,9 +18,9 @@
 
 								  <div class="tab-content" >
 								    <div id="compose" class="tab-pane fade in active" style='background-color:#FFFFFF; padding:10px;'>
-								   				<div class='row' style='border:0px solid'>
+								   				<div class='row' style='border:0px solid; '>
 
-								   					<div class='col-xs-5' style='border:0px solid; padding-top:10px;'>
+								   					<!-- <div class='col-xs-5' style='border:0px solid; padding-top:10px;'>
 
 														    
 														    	<div id='searchUser' class="form-inline" style='border:0px solid;
@@ -34,7 +34,18 @@
 
 																</div>
 																
-													</div>
+													</div> -->
+													<div class='col-xs-1'></div>
+													<div class='col-xs-10'>
+													<div class="input-group" style='width:100%; margin-bottom:20px; margin-top:10px;'>
+											                    <span class="input-group-addon">
+											                   <md-icon md-svg-src="img/svg/ic_account_circle_black_24px.svg" class="name"></md-icon></span>
+
+											                   <input id='inputUsername' ng-model='inputInboxUsername' type='text' class='form-control' placeholder='Username'>
+															</div></div>
+													<div class='col-xs-1'></div>
+													
+															
 														
 												</div>	
 
@@ -78,18 +89,25 @@
 									    		(item.msg_from.username === userInfo.username ? '':item.msg_from._id)+ '' +
 									    		(item.msg_to.username === userInfo.username ? '':item.msg_to._id)
 									    		
-									    		)" height='50px;' ng-repeat="item in msg_text track by $index"
+									    		)" height='50px;' 
+												ng-repeat="item in msg_text track by $index"
+												ng-if="((item.msg_from.username === userInfo.username ? '':item.msg_from.username)+
+											    		  	(item.msg_to.username === userInfo.username ? '':item.msg_to.username)).indexOf(inputInboxUsername)>-1"
 														 style=" border-bottom:3px solid #ffffff; background-color:
 										 {{item.msg_status === 'unseen' && item.msg_from.username != userInfo.username ? '#f2f2f2;':'#ffffff;'}} 
 									    			 			 padding-bottom:100px;">
 									    				<td  align='left'  style=' padding-left:20px; border:0px solid;'>
-									    					   <svg width="25" height="25" style='padding-top:5px;'>
-                               <circle cx="12.5" cy="12.5" r="5"   fill="LightGreen" /> <!-- Chartreuse -->
+					    					   <svg width="25" height="25" style='padding-top:5px;'>
+                               <circle cx="12.5" cy="12.5" r="5"   fill="
+                               {{onlineList.indexOf((item.msg_from.username === userInfo.username ? '':item.msg_from._id)+
+											    		  	(item.msg_to.username === userInfo.username ? '':item.msg_to._id).toString())>-1 ? 'LightGreen':'Red'}}" /> 
+											    		  	
                       </svg> 
-										    				<img src='/img/user/userDefault.png' 
-												    		 style='border:0px solid #d8d8d8; height:30px; width:30px; margin-right:0px;'></img> 
-												    		  	{{item.msg_from.username === userInfo.username ? '':item.msg_from.username}}
-												    		  	{{item.msg_to.username === userInfo.username ? '':item.msg_to.username}}
+						<img src="{{item.msg_from.username === userInfo.username ? '':item.msg_from.user_avatar}}
+										    		  	{{item.msg_to.username === userInfo.username ? '':item.msg_to.user_avatar}}" 
+												    		 style='margin-right:5px; border:0px solid #d8d8d8; height:30px; width:30px; margin-right:0px;'></img> 
+									    		  			{{item.msg_from.username === userInfo.username ? '':item.msg_from.username}}
+											    		  	{{item.msg_to.username === userInfo.username ? '':item.msg_to.username}}
 
 		    		
 												    		  

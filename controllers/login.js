@@ -35,7 +35,19 @@ app.config(['$routeProvider','$locationProvider', function ($routeProvider,$loca
    
 }]);
 
-
+app.directive('ngEnter', function () {
+    return function (scope, element, attrs) {
+        element.bind("keydown keypress", function (event) {
+            if(event.which === 13) {
+                scope.$apply(function (){
+                    scope.$eval(attrs.ngEnter);
+                });
+ 
+                event.preventDefault();
+            }
+        });
+    };
+});
 
 
 /**
@@ -288,10 +300,10 @@ console.log('login ctrl');
                                               if (data.exist == true){
                                                 $( "#imgPrimary" ).delay(1500).animate({ 
                       
-                                                  left: "-=" + parseInt($('#imgPrimary').offset().left - 50),
-                                                  top: "-=" + parseInt($('#imgPrimary').offset().top - 00), //-30
-                                                  width: '130px',
-                                                  height: '100px' //[comment]
+                                                  // left: "-=" + parseInt($('#imgPrimary').offset().left - 50),
+                                                  // top: "-=" + parseInt($('#imgPrimary').offset().top - 00), //-30
+                                                  // width: '130px',
+                                                  // height: '100px' //[comment]
                                                 
                                                    }, "slow", function(){
                                                     $window.location.reload();

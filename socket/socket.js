@@ -21,41 +21,7 @@ var checkSolver = require('../smart/solveP1.js');
 var glicko2 = require('glicko2');
 
 
-setRatedPoints(1646,1354,1,function(p1Points,p2Points){
-		console.log("p1 = " + p1Points);
-		console.log('p2 = ' + p2Points);
-});
 
-
-
-function setRatedPoints(p1Rating,p2Rating,whoWon,callback){
-
-
-	settings = {
-	  // tau : "Reasonable choices are between 0.3 and 1.2, though the system should 
-	  //       be tested to decide which value results in greatest predictive accuracy." 
-	  tau : 0.5,
-	  // rating : default rating 
-	  rating : 1500,
-	  //rd : Default rating deviation 
-	  //     small number = good confidence on the rating accuracy 
-	  rd : 50,
-	  //vol : Default volatility (expected fluctation on the player rating) 
-	  vol : 0.50
-	};
-
-    ranking = new glicko2.Glicko2(settings);
-
-	p1Rated = ranking.makePlayer(p1Rating,50,0.50);
-	p2Rated = ranking.makePlayer(p2Rating,50,0.50);
-
-	matches = []
-
-	matches.push([p1Rated,p2Rated,whoWon === 1 ? 1:0]);
-
-	ranking.updateRatings(matches);
-	callback(Math.round(p1Rated.getRating()),Math.round(p2Rated.getRating()));
-}
 
 
 //### glicko rating system -dn 
@@ -65,6 +31,14 @@ function setRatedPoints(p1Rating,p2Rating,whoWon,callback){
 //1210
 
 // win +14 / draw -2 / lose -19
+// win +13 / draw +1 / lose -12
+// 1257/1272
+
+// win +13 / draw 0 / lose -12
+// 1270/1284
+
+// win +13 / draw +1 / lose -11
+// 1283/1325
 
 //for request
 var varGameReqs = [];
@@ -74,12 +48,62 @@ var varTimerInc = [];
 var varUserInclude = [];
 
 
-var roomVar={};
+	roomVar={};
 
+	var timers = [];
+
+// timers['room'+1].test = 'hahaha';
+
+// console.log(timers);
+tempP1 = '1500';
+tempP2 = '1500';
+	setRatedPoints(tempP1,tempP2,'1',function(p1Points,p2Points){
+										scoreDiff = {
+											p1: Math.abs(tempP1 - p1Points),
+											p2: Math.abs(tempP2 - p2Points)
+										}
+										// io.in(socket.room).emit('winnerUpdate',perspective,
+										// 	roomVar[socket.room].gameStatus,winnerUser,'0',scoreDiff);
+
+										console.log(scoreDiff);
+										//update database rating
+
+
+								});
+
+function setRatedPoints(p1Rating,p2Rating,whoWon,callback){
+
+
+					settings = {
+					  // tau : "Reasonable choices are between 0.3 and 1.2, though the system should 
+					  //       be tested to decide which value results in greatest predictive accuracy." 
+					  tau : 0.5,
+					  // rating : default rating 
+					  rating : 1500,
+					  //rd : Default rating deviation 
+					  //     small number = good confidence on the rating accuracy 
+					  rd : 50,
+					  //vol : Default volatility (expected fluctation on the player rating) 
+					  vol : 0.50
+					};
+
+				    ranking = new glicko2.Glicko2(settings);
+
+					p1Rated = ranking.makePlayer(p1Rating,50,0.50);
+					p2Rated = ranking.makePlayer(p2Rating,50,0.50);
+
+					matches = []
+
+					matches.push([p1Rated,p2Rated,parseInt(whoWon) === 1 ? 1:0]);
+
+					ranking.updateRatings(matches);
+					callback(Math.round(p1Rated.getRating()),Math.round(p2Rated.getRating()));
+	}
 
 module.exports.listen = function(app){
     io = socketIO.listen(app)
  
+
 	hotel = new Hotel(io.sockets.adapter)
 
 
@@ -107,22 +131,22 @@ module.exports.listen = function(app){
 			// delete roomVar['room234'];
 
 			data = Object.keys(roomVar);
-			tempRoomVar =  clone(roomVar);
+			tempVar =  clone(roomVar);
 			for (x=0;x<data.length;x++){
-					if (tempRoomVar[data[x]].gameStatus == 'abandon') delete tempRoomVar[data[x]];
-			  try {	delete tempRoomVar[data[x]].iniTimer; }   catch(err){}
-				try {delete tempRoomVar[data[x]].clockTimer; } catch(err){}
-				try {	delete tempRoomVar[data[x]].aiTimer; } catch(err){}
-			try {	delete tempRoomVar[data[x]].dcTimer; } catch(err){}
-					// delete tempRoomVar[data[x]]		
+					if (tempVar[data[x]].gameStatus == 'abandon') delete tempVar[data[x]];
+		    try {	delete tempVar[data[x]].iniTimer; }   catch(err){}
+			try {   delete tempVar[data[x]].clockTimer; } catch(err){}
+			try {	delete tempVar[data[x]].aiTimer; } catch(err){}
+			try {	delete tempVar[data[x]].dcTimer; } catch(err){}
+					// delete tempVar[data[x]]		
 			}
-			console.log('last hint');
+			// console.log('last hint');
 
 
 			// console.log(roomVar);
-			io.emit('updateLiveGames',JSON.stringify(tempRoomVar));
+			io.emit('updateLiveGames',JSON.stringify(tempVar));
 			// console.log(roomVar);
-				console.log('###########');
+				// console.log('###########');
 
 	 }
 	 function clone(obj) {
@@ -138,6 +162,9 @@ module.exports.listen = function(app){
 		models.viewAllGames(function(err,data){
 			data.forEach(function(data){
 					if (data.reqStatus =='ongame' && roomVar['room'+data._id] == undefined){ // if ongame without data variables
+						timers['room'+data._id]={
+
+						};
 						roomVar['room'+data._id]={
 											userList:[],
 											roomMsg:[],
@@ -152,7 +179,7 @@ module.exports.listen = function(app){
 											//cubePixels animate pixels update
 											//cubePixels1
 											//clockCtr flipclock
-											//clockTimer
+											clockTimer:null,
 											//aiTimer
 											//aiCtr
 											//aiAlg
@@ -187,6 +214,7 @@ module.exports.listen = function(app){
 		/// initialize variables for database - end ----------------------------------
 	
 	iniVarGames(function(){
+		// console.log('iniVarGames');
 			funcUpdateLiveGames();
 
 	});	
@@ -206,6 +234,35 @@ module.exports.listen = function(app){
 				// 	});
 				// })
 
+				// socket.on('testUpdate',function(data,callback){
+				// 	// console.log(util.inspect(roomVar[socket.room]));
+				// 	console.log('testupdate');
+				// 	// testVar = socket.room;
+				// });
+				
+				socket.on('reqRatingUpdate',function(data,callback){
+					funcRatingUpdate(data);
+				});
+
+				function funcRatingUpdate(data){
+					var tempP1,tempP2;
+						models.getRating([roomVar[socket.room].gameData.reqFrom_id._id,
+										 roomVar[socket.room].gameData.reqTo_id._id],function(err,data){
+								data.forEach(function(item){
+									if (item._id == roomVar[socket.room].gameData.reqFrom_id._id) tempP1 = item.user_score;
+									if (item._id == roomVar[socket.room].gameData.reqTo_id._id) tempP2 = item.user_score;
+								});
+
+								//update rating to room
+									pRating = {
+									p1Rating:tempP1, //player1
+									p2Rating:tempP2 //player2
+								}
+								socket.emit('updateRating',pRating);
+					 });
+
+				}
+
 				socket.on('reqScoreUpdate',function(data,callback){
 						socket.emit('roomScoreUpdate',roomVar[socket.room].roomScore);
 						callback();
@@ -213,12 +270,12 @@ module.exports.listen = function(app){
 				socket.on('abandonGame',function(data,callback){
 
 					  //fix stack size exceeded
-						// clearInterval(roomVar[socket.room].dcTimer);
-						// clearInterval(roomVar[socket.room].clockTimer);
-						// clearInterval(roomVar[socket.room].iniTimer);
-						// clearInterval(roomVar[socket.room].aiTimer);
+						// clearInterval(timers[socket.room].dcTimer);
+						// clearInterval(timers[socket.room].clockTimer);
+						// clearInterval(timers[socket.room].iniTimer);
+						// clearInterval(timers[socket.room].aiTimer);
 
-						console.log('abandon game');
+						// console.log('abandon game');
 
 
 						if (roomVar[socket.room].gameStatus == 'onGame'){
@@ -250,7 +307,7 @@ module.exports.listen = function(app){
 				socket.on('adduser',function(data,callback){
 
 
-				
+						// console.log('add_user');				
 
 
 
@@ -280,7 +337,7 @@ module.exports.listen = function(app){
 						//room all users
 						roomVar[socket.room]['userList'].push(socket.userInfo._id);
 
-						console.log('userList + ' + roomVar[socket.room]['userList']);
+						// console.log('userList + ' + roomVar[socket.room]['userList']);
 
 						// update users given id
 						models.getUsersById(roomVar[socket.room]['userList'],function(err,data){
@@ -314,7 +371,7 @@ module.exports.listen = function(app){
 							reconnection();
 						}
 
-						console.log("PQueue add " + roomVar[socket.room].playerQueue);
+						// console.log("PQueue add " + roomVar[socket.room].playerQueue);
 
 						checkIfReady();
 
@@ -345,10 +402,27 @@ module.exports.listen = function(app){
 				}
 				function socketWinnerUpdate(perspective,winnerBy,winnerUser){
 						//remove all timer because all timer events are involve
-						clearInterval(roomVar[socket.room].dcTimer);
-						clearInterval(roomVar[socket.room].clockTimer);
-						clearInterval(roomVar[socket.room].iniTimer);
-						clearInterval(roomVar[socket.room].aiTimer);
+						// console.log('clockTimer = ' +timers[socket.room].clockTimer);
+						// console.log('s1 = ' + util.inspect(roomVar[socket.room],false,null));
+
+						// console.log('c1 = ' +util.inspect(roomVar[socket.room],false,null));
+
+
+						clearInterval(timers[socket.room].dcTimer);
+							// timers[socket.room].dcTimer = null;
+						clearInterval(timers[socket.room].clockTimer);
+							// timers[socket.room].clockTimer = null;
+						clearInterval(timers[socket.room].iniTimer);
+							// timers[socket.room].iniTimer = null;
+						clearInterval(timers[socket.room].aiTimer);
+							// timers[socket.room].aiTimer = null;
+
+						// console.log('c2 = ' +util.inspect(roomVar[socket.room],false,null));
+
+
+						// console.log('winner update '+ timers[socket.room].clockTimer);
+
+						// console.log('w update' +util.inspect(roomVar,false,null));
 
 						//insert database
 							if (perspective=='player1') gameWinner = roomVar[socket.room].gameData.reqFrom_id._id;
@@ -403,42 +477,83 @@ module.exports.listen = function(app){
 							roomVar[socket.room].roomScore.p2++;
 						}
 						io.in(socket.room).emit('roomScoreUpdate',roomVar[socket.room].roomScore);
-
+						funcUpdateLiveGames();
 						
-						//if single player lose
+						//if single player
 						if (roomVar[socket.room].gameData.reqTo_id._id == '-1' && perspective == 'player2'){	
 							winnerUser = roomVar[socket.room].gameData.reqFrom_id;
 							io.in(socket.room).emit('winnerUpdate',perspective,roomVar[socket.room].gameStatus,winnerUser,'1');
 							return;
+						}else if (roomVar[socket.room].gameData.reqTo_id._id == '-1' && perspective == 'player1'){
+							io.in(socket.room).emit('winnerUpdate',perspective,roomVar[socket.room].gameStatus,winnerUser,'0');
+							return;
 						}
-
-						io.in(socket.room).emit('winnerUpdate',perspective,roomVar[socket.room].gameStatus,winnerUser,'0');
-
 						
+					
 
+
+						//update rating
+					var tempP1,tempP2;
+					
+					models.getRating([roomVar[socket.room].gameData.reqFrom_id._id,
+							 roomVar[socket.room].gameData.reqTo_id._id],function(err,data){
+								data.forEach(function(item){
+									if (item._id == roomVar[socket.room].gameData.reqFrom_id._id) tempP1 = item.user_score;
+									if (item._id == roomVar[socket.room].gameData.reqTo_id._id) tempP2 = item.user_score;
+								});
+
+								//set rating
+								setRatedPoints(tempP1,tempP2,(perspective == 'player1'?'1':'2'),function(p1Points,p2Points){
+										scoreDiff = {
+											p1: Math.abs(tempP1 - p1Points),
+											p2: Math.abs(tempP2 - p2Points)
+										}
+										io.in(socket.room).emit('winnerUpdate',perspective,
+											roomVar[socket.room].gameStatus,winnerUser,'0',scoreDiff);
+
+										//update database rating
+
+										models.setRating(roomVar[socket.room].gameData.reqFrom_id._id,p1Points,function(){
+											models.setRating(roomVar[socket.room].gameData.reqTo_id._id,p2Points,function(){
+												// funcRatingUpdate();
+											});
+										});
+
+
+								});
+
+								
+								// io.in(socket.room).emit('updateRating',pRating);
+					 });
 
 
 				}
+			
 
+			
 
 				function reconnection(){
-					clearInterval(roomVar[socket.room].dcTimer);
+					clearInterval(timers[socket.room].dcTimer);
+					timers[socket.room].dcTimer = null;
 					roomVar[socket.room].dcInc = 0;
 					roomVar[socket.room].iniCtr = 3;
-					roomVar[socket.room].iniTimer = setInterval(function(){
+					timers[socket.room].iniTimer = setInterval(function(){
 
-					roomVar[socket.room].iniStr = 'The game stars in ' +roomVar[socket.room].iniCtr;
+					roomVar[socket.room].iniStr = 'The game starts in ' +roomVar[socket.room].iniCtr;
 
 
 						if (roomVar[socket.room].iniCtr==0){
 							roomVar[socket.room].iniStr = 'Go!';
 
 							 roomVar[socket.room].gameStatus = 'onGame'; //resume clock time
-							 roomVar[socket.room].clockTimer = setInterval(function(){
+
+
+							 timers[socket.room].clockTimer = setInterval(function(){
 								 io.in(socket.room).emit('clockUpdate',roomVar[socket.room].clockCtr); 
 						 		roomVar[socket.room].clockCtr++;
-							 },1000);
+							 },10);
 
+							
 							 //resume computer time
 							 if (roomVar[socket.room].gameData.reqTo_id._id == '0'){
 							 	computerTimerInit();
@@ -451,7 +566,8 @@ module.exports.listen = function(app){
 						 		roomVar[socket.room].iniStr, roomVar[socket.room].gameStatus,false,'blue');
 
 						 if (roomVar[socket.room].iniCtr<=0){
-						 	clearInterval(roomVar[socket.room].iniTimer);
+						 	clearInterval(timers[socket.room].iniTimer);
+						 	timers[socket.room].iniTimer = null;
 						 }
 						 roomVar[socket.room].iniCtr--;
 					},1000);
@@ -466,7 +582,7 @@ module.exports.listen = function(app){
 								 {
 									 roomVar[socket.room].readyQueue.push(socket.userInfo._id);
 								 }
-							console.log(roomVar[socket.room].readyQueue);
+							// console.log(roomVar[socket.room].readyQueue);
 
 							//if computer opponent
 							if (roomVar[socket.room].gameData.reqTo_id._id =='0'){
@@ -481,8 +597,10 @@ module.exports.listen = function(app){
 								roomVar[socket.room].readyQueue = [];
 								roomVar[socket.room].gameStatus = 'iniGame';
 								roomVar[socket.room].iniCtr = 3;
-								roomVar[socket.room].iniTimer = setInterval(function(){
-											roomVar[socket.room].iniStr = 'The game stars in ' +roomVar[socket.room].iniCtr;
+				 		 	// console.log('iniTimer ' +util.inspect(timers[socket.room].iniTimer,false,null));
+
+								timers[socket.room].iniTimer = setInterval(function(){
+											roomVar[socket.room].iniStr = 'The game starts in ' +roomVar[socket.room].iniCtr;
 									if (roomVar[socket.room].iniCtr==0){
 											roomVar[socket.room].iniStr = 'Go!';
 											//create game database
@@ -517,21 +635,30 @@ module.exports.listen = function(app){
 											 
 											 //start time
 											 roomVar[socket.room].clockCtr = 0;
-											 roomVar[socket.room].clockTimer = setInterval(function(){
+											 timers[socket.room].clockTimer = setInterval(function(){
 
 										 		 io.in(socket.room).emit('clockUpdate',roomVar[socket.room].clockCtr); 
 										 		roomVar[socket.room].clockCtr++;
-											 },1000);
 
-											 
-									
+
+										 		// console.log(timers[socket.room].clockTimer);
+											 },10);
+											 // console.log('c = ' + util.inspect(roomVar[socket.room],false,null));
+											// console.log('c = ' +util.inspect(timers[socket.room].clockTimer,false,null));
+
 									}
 									// 3 2 1 go
 									 io.in(socket.room).emit('gameUpdate', 
-									 		roomVar[socket.room].iniStr, roomVar[socket.room].gameStatus,false,'blue');
+								 		roomVar[socket.room].iniStr, roomVar[socket.room].gameStatus,false,'blue');
 
 									 if (roomVar[socket.room].iniCtr<=0){
-									 	clearInterval(roomVar[socket.room].iniTimer);
+									 	// console.log('remove iniTimer');
+									 	// console.log('r iniTimer ' + timers[socket.room].iniTimer);
+									 	// console.log('r  = ' + socket.room);
+									 		 	// console.log('iniTimer ' +util.inspect(timers[socket.room].iniTimer,false,null));
+
+									 	clearInterval(timers[socket.room].iniTimer);
+									 	// timers[socket.room].iniTimer = null;
 									 }
 									 roomVar[socket.room].iniCtr--;
 								},1000);
@@ -540,7 +667,7 @@ module.exports.listen = function(app){
 					
 				});  
 				function computerTimerInit(){
-						roomVar[socket.room].aiTimer = setInterval(function(){
+						timers[socket.room].aiTimer = setInterval(function(){
 
 								roomVar[socket.room].algP2+=roomVar[socket.room].aiAlg[roomVar[socket.room].aiCtr] + " ";
 								checkWinner();
@@ -549,9 +676,11 @@ module.exports.listen = function(app){
 									roomVar[socket.room].scramble+ " " + roomVar[socket.room].algP2); 
 
 								roomVar[socket.room].aiCtr++;
+								// console.log('computerTimerInit ' + socket.room + " "  + roomVar[socket.room].aiCtr);
 								// console.log(roomVar[socket.room].algP2);
 								if (roomVar[socket.room].aiCtr>=roomVar[socket.room].aiAlg.length){
-									clearInterval(roomVar[socket.room].aiTimer)
+									clearInterval(timers[socket.room].aiTimer);
+									timers[socket.room].aiTimer = null;
 								}
 						},100);
 				}
@@ -614,6 +743,8 @@ module.exports.listen = function(app){
 				});
 
 				socket.on('disconnect', function() {
+
+
 					//for online users
 						io.emit('updateOnlineUsers',funcUpdateOnline());
 					    
@@ -622,6 +753,9 @@ module.exports.listen = function(app){
 			     														//remove id from game
 			     	if (socket.userInfo == undefined) return;
 
+
+
+					// console.log('disconnect in game dev');
 			     	//remove from userList
 			  //  		roomVar[socket.room]['userList'] = roomVar[socket.room]['userList'].filter(function( obj ) {
 			  //  			 return obj !== socket.userInfo._id;
@@ -651,17 +785,19 @@ module.exports.listen = function(app){
 					// console.log(roomVar[socket.room]['readyQueue']);
 
 
-					console.log('userList ' + roomVar[socket.room]['userList']);
-					console.log('dc sr = ' + socket.room);
+					// console.log('userList ' + roomVar[socket.room]['userList']);
+					// console.log('dc sr = ' + socket.room);
 					//if ini default ini
 					// console.log('gm = ' +roomVar[socket.room].gameStatus);
 					if (roomVar[socket.room].gameStatus == 'iniGame' && socket.userPerspective !='observer'){
-						clearInterval(roomVar[socket.room].iniTimer);
+						clearInterval(timers[socket.room].iniTimer);
+						timers[socket.room].iniTimer = null;
 						 roomVar[socket.room].readyQueue = [];
 						 io.in(socket.room).emit('gameUpdate', '', roomVar[socket.room].gameStatus,true,'blue');
 					}
 					if (roomVar[socket.room].gameStatus == 'reconnect'){
-						clearInterval(roomVar[socket.room].iniTimer);
+						clearInterval(timers[socket.room].iniTimer);
+						timers[socket.room].iniTimer = null;
 					}
 					
 
@@ -672,12 +808,13 @@ module.exports.listen = function(app){
 					{
 
 							//for 1 second delay dc timer glitch
-							clearInterval(roomVar[socket.room].dcTimer);
+							clearInterval(timers[socket.room].dcTimer);
+							timers[socket.room].dcTimer = null;
 
 							//for computer timer stop
 							if (roomVar[socket.room].gameData.reqTo_id._id == '0')
-							clearInterval(roomVar[socket.room].aiTimer);
-							
+							clearInterval(timers[socket.room].aiTimer);
+							timers[socket.room].aiTimer = null;
 
 							//if times of dc limit is reached
 
@@ -696,30 +833,43 @@ module.exports.listen = function(app){
 
 							//decrement number of disconnection
 							roomVar[socket.room][socket.userPerspective + 'Dc']--;
-							clearInterval(roomVar[socket.room].clockTimer);
+							clearInterval(timers[socket.room].clockTimer);
+							timers[socket.room].clockTimer = null;
 
 							//60 seconds disconnection
-							roomVar[socket.room].dcInc = 60;
-							roomVar[socket.room].dcTimer = setInterval(function(){ //pause flipclock
+							roomVar[socket.room].dcInc = 6;
+							timers[socket.room].dcTimer = setInterval(function(){ //pause flipclock
 
 								roomVar[socket.room].gameStatus = 'reconnect';
 
 								roomVar[socket.room].dcStr = "Waiting for reconnection .. " + roomVar[socket.room].dcInc;
-								 io.in(socket.room).emit('gameUpdate', roomVar[socket.room].dcStr, roomVar[socket.room].gameStatus,false,'red');
+
+
+		// console.log('pq = ' +roomVar[socket.room].playerQueue + " reqto = " +roomVar[socket.room].gameData.reqTo_id + " " );
+			// console.log('TEST = ' + (roomVar[socket.room].playerQueue.indexOf(roomVar[socket.room].gameData.reqTo_id._id.toString())>-1));
+
+									 io.in(socket.room).emit('gameUpdate', roomVar[socket.room].dcStr, roomVar[socket.room].gameStatus,false,'red');
 
 									console.log('dcInc ' + roomVar[socket.room].dcInc);
 							
 								// if dc clock expires
 								if (roomVar[socket.room].dcInc<=0){
-									clearInterval(roomVar[socket.room].dcTimer);
+
+									// console.log('clear timer');
+									// console.log('pq = ' +roomVar[socket.room].playerQueue + " reqto = " +roomVar[socket.room].gameData.reqTo_id + " " +
+									// 	roomVar[socket.room].playerQueue.indexOf(roomVar[socket.room].gameData.reqTo_id._id)>-1 );
+
+									clearInterval(timers[socket.room].dcTimer);
+									timers[socket.room].dcTimer =null;
 									// console.log("PQueue " + roomVar[socket.room].playerQueue);
 									// console.log('s = ' + socket.userInfo._id);
 									// console.log('d = ' + roomVar[socket.room].playerQueue.indexOf(socket.userInfo._id)>-1 )
-									if (roomVar[socket.room].playerQueue.indexOf(roomVar[socket.room].gameData.reqFrom_id._id)>-1 ){
-										console.log('test dc 1');
+
+									if (roomVar[socket.room].playerQueue.toString().indexOf(roomVar[socket.room].gameData.reqFrom_id._id.toString())>-1 ){
+										console.log(' dc p1');
 									   socketWinnerUpdate('player1','disconnection',roomVar[socket.room].gameData.reqFrom_id);
-									}else if (roomVar[socket.room].playerQueue.indexOf(roomVar[socket.room].gameData.reqTo_id._id)>-1 ){
-											console.log('test dc 1');
+									}else if (roomVar[socket.room].playerQueue.toString().indexOf(roomVar[socket.room].gameData.reqTo_id._id.toString())>-1 ){
+											console.log(' dc p2');
 									   socketWinnerUpdate('player2','disconnection',roomVar[socket.room].gameData.reqTo_id);
 									}else{
 										//abandon game
@@ -746,7 +896,7 @@ module.exports.listen = function(app){
 						}
 					
 
-					console.log("PQueue dc" + roomVar[socket.room].playerQueue);
+					// console.log("PQueue dc" + roomVar[socket.room].playerQueue);
 
 					checkIfReady();
 
@@ -767,6 +917,8 @@ module.exports.listen = function(app){
 
 				socket.join(socket.request.session.user_id);
 				socket.room=socket.request.session.user_id;
+
+				// console.log('new user ' + socket.room);
 
 
 		//######################## -- online users and live games -- ################################
@@ -802,6 +954,12 @@ module.exports.listen = function(app){
 
 				callback();
 			});
+			socket.on('reqUpdateFriendReq', function (user,callback){
+				console.log('reqUpdateFriendReq');
+				io.sockets.in(user).emit('friendReq'); //broadcast also itself
+				io.sockets.in(socket.request.session.user_id).emit('friendReq'); //broadcast also itself
+				callback();
+			});
 
 							// gameReq:gameReq,userFrom:$rootScope.userInfo,userTo:$scope.inviteData}
 			socket.on('createReqGame',function (data,callback){
@@ -835,7 +993,7 @@ module.exports.listen = function(app){
 
 							varTimerInc[data.gameReq.reqFrom_id] = 1;
 
-							console.log(varGameReqs);
+							// console.log(varGameReqs);
 							
 							
 
@@ -858,10 +1016,10 @@ module.exports.listen = function(app){
 										if (varTimerInc[data.gameReq.reqFrom_id]<0){
 												
 										//remove id when finish
-										console.log(varGameReqs);
+										// console.log(varGameReqs);
 
 										clearInterval(varGameTimers[data.gameReq.reqFrom_id]);
-
+										varGameTimers[data.gameReq.reqFrom_id] = null;
 											varGameReqs = varGameReqs.filter(function( obj ) {
 											    return obj.reqFrom_id !== data.gameReq.reqFrom_id;
 											});
@@ -896,7 +1054,7 @@ module.exports.listen = function(app){
 						if (Object.keys(data).length === 0 && data.constructor === Object) callback();
 						else{
 								clearInterval(varGameTimers[data.gameData.reqFrom_id]);
-
+								varGameTimers[data.gameData.reqFrom_id] = null;
 								varGameReqs = varGameReqs.filter(function( obj ) {
 								    return obj.reqFrom_id !== data.gameData.reqFrom_id;
 								});
@@ -924,7 +1082,7 @@ module.exports.listen = function(app){
 						else{
 
 								clearInterval(varGameTimers[data.gameData.reqFrom_id]);
-
+								varGameTimers[data.gameData.reqFrom_id] = null;
 								//delete id
 								varGameReqs = varGameReqs.filter(function( obj ) {
 								    return obj.reqFrom_id !== data.gameData.reqFrom_id;
@@ -939,7 +1097,7 @@ module.exports.listen = function(app){
 								});
 
 
-								console.log('userInclude = ' + varUserInclude);
+								// console.log('userInclude = ' + varUserInclude);
 
 								io.sockets.in(data.gameData.reqFrom_id).emit('declineModal');
 								io.sockets.in(data.gameData.reqTo_id).emit('closeModal');
@@ -951,6 +1109,7 @@ module.exports.listen = function(app){
 
 					socket.on('acceptGameReq',function(data,callback){
 						clearInterval(varGameTimers[data.gameData.reqFrom_id]);
+						varGameTimers[data.gameData.reqFrom_id] = null;
 						varGameReqs = varGameReqs.filter(function( obj ) {
 								    return obj.reqFrom_id !== data.gameData.reqFrom_id;
 						});

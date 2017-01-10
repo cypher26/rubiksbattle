@@ -79,8 +79,8 @@ var server = express()
 
 
 
-var io = require('./socket/socket').listen(server)
+var ioTest = require('./socket/socket').listen(server)
 
-io.use(function(socket, next) {
+ioTest.use(function(socket, next) {
     sessionMiddleware(socket.request, socket.request.res, next);
 });
