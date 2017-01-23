@@ -11,8 +11,8 @@ var session = require('express-session');
 
 var sessionMiddleware = session({
     secret: 'secret',
-    saveUninitialized: true,
-    resave: true
+    saveUninitialized: false,
+    resave: false
 });
 
 
@@ -36,19 +36,21 @@ var server = express()
 
 .engine('html', require('ejs').renderFile)
 .set('view engine', 'html')
-.use(sessionMiddleware)
+
 .use('/',express.static(__dirname + '/public'))
 .use('/js',express.static(__dirname + '/controllers'))
 .use("/templates",express.static(__dirname + '/templates'))
 .use("/partials",express.static(__dirname + '/partials'))
 .use("/node_modules",express.static(__dirname + '/node_modules'))
+.use("/bower_components",express.static(__dirname + '/bower_components'))
 // .use(function(req, res, next) { //allow cross origin requests
 //         res.setHeader("Access-Control-Allow-Methods", "POST, PUT, OPTIONS, DELETE, GET");
 //         res.header("Access-Control-Allow-Origin", "/");
 //         res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
 //     })
+// .use(sessionMiddleware)
+.use("/",sessionMiddleware,users)
 
-.use("/",users)
 	// .set('view engine','html');
 	// .use("",express.static(__dirname + '/views'))
 	// .use("",express.static(__dirname + ''))
@@ -79,8 +81,8 @@ var server = express()
 
 
 
-var ioTest = require('./socket/socket').listen(server)
+var io = require('./socket/socket').listen(server)
 
-ioTest.use(function(socket, next) {
+io.use(function(socket, next) {
     sessionMiddleware(socket.request, socket.request.res, next);
 });

@@ -618,7 +618,7 @@ function execPerm(str){
 function execCornerBufferAlg(str){
 	var completeCheck=0;	
 	execPerm(str);
-	for(var z=1;completeCheck==0;){
+	for(var z=0;completeCheck==0;){
 
 
 	var cornerBuffer = arrayCube[0][1][1][3] + '' + arrayCube[0][1][1][4] + '' + arrayCube[0][1][1][5];
@@ -669,7 +669,7 @@ function execCornerBufferAlg(str){
 					break;
 					case corner[x].charAt(y):
 						cornerCheck[x]=1;
-						z++;
+				
 						//execute algorithm
 						break;
 				}
@@ -689,14 +689,15 @@ function execCornerBufferAlg(str){
 	}
 	console.log(cornerSolution);
 	console.log('z='+z);
-	if (z%2==0){
+			z++;
+	if (z%2==1){
 		console.log('parity');
 		//"R D' R U' R' U' R U R' F' R U R' U' R' F R D R'"
 		//execPerm("R D' " + concatPerm + " D R'");
 	}
 
 }
-
+// console.log('hi hehehe');
 ///---------------corner----------------
 var cornerSolution='';
 var corner=['ARE','BNQ','CJM','DIF','PKV','GLU','XHS','OTW'];

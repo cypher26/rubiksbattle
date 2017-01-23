@@ -414,7 +414,7 @@ function execPerm(str){
 		}
 }
 
-
+var parity;
 function execCornerBufferAlg(str){
 	parity=false;
 	matrixInit();
@@ -424,7 +424,7 @@ function execCornerBufferAlg(str){
 	}
 	var completeCheck=0;	
 	execPerm(str);
-	for(var z=1;completeCheck==0;){
+	for(var z=0;completeCheck==0;){
 
 
 	var cornerBuffer = arrayCube[0][1][1][3] + '' + arrayCube[0][1][1][4] + '' + arrayCube[0][1][1][5];
@@ -475,7 +475,7 @@ function execCornerBufferAlg(str){
 					break;
 					case corner[x].charAt(y):
 						cornerCheck[x]=1;
-						z++;
+				
 						//execute algorithm
 						break;
 				}
@@ -489,6 +489,7 @@ function execCornerBufferAlg(str){
 	
 	 	
 			// console.log(cornerLetter);
+			z++;
 			str = cornerAlg;
 			cornerSolution+=cornerAlg + " ";
 			execPerm(str);
@@ -497,7 +498,9 @@ function execCornerBufferAlg(str){
 
 	// console.log('z='+z);
 	// console.log('z='+z);
-	if (z%2==0){
+			
+			console.log('z = ' + z);
+	if (z%2==1){
 		parity = true;
 		execPerm(cornerArray[3][2]);
 		cornerSolution+=cornerArray[3][2] + " ";
@@ -512,7 +515,7 @@ var cornerSolution='';
 var corner=['ARE','BNQ','CJM','DIF','PKV','GLU','XHS','OTW'];
 var cornerCheck=[];
 var cornerLetter,cornerAlg;
-var parity;
+
 var concatPerm ="R U' R' U' R U R' F' R U R' U' R' F R";
 for (x=0;x<8;x++){
 	cornerCheck[x]=0;
@@ -722,6 +725,7 @@ function execEdgeBufferAlg(str){
 		edgeSolution+=edgeAlg + " ";
 		execPerm(str);
 	}
+	console.log('parity = ' + parity);
 	if (parity){
 		edgeSolution+="M2 y L2 R U R' U' R' F R2 U' R' U' R U R' F' L2 ";
 		// execPerm("M2 y L2 R U R' U' R' F R2 U' R' U' R U R' F' L2 ");

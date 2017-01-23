@@ -1,5 +1,8 @@
 <div style="visibility: hidden">
     <!--############################# invite dialog ######################################-->
+
+
+
     <div class="md-dialog-container lg-modal" id="inviteDialog" style=''>
       <md-dialog layout-padding style='background-color:#000000;color:#ffffff; width:300px;' >
            
@@ -234,11 +237,7 @@
                                        counter-clockwise="">
                                     </progress-arc>
                                 </center>
-                            <center>
-                              
-                                 
                                    
-                                        </font> </center>
                                 </div>
                           <div layout='row' align='center' ng-init='receiveDialogAccept=false'>
                                 <div flex>
@@ -259,7 +258,7 @@
      <div class="md-dialog-container lg-modal" id="friendsDialog" style=''>
       <md-dialog layout-padding style=' width:700px; border:0px solid;' >
             <md-toolbar style='padding:0px;'>
-             <div class='md-toolbar-tools' style='background-color:#848484'>
+             <div class='md-toolbar-tools' style='background-color:#2e2e2e'>
                  <span flex></span>
               <span class='glyphicon glyphicon-fire'></span>
                   <span style='margin-left:10px'></span>Play with your friends!
@@ -297,7 +296,7 @@
          <md-list-item class="clickCard" layout-wrap style='border:0px solid;' layout-align='center center'>
     
         <md-card   ng-repeat="item in friendsData" ng-if=
-        "onlineList.indexOf(item._id.toString())>-1 && item.username.indexOf(inputPlayUsername.toString())>-1"
+        "busyList.indexOf(item._id.toString())<0 && onlineList.indexOf(item._id.toString())>-1 && item.username.indexOf(inputPlayUsername.toString())>-1"
          ng-click='inviteDialog(item)'
          class="md-whiteframe-5dp"  flex="30"  layout >
          <table style='border:0px solid; table-layout:fixed;'>
@@ -336,8 +335,6 @@
 
 
 
-
-
   </md-dialog>
     </div>
 
@@ -346,10 +343,329 @@
 
 
 
+<!-- help dialog -->
+    <style>
+    .animate-switch-container {
+          position:relative;
+        
+        
+         height:350px;
+          overflow:hidden;
+          padding:30px;
+          padding-top:10px;
+        }
+
+        .animate-switch {
+           /* padding:30px;*/
+            border:1px solid #000000;
+          height:350px;
+        }
+
+        .animate-switch.ng-animate {
+          transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
+
+          position:absolute;
+          top:0;
+          left:0;
+          right:0;
+          bottom:0;
+        }
+
+        .animate-switch.ng-leave.ng-leave-active,
+        .animate-switch.ng-enter {
+          top:-50px;
+        }
+        .animate-switch.ng-leave,
+        .animate-switch.ng-enter.ng-enter-active {
+          top:0;
+        }
+    </style>
+       <div class="md-dialog-container lg-modal" id="helpDialog" style='top:0px;'>
+          <md-dialog  layout-padding style=' width:600px; border:0px solid; background-color:#2E2E2E; padding:10px; color:#ffffff; 
+             '  >
+                
+            <div layout='row' >
+             
+        
+
+             <span id="" style='padding-left:20px;  
+              font-size:20px; border:0px solid #ffffff; position:relative;   font-family:"Comic Sans MS", cursive, sans-serif;' > 
+                        <span class='glyphicon glyphicon-question-sign'></span> Help</span>
+                    <div class='col-xs-8' style='border:0px solid #ffffff;'>
+                            <div class='col-xs-5' style='border:0px solid;' align='right'>
+                                <button ng-disabled="modalPage === 1?true:false"ng-click='modalBack()' class='btn btn-default' style='' > &#9668; </button>
+                            </div>
+                             <div class='col-xs-2' style='border:0px solid; color:#ffffff'>
+                                <h4 id='pagination'>{{modalPage}}/6</h4>
+                            </div>
+                            <div class='col-xs-5' style='border:0px solid;'>
+                                <button ng-click="modalNext()" class='btn btn-default' style=''>  &#9658;</button>
+                            </div>
+                    </div>
+                    <div flex></div>
+<span type="button" ng-click='cancel()'class="close" style='' data-dismiss="modal" aria-label="Close"><span 
+            style='color:#ffffff; font-size:25px;' >&times;</span></span>
+            </div>
+
+        <div ng-switch on="modalPage"    class="animate-switch-container" style=' overflow-y:auto; margin:0px; background-color:#ffffff'>
+                    <div class='row'  class="animate-switch" ng-switch-when="1"style="background-color:#ffffff; border:0px solid;  padding-top:0px; color:#000000;"  >
+                        <div  class='row' align='center'>
+                          <img src='img/lpu.png' style='width:225px; height:225px;' />
+
+                        </div>
+                        <div class='row' align='center'>
+                             <h2>Welcome to Rubik's Battle!</h2>
+                        </div>
+                        <div class='row' align='center' >
+                           C'mon, let's play Rubik's cube together!
+                        </div>
+                                     
+                                        
+                    </div>
+
+                   <div class='row'  class="animate-switch" ng-switch-when="2"style="background-color:#ffffff; border:0px solid;   color:#000000;"  align='center'>
+                            <h4> Choose game mode <span class='glyphicon glyphicon-tasks'></span></h4>
+                            In <b>'Play'</b> tab, you can select the game mode whether single player, versus another player, or computer <br>
+                            <br>
+                            <img  class="md-whiteframe-8dp" src='img/gamemode.png' style='width:550px; height:200px'></img>
+                                     
+                                        
+                    </div>
+
+                    <div class='row'  class="animate-switch" ng-switch-when="3"style="background-color:#ffffff; border:0px solid;   color:#000000;"  align='center' >
+                           <h4> Game request <span class='glyphicon glyphicon-tasks'></span></h4>
+                            Once you select game, this dialog will pop up. <br>
+                        
+                            <table style='margin-bottom:7px; margin-top:1px;'>
+                                <tr>
+                                    <td rowspan='2'>
+                                        <img  class="md-whiteframe-8dp" src='img/request.png' style='width:230; height:150'></img>
+                                    </td>
+                                    <td style='width:100px; padding-left:10px; '>
+                                        <b>Cube type:</b>
+                                    </td>
+                                    <td style='padding:5px; font-size:14px;'>
+                                         <You can change/specify <br> the cube type whether it is (3x3x3) or (2x2x2)
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style='padding-left:10px;'>
+                                        <b>Room type:</b>
+                                    </td>
+                                    <td style='padding:5px; font-size:14px;'>
+                                        If you want some privacy, you can change the room to (Private) and set keyword/password of the room.
+                                    </td>
+                                </tr>
+                            </table>
+                            
+                            <b>Note:</b> This may apply to <u>single player</u> and <u>versus computer</u> game mode.
+                    </div> 
+                       <div class='row'  class="animate-switch" ng-switch-when="4"style="background-color:#ffffff; border:0px solid;   color:#000000;"  align='center'>
+                            <div align='left' style='margin-left:25px;'>
+                                <table>
+                                    <tr>
+                                        <td rowspan='2'>
+                                            <img c src='img/pvp.png' style='height:75px; width:100px;'>
+                                            </img>
+                                            </td>
+                                        <td style='padding-left:10px;'>
+                                            <h4> Battle (PvP) Player versus Player</h4>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style='padding-left:10px;'>
+                                            If you choose Battle PvP, just select friends who's online
+                                            or direct invite by clicking <b>here</b> at the bottom
+                                        </td>
+                                    </tr>
+                                </table><br>
+                         
+                            </div>
+                            <div align='center'>
+                                       <img class="md-whiteframe-8dp" src="/img/online1.png" style="height:200px; width:550px;"></img>
+                            </div>
+                      </div>
+
+
+                     <div class='row'  class="animate-switch" ng-switch-when="5"style="background-color:#ffffff; border:0px solid;   color:#000000; "  align='center'>
+
+                            <div align='left' style='margin-left:25px;'>
+                                    <table>
+                                        <tr>
+                                            <td rowspan='2'>
+                                                <img src='img/pvp.png' style='height:75px; width:100px;'>
+                                                </img>
+                                                </td>
+                                            <td style='padding-left:10px;' rowspan='2'>
+                                                <h4> Battle (PvP) Player versus Player</h4>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style='padding-left:10px;'>
+                                             
+                                            </td>
+                                        </tr>
+                                    </table><br>
+                             
+                                </div>
+                                <div align='center'>
+                                  - For a <b>new user</b>, you can <b>add</b> other players from 'invite' tab<br> <br>
+                          <img class="md-whiteframe-8dp" src='img/add.png' style='width:450px; height:150px'></img><br><br>
+                          - Or by selecting the player and direct challenge to play<br><br>
+                          <img class="md-whiteframe-8dp" src='img/direct5.png' style='width:450px; height:250px'></img>
+                           
+                                          
+                                </div>
+                       
+                    </div>
+                      <div class='row'  class="animate-switch" ng-switch-when="6"style="background-color:#ffffff; border:0px solid;   color:#000000;"  align='center'>
+                            <h4> Profile <md-icon style='fill:black'  md-svg-src="/img/svg/ic_person_pin_black_24px.svg" aria-label="android "></md-icon></h4>
+                            In <b>'profile'</b> tab, you can view your progress, friends, send messages and many more! <br>
+                            <br>
+                            <img class="md-whiteframe-8dp" src='img//help/profile.png' style='width:430px; height:200px'></img>
+                                     
+                                        
+                    </div>
+                         
+                             
+        
+      
+        </div>
+      </md-dialog>
+      </div>
 
 
 
 
+<!-- help dialog  end-->
+
+<!-- avatar dialog -->
+ <div class="md-dialog-container lg-modal" id="avatarDialog" style=''>
+          <md-dialog  layout-padding  style=' width:400px;' layout-align='center' >
+          <md-toolbar style='padding:0px;'>
+             <div class='md-toolbar-tools' style='background-color:#2e2e2e'>
+                 <span flex></span>
+              <span class='glyphicon glyphicon-tag'></span>
+                  <span style='margin-left:10px'></span>Change avatar
+
+                  <!-- <label style='font-size:14px'>All friends online</label> -->
+                <span flex></span>
+                <md-button class="md-icon-button" ng-click="cancel()">
+                  <md-icon md-svg-src="/img/svg/ic_close_black_24px.svg" aria-label="Close dialog"></md-icon>
+                </md-button>
+              </div>
+            </md-toolbar>
+            <div layout='row' flex style='border:0px solid;' layout-align='center'>
+                <form ng-controller='imageCtrl as up' name="up.upload_form" style='width:100%; border:0px solid;'>
+                                            <div id="image_preview" layout='row' style='border:0px solid;' >
+                                                <div flex='50' style='border:0px solid;'>
+                                                <img = style='width:160px; border:0px solid; height:160px; margin-bottom:10px;'  ngf-thumbnail="up.file || userInfo.user_avatar"/>
+                                                </div>
+
+                                                <div  flex='50' style=' border:0px solid;' >
+                                                    <div style=" margin-bottom:20px;"><u>Maximum of 2 MB only</u></div>
+                                                     <i ng-show="up.upload_form.file.$error.pattern">Only image file is required<br></i>
+                                                     <i ng-show="up.upload_form.file.$error.maxSize"> File too large</i>    
+                                                     {{progress}}
+                                                </div>
+                                            </div>
+                                                
+                                             
+                                                <div id="selectImage" style='border:0px solid' flex='100' align='center'>
+                                                
+                                                <input  type="file" 
+                                                    ngf-select
+                                                    ng-model="up.file" 
+                                                    name="file" 
+                                                    ngf-pattern="'image/*'"
+                                                    accept="image/*" 
+                                                    ngf-max-size="2MB" 
+                                                 
+                                                     />
+                                                                 
+                                                 </div>
+                    </form>
+            </div>
+            <div layout='row' layout-align='center'>
+                    <md-button ng-click='updateAcct()' class='md-raised md-primary'>Update avatar</md-button>
+            </div>
+
+          </md-dialog>
+  </div>
+
+<!-- avatar dialog -end -->
+
+
+<!-- edit acct -->
+ <div class="md-dialog-container lg-modal" id="editDialog" style=''>
+          <md-dialog  layout-padding  style=' width:400px;' layout-align='center' >
+          <md-toolbar style='padding:0px;'>
+             <div class='md-toolbar-tools' style='background-color:#2E2E2E;'>
+                 <span flex></span>
+              <span class='glyphicon glyphicon-wrench'></span>
+                  <span style='margin-left:10px'></span>Edit Account
+                  <!-- <label style='font-size:14px'>All friends online</label> -->
+                <span flex></span>
+                <md-button class="md-icon-button" ng-click="cancel()">
+                  <md-icon md-svg-src="/img/svg/ic_close_black_24px.svg" aria-label="Close dialog"></md-icon>
+                </md-button>
+              </div>
+            </md-toolbar>
+            <div layout='row' layout-wrap flex style='border:0px solid; margin:0px;' layout-align='center'>
+                  
+
+                  <div layout='row' layout-padding style='padding-bottom:0px; margin-bottom:0px; border:0px solid;'>
+                   
+                        
+                         <div class="input-group input-group-md" ng-init="viewPass1 = false; viewPass2 = false; ">
+                              <span class="input-group-addon" id="sizing-addon3">
+                                 <md-icon ng-click="viewPass1 = !viewPass1;" md-svg-src="/img/svg/attachment-clip.svg" aria-label="Close dialog"></md-icon>
+                              </span>
+                              <input my-enter = "" ng-model="inputEmail" type="text" class="form-control" placeholder="Email" aria-describedby="sizing-addon3">
+                            </div>
+                    
+                   </div>
+                 
+            </div>
+            <div layout='row' layout-align='center' style="border:0px solid; padding-top:0px;" >
+                    <md-button ng-disabled="enableEmail" ng-click='updateEmail(inputEmail)' class='md-raised md-primary'>Update email</md-button>
+            </div>
+    <md-divider></md-divider>
+
+
+
+                   <div layout='row' layout-padding style='padding-bottom:0px;'>
+                   
+                        
+                         <div class="input-group input-group-md" ng-init="viewPass1 = false; viewPass2 = false; ">
+                              <span class="input-group-addon" id="sizing-addon3">
+                                 <md-icon ng-click="viewPass1 = !viewPass1;" md-svg-src="/img/svg/binoculars.svg" aria-label="Close dialog" style="fill:blue;"></md-icon>
+                              </span>
+                              <input my-enter = "updatePass(newPass,retypePass)"  ng-model = "newPass" type="{{viewPass1?'text':'password'}}" class="form-control" placeholder="New Password" aria-describedby="sizing-addon3">
+
+                            </div>
+                    
+                   </div>
+                   <div layout='row' layout-padding style='padding-top:0px;'>
+               
+                             <div class="input-group input-group-md">
+                              <span class="input-group-addon" id="sizing-addon3" style="visibility:hidden;">
+                                   <md-icon ng-click="viewPass2 = !viewPass2;" md-svg-src="" aria-label="Close dialog"></md-icon>
+                              
+                              </span>
+                              <input  my-enter = "updatePass(newPass,retypePass)"  ng-model = "retypePass"  type="{{viewPass1?'text':'password'}}" class="form-control" placeholder="Retype New Password" aria-describedby="sizing-addon3">
+                            
+                   </div>
+            </div>
+            <div layout='row' layout-align='center' style="padding-top:0px;">
+                    <md-button ng-disabled="enablePassword" ng-click='updatePass(newPass,retypePass)' class='md-raised md-primary'>Update password</md-button>
+            </div>
+
+          </md-dialog>
+  </div>
+
+
+<!-- edit acct end -->
 
 
 

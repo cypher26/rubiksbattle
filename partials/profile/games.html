@@ -73,12 +73,15 @@
 
 											        {{item.game_id.cubeType}}</td>
 		        <td><strong><span style="color:{{item.gameWinner==(isMember?isMember_id:userInfo._id)?'green':'red'}}"> 
-		        							   {{item.gameWinner==(isMember?isMember_id:userInfo._id)?'won':'lost'}}</span></strong></td>
+		        							   {{item.gameWinner==(isMember?isMember_id:userInfo._id)?'won':'lost'}}
+												</span></strong>
+		        							   {{item.gameWinner==(isMember?isMember_id:userInfo._id)&&
+		        							   item.winnerBy=='time'?'('+convertTimeComplete(item.endedTime)+')':''}}</td>
 
 
 
 											        <td>{{convertToDate(item.game_id.reqDate)}} </a></td>
-											        <td><a href='/archive/{{item._id}}' target='_blank'><center>View</center></a>
+											        <td><a href='/archive/{{item._id}}' ><center>View</center></a>
 											      </tr>
 											      
 																	

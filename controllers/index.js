@@ -38,6 +38,23 @@ app.directive('initialisation',['$rootScope',function($rootScope) {
             };
         }]);
 
+app.directive('iniMain',['$rootScope',function($rootScope) {
+            return {
+                restrict: 'A',
+                link: function($scope) {
+                    var to;
+                    var listener = $scope.$watch(function() {
+                        clearTimeout(to);
+                        to = setTimeout(function () {
+                           listener();
+                            
+
+                            $rootScope.$broadcast('initialised_main');
+                        });
+                    });
+                }
+            };
+        }]);
 
 
 
@@ -65,21 +82,6 @@ app.factory('socket', function ($rootScope) {
   };
 });
 
-app.run(function ($rootScope, ngProgressFactory) { 
-
-    // first create instance when app starts
-    $rootScope.progressbar = ngProgressFactory.createInstance();
-
-    $rootScope.progressbar.setColor("#bdbdbd");
-    // $rootScope.progressbar.setHeight('3px');
-    $rootScope.$on("$routeChangeStart", function () {
-       $rootScope.progressbar.start();
-    });
-
-    $rootScope.$on("$routeChangeSuccess", function () {
-        $rootScope.progressbar.complete();
-    });
-});
 
 
 // .run(function($rootScope,$location,$parse) {
@@ -167,40 +169,408 @@ app.config(['$routeProvider','$locationProvider', function ($routeProvider,$loca
 
 
 
-// app.controller('sliderCtrl',sliderCtrl);
+(function (window) {
+    var last = +new Date();
+    var delay = 100; // default delay
+
+    // Manage event queue
+    var stack = [];
+
+    function callback() {
+        var now = +new Date();
+        if (now - last > delay) {
+            for (var i = 0; i < stack.length; i++) {
+                stack[i]();
+            }
+            last = now;
+        }
+    }
+
+    // Public interface
+    var onDomChange = function (fn, newdelay) {
+        if (newdelay) delay = newdelay;
+        stack.push(fn);
+    };
+
+    // Naive approach for compatibility
+    function naive() {
+
+        var last = document.getElementsByTagName('*');
+        var lastlen = last.length;
+        var timer = setTimeout(function check() {
+
+            // get current state of the document
+            var current = document.getElementsByTagName('*');
+            var len = current.length;
+
+            // if the length is different
+            // it's fairly obvious
+            if (len != lastlen) {
+                // just make sure the loop finishes early
+                last = [];
+            }
+
+            // go check every element in order
+            for (var i = 0; i < len; i++) {
+                if (current[i] !== last[i]) {
+                    callback();
+                    last = current;
+                    lastlen = len;
+                    break;
+                }
+            }
+
+            // over, and over, and over again
+            setTimeout(check, delay);
+
+        }, delay);
+    }
+
+    //
+    //  Check for mutation events support
+    //
+
+    var support = {};
+
+    var el = document.documentElement;
+    var remain = 3;
+
+    // callback for the tests
+    function decide() {
+        if (support.DOMNodeInserted) {
+            window.addEventListener("DOMContentLoaded", function () {
+                if (support.DOMSubtreeModified) { // for FF 3+, Chrome
+                    el.addEventListener('DOMSubtreeModified', callback, false);
+                } else { // for FF 2, Safari, Opera 9.6+
+                    el.addEventListener('DOMNodeInserted', callback, false);
+                    el.addEventListener('DOMNodeRemoved', callback, false);
+                }
+            }, false);
+        } else if (document.onpropertychange) { // for IE 5.5+
+            document.onpropertychange = callback;
+        } else { // fallback
+            naive();
+        }
+    }
+
+    // checks a particular event
+    function test(event) {
+        el.addEventListener(event, function fn() {
+            support[event] = true;
+            el.removeEventListener(event, fn, false);
+            if (--remain === 0) decide();
+        }, false);
+    }
+
+    // attach test events
+    if (window.addEventListener) {
+        test('DOMSubtreeModified');
+        test('DOMNodeInserted');
+        test('DOMNodeRemoved');
+    } else {
+        decide();
+    }
+
+    // do the dummy test
+    var dummy = document.createElement("div");
+    el.appendChild(dummy);
+    el.removeChild(dummy);
+
+    // expose
+    window.onDomChange = onDomChange;
+})(window);
 
 
-// function sliderCtrl($scope,$timeout,$rootScope){
-//                      vm = this; 
+
+// function setConstantWidth(){
+
+//   // console.log('change constant');
+//    rowList = document.getElementsByClassName('row'); 
+//     // console.log(rowList);
+//       var c=0; // check if 1296 =3
+//       for (i in rowList){
+//         // console.log(rowList[i].offsetWidth);
+//         if (rowList[i].offsetWidth>1200){
+//                c++;
+//           }
+//       }
+//       console.log('row w = ' + c + 'iniWidth = ' + iniWidth);
+//       if (c>(3)){ // if 3 , set values to constant
+//             for (i in rowList){
+//               if (rowList[i].offsetWidth>1200){
+//                 rowList[i].style.width = "1296px";
+//                 // console.log('change');
+//               }
+//             }
+//             if (iniWidth==0) iniWidth++; 
+            
+//       }
+//       else{
+//          setTimeout(function(){
+//             setConstantWidth();
+//           },1000);
+//       }
+   
 
 
-//                      vm.slider_toggle = {
-//                       value: 30,
-//                       options: {
-//                         floor: 10,
-//                         ceil: 50,
-//                         step:10
-//                       }
-//                     };
-                    
-//                     $rootScope.sliderValue = vm.slider_toggle;
 
-                   
-//                     vm.refreshSlider = function () {
-//                         $timeout(function () {
-//                             $scope.$broadcast('rzSliderForceRender');
-//                         });
-//                     };
+// }
+
+onDomChange(function(){ 
+    // alert("The Times They Are a-Changin'");
+    rowList = document.getElementsByClassName('row'); 
+    try{
+    for (var i = 0;i<2;i++){
+              if (rowList[i].offsetWidth>1000){
+                rowList[i].style.width = "1296px";
+              }
+            
+    }
+    }catch(e){}
+
+});
+
+var iniWidth  = 0;
+app.run(function ($rootScope, ngProgressFactory,$http,$window) { 
+
+    // first create instance when app starts
+    $rootScope.progressbar = ngProgressFactory.createInstance();
+
+    $rootScope.progressbar.setColor("#bdbdbd");
+    // $rootScope.progressbar.setHeight('3px');
+    $rootScope.$on("$routeChangeStart", function () {
+       $rootScope.progressbar.start();
+         // alert('start');
+             $http.post('/getUserInfo',{}).
+                    success(function(data) {
+                          // alert(data.userInfo.username);
+                          $rootScope.userInfo = data.userInfo;
+                          $rootScope.computerInfo = data.computerInfo;
+                          $rootScope.selfInfo = data.selfInfo;
+
+                             // $rootScope.side = {
+                             //      username : data.userInfo.username,
+                             //      avatar : data.userInfo.user_avatar,
+                             //      fullName : data.userInfo.user_fullName,
+                             //      country : data.userInfo.user_country
+                             //   } 
+                        
+
+
+                               // $rootScope.memberIni(function(){});
+                                //###################### side template ################
+
+                                $rootScope.edit = false;
+                                $rootScope.validName = false;
+
+
+
+
+                                $rootScope.fullName = $rootScope.userInfo.user_fullName;
+                                $rootScope.inputFullName = $rootScope.fullName;
+
+                                // console.log($rootScope.userInfo);
+                              
+                                $rootScope.inputFullNameFunc = function(e){
+                                    if (e.length>0){
+                                      $rootScope.validName = true;
+                                    }else $rootScope.validName = false;
+                                }
+
+                                $rootScope.updateFullName = function(e){
+                                    if ($rootScope.validName){
+                                         $http.post('/updateFullName',{fullName:e})
+                                          .success(function(data) {
+                                             $rootScope.userInfo = data.user_data;
+                                             alert('Success updating display name!');
+                                             // $rootScope.edit = false;
+                                             $window.location.reload();
+                                             // console.log(data.friendsData);
+                                          }).error(function(data) {
+                                            
+                                        });
+                                    }
+
+                                }
+                                 $rootScope.memberIni(function(){});
+                                //###################### side template end ################
+                          
+                          }).error(function(data) {
+                              console.log("error in get user info");
+                          });
+
+    });
+
+    $rootScope.$on("$routeChangeSuccess", function () {
+        // $rootScope.progressbar.complete();
+        // ON CHANGE CONTROLLER
+        // setConstantWidth(); 
+        
+    });
+});
+
+    function isValidEmailAddress(emailAddress) {
+          var pattern = /^([a-z\d!#$%&'*+\-\/=?^_`{|}~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]+(\.[a-z\d!#$%&'*+\-\/=?^_`{|}~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]+)*|"((([ \t]*\r\n)?[ \t]+)?([\x01-\x08\x0b\x0c\x0e-\x1f\x7f\x21\x23-\x5b\x5d-\x7e\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]|\\[\x01-\x09\x0b\x0c\x0d-\x7f\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]))*(([ \t]*\r\n)?[ \t]+)?")@(([a-z\d\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]|[a-z\d\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF][a-z\d\-._~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]*[a-z\d\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])\.)+([a-z\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]|[a-z\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF][a-z\d\-._~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]*[a-z\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])\.?$/i;
+          return pattern.test(emailAddress);
+      };
+
+
+
+app.controller('globalCtrl',function (Upload,$mdToast, $sce,$scope,$location,$http,$window,$rootScope,$route,
+                                        $routeParams,socket,$mdDialog,$interval,$document,$timeout){
+
+
+
+  socket.on('multipleLogin',function(){
+        $window.location.href = "/invalid";
+  });
+
+
+// if (document.getElementsByClassName('row')[0].style.width == undefined){
+//   alert('undefined');
+// }else{
+//   alert('main');
+
 // }
 
 
 
-app.controller('globalCtrl',function ($scope,$location,$http,$window,$rootScope,$route,
-                                        $routeParams,socket,$mdDialog,$interval,$document,$timeout){
+ $rootScope.$on('initialised_main', function(){   //workaround fix for sometimes not update game req
 
-  console.log('globalCtrl');
+       $timeout(function(){ //workaround fix auto size
+
+// setConstantWidth();
+
+        // document.getElementsByClassName("row")[0].style.width ="1296px";
+        // document.getElementsByClassName("row")[1].style.width ="1296px";
+   
+        });
+});
+ vm = this;
+
+ $scope.testFunc = function(){
+    document.getElementById('inputImage').click();
+    $rootScope.updateAcct();
+ }
 
 
+$scope.minError = false;
+$scope.mismatchError = false;
+
+$scope.newPass = '';
+$scope.retypePass = '';
+
+
+$scope.enablePassword = false;
+$scope.updatePass = function(newPass,retypePass){
+
+
+   
+  if (!$scope.enablePassword){
+      $scope.enablePassword = true;
+            if (newPass.toString().length<4 || retypePass.toString().length<4){
+                 alert('Minimum of 4 characters only');
+                  $scope.enablePassword = false;
+            }else{
+                    if (newPass != retypePass){
+                         alert('Mismatched type of password');
+                         $scope.enablePassword = false;
+                    }else{
+
+                                  $http.post('/updatePassword',{password:newPass})
+                                    .success(function(data) {
+                                       alert('Success updating password!');
+                                       // $rootScope.edit = false;
+                                       $window.location.reload();
+                                       // console.log(data.friendsData);
+                                    }).error(function(data) {
+                                      
+                                  });
+                          
+                        ///update acct
+                    }
+                    
+            }
+      }
+
+
+}
+
+$scope.enableEmail = false;
+
+
+
+
+    
+
+$scope.updateEmail = function(email){
+
+
+  if (!$scope.enableEmail){
+      $scope.enableEmail = true;
+          if (isValidEmailAddress(email)){
+            //change email
+                  $http.post('/updateEmail',{email:email})
+                                  .success(function(data) {
+                                    if (data.valid){
+                                      alert('Success updating email!');
+                                      $window.location.reload();
+                                    }else{
+                                      alert('Email is already taken');
+                                      $scope.enableEmail = false;
+
+                                    }
+                                  }).error(function(data) {
+                                    
+                                });
+          }else{
+            alert('Please enter a valid email address');
+            $scope.enableEmail = false;
+          }
+
+      }
+
+  }
+ $scope.showEdit = function(){
+  $scope.inputEmail =$rootScope.userInfo.user_email;
+    $mdDialog.show({
+              contentElement: '#editDialog',
+              clickOutsideToClose: true,
+              openFrom:{
+                 top: -50,
+                  width: 30,
+                  height: 80
+              },
+              closeTo:{
+                 top: -50,
+                  width: 30,
+                  height: 80
+              }
+            }).finally(function(){
+           });
+}
+
+
+
+
+$scope.showAvatarDialog = function(){
+    $mdDialog.show({
+              contentElement: '#avatarDialog',
+              clickOutsideToClose: true,
+              openFrom:{
+                 top: -50,
+                  width: 30,
+                  height: 80
+              },
+              closeTo:{
+                 top: -50,
+                  width: 30,
+                  height: 80
+              }
+            }).finally(function(){
+          
+             });
+}
 
 
 
@@ -209,6 +579,8 @@ app.controller('globalCtrl',function ($scope,$location,$http,$window,$rootScope,
        $rootScope.getNumber = function(num) {
             return new Array(num);   
        }
+
+
 
 //--################################################### - MemberCtrl - #################################################
 
@@ -245,9 +617,9 @@ $rootScope.memberIni = function(callback){
           
         try{
            if ($rootScope.userInfo.user_fullName == undefined && ($routeParams.member_id == undefined)){
-                       $scope.edit = true;
+                       $rootScope.edit = true;
                     }else{
-                      $scope.edit=false;
+                      $rootScope.edit=false;
                     }
         }catch(e){
               //workaround for init userInfo then side userInfo
@@ -261,7 +633,11 @@ $rootScope.memberIni = function(callback){
 
 
 
-
+      // if ($scope.isMember_id == $rootScope.userInfo._id){
+      if ([$rootScope.userInfo._id.toString(),'-1','0'].indexOf($scope.isMember_id)>-1){
+        $location.path('/profile/');
+     
+      }else{
       $http.post('/viewSpecificMember',{member_id:$routeParams.member_id}).
             success(function(data) {
 
@@ -276,10 +652,11 @@ $rootScope.memberIni = function(callback){
                        $scope.isMemberInfo = data.userInfo;
                        callback();
             }).error(function(data) {
-                  alert('error');
+                  alert('internal error');
                   $window.location.href = "/";
                   // callback();
             });
+        }
   }else{
         $http.post('/getUserInfo',{}).
             success(function(data) {
@@ -310,10 +687,11 @@ $rootScope.memberIni = function(callback){
 
 // $window.location.href = "/live?id=111";
 
-
+$scope.redirectWindow = function(loc){
+  $window.location.href = loc;
+}
 $scope.redirect = function(loc){
   $location.path(loc);
-
 }
 $scope.redirectParam = function(loc,param){
   $location.path(loc).search({name:param});
@@ -338,6 +716,66 @@ $scope.gameInit();
 
 //--################################################### - init - end  #################################################
 
+// popover for modal help
+  $scope.htmlPopover = $sce.trustAsHtml("<h4 style='margin:0px;'>Here!</h4>");
+
+
+
+  $scope.modalPage =1;
+  $scope.modalNext =function(){
+      if ($scope.modalPage<6)
+       $scope.modalPage++;
+     else{
+        $mdDialog.cancel();
+     }
+  }
+  $scope.modalBack = function(){
+    if ($scope.modalPage>1)
+    $scope.modalPage--;
+     }
+
+  $scope.showHelp = function(){
+    $scope.modalPage = 1;
+    $mdDialog.show({
+              contentElement: '#helpDialog',
+              clickOutsideToClose: true,
+              openFrom:{
+                 top: -50,
+                  width: 30,
+                  height: 80
+              },
+              closeTo:{
+                 top: -50,
+                  width: 30,
+                  height: 80
+              }
+            }).finally(function(){
+              $scope.modalPage = 1;
+               // $http.post('/stopModalHelp',{}). success(function(data) {}).error(function(data) {   });
+
+            // socket.emit('stopModalHelp',{},function(){ });
+            });
+  
+  }
+
+// socket.on('modalUpdate',function(){
+//   console.log('reqModalHelp');
+//   $scope.showHelp();
+// });
+
+$timeout(function(){
+  $http.post('/reqModalHelp',{}).success(function(data){
+    console.log('reqModalHelp');
+    if (data.show){
+      $scope.showHelp();
+    }
+  }).error(function(data){});
+});
+
+
+// popover for modal help -end
+
+
   $scope.friendsDialog = function(){
       $mdDialog.show({
       contentElement: '#friendsDialog',
@@ -354,9 +792,7 @@ $scope.gameInit();
       }
 
       }).finally(function(){
-       // $scope.inviteStatus =0;
-            // $rootScope.root.declineModal = 0;
-            // $rootScope.root.notAvailableModal = 0;
+         
     });
   }
 
@@ -492,7 +928,8 @@ $scope.gameInit();
      //  });
      socket.on('updateOnlineUsers',function(data){
           console.log('Uonline ' + data);
-          $rootScope.onlineList = data;
+          $rootScope.onlineList = data.online;
+          $rootScope.busyList = data.busy;
      });
       socket.emit('reqUpdateLiveGames',{},function(){ });
 
@@ -544,6 +981,7 @@ $scope.gameInit();
         success(function(data) {
                  $scope.msg_convo = data.msg;
                  $scope.glued = true;
+                 $rootScope.progressbar.complete();
         }).error(function(data) { 
             console.log("error in view chat");
         });
@@ -625,8 +1063,7 @@ $scope.gameInit();
 $timeout(function(){
    $rootScope.updateInbox();
    $rootScope.updateFriendReq();
-   
-
+});     
 
     socket.on('updateInvite',function (inc,user_data,game_data){
         $scope.inviteDisplay = 1;
@@ -693,8 +1130,7 @@ $timeout(function(){
 
    
 
-});     
-
+           
 
 
               socket.on('friendReq',function (){
@@ -736,74 +1172,17 @@ $timeout(function(){
           
         }
 
-      $http.post('/viewFriends',{id:$routeParams.member_id})
-          .success(function(data) {
-             $rootScope.friendsData = data.friendsData;
-             // console.log(data.friendsData);
-          }).error(function(data) {
+      // $http.post('/viewFriends',{id:$routeParams.member_id})
+      //     .success(function(data) {
+      //        $rootScope.friendsData = data.friendsData;
+      //        // console.log(data.friendsData);
+      //     }).error(function(data) {
              
-        });
+      //   });
 
     
   
-      $http.post('/getUserInfo',{}).
-        success(function(data) {
-              // alert(data.userInfo.username);
-              $rootScope.userInfo = data.userInfo;
-              $rootScope.computerInfo = data.computerInfo;
-              $rootScope.selfInfo = data.selfInfo;
-
-                 $rootScope.side = {
-                      username : data.userInfo.username,
-                      avatar : data.userInfo.user_avatar,
-                      fullName : data.userInfo.user_fullName,
-                      country : data.userInfo.user_country
-                   } 
-            
-
-
-                   // $rootScope.memberIni(function(){});
-                    //###################### side template ################
-
-                    $scope.edit = false;
-                    $scope.validName = false;
-
-
-
-
-                    $scope.fullName = $rootScope.userInfo.user_fullName;
-                    $scope.inputFullName = $scope.fullName;
-
-                    // console.log($rootScope.userInfo);
-                  
-                    $scope.inputFullNameFunc = function(e){
-                        if (e.length>0){
-                          $scope.validName = true;
-                        }else $scope.validName = false;
-                    }
-
-                    $scope.updateFullName = function(e){
-                        if ($scope.validName){
-                             $http.post('/updateFullName',{fullName:e})
-                              .success(function(data) {
-                                 $rootScope.userInfo = data.user_data;
-                                 alert('Success updating fullname!');
-                                 // $scope.edit = false;
-                                 $window.location.reload();
-                                 // console.log(data.friendsData);
-                              }).error(function(data) {
-                                
-                            });
-                        }
-
-                    }
-
-                    //###################### side template end ################
-              
-        }).error(function(data) {
-            console.log("error in get user info");
-        });
-
+  
   
 
 
@@ -828,6 +1207,8 @@ $timeout(function(){
 
       }
       $rootScope.convertToTime = function(n){
+        
+
         var myDate = new Date(n);
 
         var minutes = myDate.getMinutes();
@@ -836,6 +1217,7 @@ $timeout(function(){
         var suffix = hours >= 12 ? "PM":"AM"; 
 
         hours = ((hours + 11) % 12 + 1);
+
           return hours + ":" +  minutes + " " + suffix;
 
       }
@@ -854,7 +1236,9 @@ $rootScope.convertTime = function(startVal,type){
             return  (sec.toString().length==1 ? '0'+sec:sec);
            break;
            case 'milli':
-            return  (x.toString().length >= 2 ? x.toString().slice(-2) : '0'+ x );
+            return x.toString().slice(0,-1).slice(-2) + " sec";
+           
+            // return  (x.toString().length >= 2 ? x.toString().slice(-2) : '0'+ x + ' sec' );
            break;
         }
 
@@ -863,14 +1247,22 @@ $rootScope.convertTime = function(startVal,type){
 $rootScope.convertTimeComplete = function(startVal){
     var x =parseInt(startVal); //max time 
     
-        min = Math.floor( (x/100/60) % 60 );
-        sec = Math.floor( (x/100) % 60 );
+        min = Math.floor( (x/1000/60) % 60 );
+        sec = Math.floor( (x/1000) % 60 );
 
         displayMin = (min.toString().length==1  ? '0'+min:min+'');
         displaySec = (sec.toString().length==1 ? '0'+sec:sec+'');
-        displayMilli =  (x.toString().length >= 2 ? x.toString().slice(-2) : '0'+ x );
+        // displayMilli =  (x.toString().length >= 2 ? x.toString().slice(-2) : '0'+ x );
+        displayMilli =  x.toString().slice(0,-1).slice(-2);
+           
       
-      return (displayMin != '00'? displayMin+':':'')+displaySec+'.'+displayMilli;
+      if (isNaN(displaySec) && isNaN(displayMin)){
+        return 'loading ..';
+      }
+      if (displayMin == '00' && displaySec == '00'){
+        return '';
+      }
+      return (displayMin != '00'? displayMin+':':'')+displaySec+'.'+displayMilli + (displayMin != '00'?' min':' sec');
         // return displayMin + ":"+displaySec+"."+displayMilli;
 }
 
@@ -1045,13 +1437,13 @@ $rootScope.convertTimeComplete = function(startVal){
              })().then(function(){
                    return new Promise(function(resolve, reject){
                         //set clock
-                        $scope.clockMin = '00';
-                        $scope.clockSec = '00';
-                        $scope.clockMilli = '00';
+                        // $scope.clockMin = '00';
+                        // $scope.clockSec = '00';
+                        // $scope.clockMilli = '00';
 
-                        $scope.clockMin = $scope.convertTime($scope.gameData.endedTime,'min');
-                        $scope.clockSec = $scope.convertTime($scope.gameData.endedTime,'sec');
-                        $scope.clockMilli = $scope.convertTime($scope.gameData.endedTime,'milli')
+                        // $scope.clockMin = $scope.convertTime($scope.gameData.endedTime,'min');
+                        // $scope.clockSec = $scope.convertTime($scope.gameData.endedTime,'sec');
+                        // $scope.clockMilli = $scope.convertTime($scope.gameData.endedTime,'milli')
 
                         //set dimension and backend matrix
                         dimension1 = dimension = parseInt($scope.gameData.game_id.cubeType.charAt(0));
@@ -1126,11 +1518,11 @@ $rootScope.convertTimeComplete = function(startVal){
                         }
                         //for player 1
                         $scope.p1Index = $scope.gameData.scrambleMoves.split(' ').length; //for alg index
-                        $scope.gameData.p1_moves = $scope.gameData.scrambleMoves + " <end-scramble> " + $scope.gameData.p1_moves;
+                        $scope.gameData.p1_moves = $scope.gameData.scrambleMoves + " end-scramble " + $scope.gameData.p1_moves;
 
                         //for player 2
                         $scope.p2Index = $scope.gameData.scrambleMoves.split(' ').length; //for alg index
-                        $scope.gameData.p2_moves = $scope.gameData.scrambleMoves + " <end-scramble> " + $scope.gameData.p2_moves;
+                        $scope.gameData.p2_moves = $scope.gameData.scrambleMoves + " end-scramble " + $scope.gameData.p2_moves;
 
                         $scope.arrP1Moves = $scope.gameData.p1_moves.split(' '); // to distribute from objects
                         $scope.arrP2Moves = $scope.gameData.p2_moves.split(' '); // to distribute from objects
@@ -1156,9 +1548,13 @@ $rootScope.convertTimeComplete = function(startVal){
                   // renderer1.setClearColor( 0x424242, 1);
                   // material1.transparent =true;
                   // renderer1.render(scene1,camera1);
+                   $rootScope.progressbar.complete();
 
              
                     resolve();
+
+                 
+                
                });
 
 
@@ -1214,6 +1610,7 @@ app.controller('msgCtrl',function ($scope,$location,$http,$window,$rootScope,soc
    
 
  $scope.inputInboxUsername = '';
+ $rootScope.progressbar.complete();
 
       console.log('msgCtrl');
     $scope.manageInbox = 0;
@@ -1260,26 +1657,26 @@ app.controller('msgCtrl',function ($scope,$location,$http,$window,$rootScope,soc
                                     // {{item.msg_to.username === username ? '':item.msg_to._id}}
 
     $rootScope.updateInbox();
+
       $scope.selectAll = function(){
             $scope.msg_text.forEach(function(data){
                 data.checkBox = true;
             });
-      }
+      };
       $scope.deselectAll = function(){
             $scope.msg_text.forEach(function(data){
                 data.checkBox = false;
             });
-      }
-
-
+      };
 
 
 });
 app.controller('createCtrl',function ($timeout,$scope,$location,$http,$window,$routeParams,socket,$rootScope){
     console.log('createCtrl');
+    $rootScope.progressbar.complete();
     $scope.searchText = '';
 
-      $rootScope.memberIni(function(){});
+      // $rootScope.memberIni(function(){});
 
   $timeout(function(){
 
@@ -1312,21 +1709,34 @@ app.controller('createCtrl',function ($timeout,$scope,$location,$http,$window,$r
         document.querySelector('#toggleAuto').focus();
     }
 
+    $scope.enableCreate = true;
     $scope.btnSend = function(){
           // alert($scope.searchText + " " + $scope.inputMessage);
 
+    if ($scope.enableCreate){
+        $scope.enableCreate = false;
+          if ($scope.searchText == $rootScope.userInfo.username){
+                  alert('Please insert a valid username');
+                   $scope.searchText = '';
+                   $scope.enableCreate = true;
+         }else{
+                $http.post('/createMsg',{username:$scope.searchText,msg:$scope.inputMessage}).
+                    success(function(data) {
 
-    $http.post('/createMsg',{username:$scope.searchText,msg:$scope.inputMessage}).
-        success(function(data) {
-             socket.emit('reqUpdateChat',data.id,function(){
-                               $location.path('/profile/messages/'+data.id);
-             });
-                           
-        }).error(function(data) {
-           alert('Please insert a valid username');
-           $scope.searchText = '';
-        });
+                      
+                           socket.emit('reqUpdateChat',data.id,function(){
+                                             $location.path('/profile/messages/'+data.id);
+                           });
 
+                                       
+                    }).error(function(data) {
+                       alert('Please insert a valid username');
+                       $scope.searchText = '';
+                       $scope.enableCreate = true;
+                    });
+
+                }
+       }
     }
 
     $scope.clearText = function(){
@@ -1339,16 +1749,51 @@ app.controller('createCtrl',function ($timeout,$scope,$location,$http,$window,$r
 });
 app.controller('chatCtrl',function ($scope,$location,$http,$window,$routeParams,socket,$rootScope){
 
+ // $rootScope.memberIni(function(){
 
+
+//work around fix for waiting userInfo
+function waitUserInfo(callback){
+  if ($rootScope.userInfo== undefined){
+    console.log('nice');
+      setTimeout(function(){
+         waitUserInfo();
+      });
+    }else{
+      callback;
+    }
+}
+
+ (function() {
+           return new Promise(function(resolve, reject){
+                    waitUserInfo(function(){
+                         resolve();
+                    });
+            });
+     })().then(function() {
+           return new Promise(function(resolve, reject){
+               
+                 if ($routeParams.id == $rootScope.userInfo._id){
+                    $location.path('/');
+                 }
+                  resolve();
+
+           });
+    })
+
+
+     
+ // });
 
     $rootScope.updateInbox();
       console.log('chatCtrl');
       $scope.manageChat = 0;
+
      $scope.btnManage = function(){
           $scope.manageChat ^= true;
      }
 
-
+     
    
     $http.post('/getChatInfo',{user_id:$routeParams.id}).
         success(function(data) {
@@ -1370,17 +1815,21 @@ app.controller('chatCtrl',function ($scope,$location,$http,$window,$routeParams,
         $rootScope.updateChat();
  
 
-    
+      $scope.enableSend = true; // for workaround fix double send slow transac
      
       $scope.sendFunc = function(){
-          // alert('testing');
-          if ($scope.inputMessage != undefined && $scope.inputMessage != ""){
+    
+
+          if ($scope.inputMessage != undefined && $scope.inputMessage != "" && $scope.enableSend){
+            $scope.enableSend = false;
                 $http.post('/createMsg',{msg:$scope.inputMessage,user:$routeParams.id}).
                     success(function(data) {
                         // alert('testing');
                            socket.emit('reqUpdateChat',$routeParams.id,function(){
                                   $scope.inputMessage = '';  
+                                  $scope.enableSend =true;
                            });
+                         
                            
                           
                     }).error(function(data) { 
@@ -1426,20 +1875,21 @@ app.controller('chatCtrl',function ($scope,$location,$http,$window,$routeParams,
 
 
 app.controller('friendsCtrl',function ($scope,$location,$http,$window,$routeParams,socket,$rootScope){
-   $rootScope.memberIni(function(){});
+   // $rootScope.memberIni(function(){});
 
- 
+  $rootScope.progressbar.complete();
 
     
 });
 
 app.controller('gamesCtrl',function ($scope,$location,$http,$window,$routeParams,socket,$rootScope){
- $rootScope.memberIni(function(){});
+ // $rootScope.memberIni(function(){});
 
      $http.post('/getUserArchiveGameInfo',{id:$routeParams.member_id}).
           success(function(data) {
                 // console.log(data.archiveUserGameData);
                 $scope.gameList = data.archiveUserGameData;
+                $rootScope.progressbar.complete();
           }).error(function(data) {
               console.log('error in gamectrl');
         });
@@ -1447,13 +1897,14 @@ app.controller('gamesCtrl',function ($scope,$location,$http,$window,$routeParams
 
 });
 app.controller('inviteCtrl',function ($route,$timeout,$scope,$location,$http,$window,$routeParams,socket,$rootScope){
-   $rootScope.memberIni(function(){});
-
+   // $rootScope.memberIni(function(){});
+$rootScope.progressbar.complete();
    console.log('inviteCtrl');
    $scope.changeFriendStatus = function(user_id,friendStatus){
 
         $http.post('/editFriendStatus',{user_id:user_id,friend_status:friendStatus}).
           success(function(data) {
+
              // $scope.btnEnter($scope.inputUsername);
              $route.reload();
              // console.log('update first');
@@ -1487,11 +1938,20 @@ app.controller('inviteCtrl',function ($route,$timeout,$scope,$location,$http,$wi
         
    }
    $scope.btnEnter = function(str){
+
+    if (str.toString().length <3){
+      alert('Please enter atleast 3 characters');
+      return;
+    }
+     $rootScope.progressbar.start();
+            
       $http.post('/viewMembers',{findStr:str}).
           success(function(data) {
              // console.log(data.user_data);
              $scope.viewMembers = data.user_data;
-            
+            $rootScope.progressbar.complete();
+            $scope.searchResult = "\""+str+"\"";
+     
           }).error(function(data) {
               console.log("error in members");
       });
@@ -1528,6 +1988,8 @@ app.controller('imageCtrl',['Upload','$window','$scope','$rootScope',function (U
             data:{file:file} //pass file as data, should be user ng-model
         }).then(function (resp) { //upload function returns a promise
             if(resp.data.error_code === 0){ //validate success
+                    alert("Avatar successfully changed! ");
+              $window.location.reload();
                 console.log('Success ' + resp.config.data.file.name + 'uploaded. Response: ');
                 // console.log(vm.file);
                vm.imgThumb = vm.file;
@@ -1542,7 +2004,12 @@ app.controller('imageCtrl',['Upload','$window','$scope','$rootScope',function (U
             var progressPercentage = parseInt(100.0 * evt.loaded / evt.total);
             // console.log('progress: ' + progressPercentage + '% ' + evt.config.data.file.name);
           $scope.progress = 'progress: ' + progressPercentage + '% '; // capture upload progress
-            if (progressPercentage ==100) $rootScope.progress = '';
+            if (progressPercentage ==100) {
+              //     alert("Avatar successfully changed! ");
+              // $window.location.reload();
+                console.log('ok na');
+              // $scope.progress = '';
+            }
         });
     };
 }]);
@@ -1605,8 +2072,7 @@ app.config(['ChartJsProvider', function (ChartJsProvider) {
 
 app.controller('aboutCtrl', function ( $scope, $location, $http,$route, ngProgressFactory,$sce,$rootScope,$routeParams ) {
 
-
-
+  
        $scope.radarLabels = ["Won by Time", "Won by resignation", "Won by disconnection",
                         "lost by Time","Lost by resignation","Lost by disconnection"];
 
@@ -1640,10 +2106,10 @@ app.controller('aboutCtrl', function ( $scope, $location, $http,$route, ngProgre
      (function() {
            return new Promise(function(resolve, reject){
                 
-                  $rootScope.memberIni(function(){
+                  // $rootScope.memberIni(function(){
 
                       resolve();
-                  });
+                  // });
                    
                 
            });
@@ -1693,7 +2159,6 @@ app.controller('aboutCtrl', function ( $scope, $location, $http,$route, ngProgre
            });
      }).then(function() {
          return new Promise(function(resolve, reject){
-                
         $http.post('/getUserRankSingle',{id:$routeParams.member_id, cubeType:'2x2x2'}).
         success(function(data) {
               $scope.userRankSingle2 = data.userRankSingle;
@@ -1720,7 +2185,7 @@ app.controller('aboutCtrl', function ( $scope, $location, $http,$route, ngProgre
          $http.post('/getMemberSince',{id:$routeParams.member_id}).
           success(function(data) {
                $scope.user_since = $rootScope.convertToDate(data.user_since);
-            
+                     $rootScope.progressbar.complete();
                      resolve();
 
           });
@@ -1749,27 +2214,28 @@ app.controller('aboutCtrl', function ( $scope, $location, $http,$route, ngProgre
 
 app.controller('homeCtrl', function ( $scope, $location, $http,$route, ngProgressFactory,$sce ,$rootScope) {
   console.log("home Controller reporting for duty.");
- $rootScope.memberIni(function(){});
+ // $rootScope.memberIni(function(){});
 
 
   
   $scope.radioSelected = 'Left';
   $scope.cubeType = '3x3x3';
-
+$scope.leaderboardDisable = false;
 $scope.selectCubeType = function(c){
       $scope.cubeType = c;
       $scope.changeRadio($scope.radioSelected);
 }
 
 $scope.changeRadio = function(val){
-
+$scope.leaderboardDisable = true;
   console.log($scope.cubeType);
     switch(val){
       case 'Left':
         $http.post('/getHighscoreList',{}).
         success(function(data) {
                  $scope.leaderboardDisplay = data.highscoreList;
-              
+                $scope.leaderboardDisable = false;
+                $rootScope.progressbar.complete();
         }).error(function(data) { 
             console.log("error in highscore");
         });
@@ -1780,6 +2246,7 @@ $scope.changeRadio = function(val){
              $http.post('/getAverageList',{cubeType:$scope.cubeType}).
             success(function(data) {
                  $scope.leaderboardDisplay = data.averageList;
+                 $scope.leaderboardDisable = false;
             }).error(function(data) { 
             console.log("error in average");
             });
@@ -1790,7 +2257,7 @@ $scope.changeRadio = function(val){
              $http.post('/getSingleList',{cubeType:$scope.cubeType}).
               success(function(data) {
                        $scope.leaderboardDisplay = data.singleList;
-                     
+                     $scope.leaderboardDisable = false;
               }).error(function(data) { 
                   console.log("error in single");
             });
@@ -1812,9 +2279,10 @@ $scope.changeRadio('Left');
  
 });
 app.controller('playCtrl', function ( $scope, $location, $http ,$route,$rootScope) {
-   $scope.$route = $route;
- $rootScope.memberIni(function(){});
 
+   $scope.$route = $route;
+ // $rootScope.memberIni(function(){});
+$rootScope.progressbar.complete();
 });
 
 

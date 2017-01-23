@@ -66,7 +66,7 @@
 
 
 <div class="menu">
-    <img src="{{item.user_avatar}}" class="" style='width:60px; height:60px;' />
+    <img src="{{item.user_avatar}}" class="" style='width:60px; height:60px;'   />
   <!--   <span class="menu_label">
            <svg width="25" height="25" style='position: relative; top:-11px; left:-28px; z-index: 3;' >
 	                               <circle cx="12.5" cy="12.5" r="8"   fill="{{onlineList.indexOf(item._id.toString())>-1 ? 'LightGreen':'Red'}}" />
@@ -79,8 +79,13 @@
 						
 													    <a href="/member/{{item._id}}"> 
 								    						<font style='font-size:20px; color:#6E6E6E;'> {{item.username}}</font>		</a>
-								    						 <svg width="25" height="25" style='padding-top:5px;'>
-                               <circle cx="12.5" cy="12.5" r="5"   fill="{{onlineList.indexOf(item._id.toString())>-1 ? 'LightGreen':'Red'}}"  /> 
+					 <svg width="25" height="25" style='padding-top:5px; border:0px solid;'    
+					>
+                               <circle cx="12.5" cy="12.5" r="5"   
+                               fill="{{busyList.indexOf(item._id.toString())>-1 ? 'orange':onlineList.indexOf(item._id.toString())>-1? 'LightGreen':'red'}}" >
+                               <title>
+                               {{busyList.indexOf(item._id.toString())>-1 ? 'Busy':onlineList.indexOf(item._id.toString())>-1? 'Online':'Offline'}}</title>
+                               </circle>
 											    		  	
                       </svg> 
 				    										 </td>
@@ -88,6 +93,7 @@
 								                            <tr>
 								                            	<td>
 								                            		 <font style='font-size:13px; color:#6e6e6e;'>
+								                            	
 							    							{{item.user_country}}
 									    				
 								                            	</td>

@@ -15,12 +15,11 @@ mongoose.Promise = global.Promise;
 
 
 //without internet
-var mongoStr = "mongodb://127.0.0.1/rubiksbattle";
-
+// var mongoStr = "mongodb://127.0.0.1/rubiksbattle";
 
 // var mongoStr = "mongodb://localhost/rubiksbattle";
 
-// var mongoStr = 'mongodb://rubiksbattle_user:rubiksbattledbpassword@jello.modulusmongo.net:27017/eja4timI';
+var mongoStr = 'mongodb://rubiksbattle_user:rubiksbattledbpassword@jello.modulusmongo.net:27017/eja4timI';
 
 
 mongoose.connect(mongoStr);
@@ -34,9 +33,18 @@ autoIncrement.initialize(connection);
 
 
 
-   // autoIncrement.initialize(connection);
+var bcrypt = require('bcryptjs');
+var salt = bcrypt.genSaltSync(10);
+// var hash = bcrypt.hashSync("MYPASSWORD", salt);
+var nodemailer = require('nodemailer');
+
+var crypto = require('crypto');
 
 
+// crypto.randomBytes(20, function(err, buf) {
+//         var token = buf.toString('hex');
+//         console.log(token);
+//       });
 
 var Schema = mongoose.Schema;
 // var ObjectId = require('mongodb').ObjectID;
@@ -57,7 +65,9 @@ var Schema = mongoose.Schema;
         user_about           : String,
         user_since           : Date,
         user_avatar          : String,
-        user_score            : Number
+        user_score            : Number,
+        resetPasswordToken   : String,
+        resetPasswordExpires  : Date
       
     });
 
@@ -109,7 +119,7 @@ var archive_game_collections = Schema({
         p1_moves         : String,
         p2_moves         : String,
         scrambleMoves    : String,
-        endedTime        : String,
+        endedTime        : Number,
         gameWinner       : { type: Number, ref: 'user_collections' },  
         winnerBy         : String,  
              
@@ -133,158 +143,266 @@ var game_model = mongoose.model('game_collections',game_collections);
 var archive_game_model = mongoose.model('archive_game_collections',archive_game_collections);
 
 
-// //default users
-// var newUser1 = {
-//     _id: 1,
-//      username             : 'jester26',
-//     user_password        :  'jester',
-//     user_email           :  'jestercaporado@yahoo.com',
-//     user_fullName          : 'jester caporado',
-//     user_country           : 'Philippines',
-//     user_location           : 'Cavite',
-//     user_about           : 'rubiks battle is awesome haha',
-//     user_since           : '2016-11-26',
-//     user_avatar            : "/img/upload/img_1.jpg",
-//      user_score              :1500
-// };
-// var newUser2 = {
-//      _id: 2,
-//      username             : 'winnie26',
-//     user_password        :  'winnie',
-//     user_email           :  'winnie@yahoo.com',
-//      user_fullName          : 'winnie flores',
-//     user_country           : 'Philippines',
-//     user_location           : 'Cavite',
-//     user_about           : 'rubiks battle is awesome haha',
-//     user_since           : '2016-11-26',
-//     user_avatar            : "/img/upload/img_2.jpg",
-//      user_score            :1500
-// };
-// var newUser3 = {
-//       _id: 3,
-//      username             : 'candace12',
-//     user_password        :  'candace',
-//     user_email           :  'candace@yahoo.com',
-//     user_fullName          : 'candace tapuro',
-//     user_country           : 'Philippines',
-//     user_location           : 'Cavite',
-//     user_about           : 'rubiks battle is awesome haha',
-//     user_since           : '2016-11-26',
-//     user_avatar            : "/img/upload/img_3.jpg",
-//      user_score            :1500
-// };
-//  var newUser4 = {
-//      _id: 4,
-//      username             : 'fauni12',
-//     user_password        :  'fauni',
-//     user_email           :  'fauni@yahoo.com',
-//      user_fullName          : 'Madel Fauni',
-//     user_country           : 'Philippines',
-//     user_about           : 'rubiks battle is awesome haha',
-//     user_since           : '2016-11-26',
-//     user_avatar            : "/img/upload/img_4.jpg",
-//      user_score            :1500
-// };
-//  var newUser5 = {
-//      _id: 0,
-//     username             : 'Computer',
-//     user_password        :  'computerpassword',
-//     user_email           :  'computer@yahoo.com',
-//       user_fullName          : 'computer_v1',
-//     user_country           : 'Philippines',
-//     user_about           : 'Beat me!',
-//     user_since           : '2016-11-26',
-//     user_avatar            : "/img/user/robotDefault.png",
-//     user_score            :1500
-// };
-//  var newUser6 = {
-//      _id: -1,
-//      username             : 'SinglePlayer',
-//     user_password        :  'singleplayerpassword',
-//     user_email           :  'singleplayer@yahoo.com',
-//     user_fullName          : 'single_v1',
-//     user_country           : 'Philippines',
-//     user_about           : 'Beat me!',
-//     user_since           : '2016-11-26',
-//     user_avatar            : "/img/user/robotDefault.png",
-//     user_score          : 1500
-
-// };
-
-       
-// var people = [ newUser1, newUser2, newUser3, newUser4, newUser5 ,newUser6];
 
 
 
-// var friend1 = {
-//     _id:0,
-//     user1_id:'1',
-//     user2_id:'2',
-//     friend_status:'1'
-// };
-// var friend2 = {
-//     _id:1,
-//     user1_id:'1',
-//     user2_id:'3',
-//     friend_status:'1'
-// };
-// var friend3 = {
-//     _id:2,
-//      user1_id:'1',
-//     user2_id:'4',
-//     friend_status:'1'
-// };
-// // var msgArchive = [msgArchive1, msgArchive2, msgArchive3];
-// var friends = [friend1,friend2,friend3];
+//  ////#####default users
+var newUser1 = {
+    _id: 1,
+     username             : 'jester26',
+    user_password        :  bcrypt.hashSync("jester", salt),
+    user_email           :  'jestercaporado@yahoo.com',
+    user_fullName          : 'jester caporado',
+    user_country           : 'Philippines',
+    user_location           : 'Cavite',
+    user_about           : 'rubiks battle is awesome haha',
+    user_since           : '2016-11-26',
+    user_avatar            : "/img/upload/img_1.jpg",
+     user_score              :1500
+};
+var newUser2 = {
+     _id: 2,
+     username             : 'winnie26',
+    user_password        :  bcrypt.hashSync("winnie", salt),
+    user_email           :  'winnie@yahoo.com',
+     user_fullName          : 'winnie flores',
+    user_country           : 'Philippines',
+    user_location           : 'Cavite',
+    user_about           : 'rubiks battle is awesome haha',
+    user_since           : '2016-11-26',
+    user_avatar            : "/img/upload/img_2.jpg",
+     user_score            :1500
+};
+var newUser3 = {
+      _id: 3,
+     username             : 'candace12',
+    user_password        : bcrypt.hashSync("candace", salt),
+    user_email           :  'candace@yahoo.com',
+    user_fullName          : 'candace tapuro',
+    user_country           : 'Philippines',
+    user_location           : 'Cavite',
+    user_about           : 'rubiks battle is awesome haha',
+    user_since           : '2016-11-26',
+    user_avatar            : "/img/upload/img_3.jpg",
+     user_score            :1500
+};
+ var newUser4 = {
+     _id: 4,
+     username             : 'fauni12',
+    user_password        :  bcrypt.hashSync("fauni", salt),
+    user_email           :  'fauni@yahoo.com',
+     user_fullName          : 'Madel Fauni',
+    user_country           : 'Philippines',
+    user_about           : 'rubiks battle is awesome haha',
+    user_since           : '2016-11-26',
+    user_avatar            : "/img/upload/img_4.jpg",
+     user_score            :1500
+};
+ var newUser5 = {
+     _id: 0,
+    username             : 'Computer',
+    user_password        :  bcrypt.hashSync("computerpassword", salt),
+    user_email           :  'computer@yahoo.com',
+      user_fullName          : 'computer_v1',
+    user_country           : 'Philippines',
+    user_about           : 'Beat me!',
+    user_since           : '2016-11-26',
+    user_avatar            : "/img/user/robotDefault.png",
+    user_score            :1500
+};
+ var newUser6 = {
+     _id: -1,
+     username             : 'SinglePlayer',
+    user_password        :  bcrypt.hashSync("singlepassword", salt),
+    user_email           :  'singleplayer@yahoo.com',
+    user_fullName          : 'single_v1',
+    user_country           : 'Philippines',
+    user_about           : 'Beat me!',
+    user_since           : '2016-11-26',
+    user_avatar            : "/img/user/robotDefault.png",
+    user_score          : 1500
+
+};
+ var newUser7 = {
+     _id: 5,
+     username             : 'user1',
+    user_password        :  bcrypt.hashSync("userpassword", salt),
+    user_email           :  'user1@yahoo.com',
+    user_fullName          : '',
+    user_country           : 'Philippines',
+    user_about           : 'Beat me!',
+    user_since           : '2016-11-26',
+    user_avatar            : "/img/upload/img_5.jpg",
+    user_score          : 1500
+
+};
+ var newUser8 = {
+     _id: 6,
+     username             : 'user2',
+    user_password        :  bcrypt.hashSync("userpassword", salt),
+    user_email           :  'user2@yahoo.com',
+    user_fullName          : '',
+    user_country           : 'Philippines',
+    user_about           : 'Beat me!',
+    user_since           : '2016-11-26',
+    user_avatar            : "/img/upload/img_6.jpg",
+    user_score          : 1500
+
+};
+
+ var newUser9 = {
+     _id: 7,
+     username             : 'user3',
+    user_password        :  bcrypt.hashSync("userpassword", salt),
+    user_email           :  'user3@yahoo.com',
+    user_fullName          : '',
+    user_country           : 'Philippines',
+    user_about           : 'Beat me!',
+    user_since           : '2016-11-26',
+    user_avatar            : "/img/upload/img_7.jpg",
+    user_score          : 1500
+
+};
+
+ var newUser10 = {
+     _id: 8,
+     username             : 'user4',
+    user_password        :  bcrypt.hashSync("userpassword", salt),
+    user_email           :  'user4@yahoo.com',
+    user_fullName          : '',
+    user_country           : 'Philippines',
+    user_about           : 'Beat me!',
+    user_since           : '2016-11-26',
+    user_avatar            : "/img/upload/img_8.jpg",
+    user_score          : 1500
+
+};
+
+ var newUser11 = {
+     _id: 9,
+     username             : 'user5',
+    user_password        :  bcrypt.hashSync("userpassword", salt),
+    user_email           :  'user5@yahoo.com',
+    user_fullName          : '',
+    user_country           : 'Philippines',
+    user_about           : 'Beat me!',
+    user_since           : '2016-11-26',
+    user_avatar            : "/img/upload/img_9.jpg",
+    user_score          : 1500
+
+};
+ var newUser12 = {
+     _id: 10,
+     username             : 'user6',
+    user_password        :  bcrypt.hashSync("userpassword", salt),
+    user_email           :  'user6@yahoo.com',
+    user_fullName          : '',
+    user_country           : 'Philippines',
+    user_about           : 'Beat me!',
+    user_since           : '2016-11-26',
+    user_avatar            : "/img/upload/img_10.jpg",
+    user_score          : 1500
+
+};
+
+
+var people = [ newUser1, newUser2, newUser3, newUser4, newUser5 ,newUser6,newUser7,newUser8,newUser9,newUser10,newUser11,newUser12 ];
+
+      
+
+
+var friend1 = {
+    _id:0,
+    user1_id:'1',
+    user2_id:'2',
+    friend_status:'1'
+};
+var friend2 = {
+    _id:1,
+    user1_id:'1',
+    user2_id:'3',
+    friend_status:'1'
+};
+var friend3 = {
+    _id:2,
+     user1_id:'1',
+    user2_id:'4',
+    friend_status:'1'
+};
+// var msgArchive = [msgArchive1, msgArchive2, msgArchive3];
+var friends = [friend1,friend2,friend3];
 
 
 
 
-//    (function() {
-//            return new Promise(function(resolve, reject){
+  //  (function() {
+  //          return new Promise(function(resolve, reject){
 
-//             //reset from start
-//         [user_model,msg_model,archive_msg_model,friends_model,game_model,archive_game_model].forEach(function(data){
-//           data.remove({}, function(err) { 
-//                resolve();
-//           });
-//         });
+  //           // //reset from start
+  //       [msg_model,archive_msg_model,game_model,archive_game_model].forEach(function(data){
+  //         data.remove({}, function(err) { 
+  //              resolve();
+  //         });
+  //       });
                
-//            });
-//      })().then(function(){
-//       return new Promise(function(resolve,reject){
-//         var ctr = 0;
-//          people.forEach(function(data,index,array){
-//             new user_model(data)
-//             .save(function(err,data){
-//                 console.log(data);
-//                  ctr++;
-//                  if(ctr === array.length) {
-//               resolve();
-//               }
-//             });
+  //          });
+  //    })().then(function(){
+  //    	return new Promise(function(resolve,reject){
+  //    		 user_model.update(
+		// 	    {}, 
+		// 	    { 'user_score': 1500 },
+		// 	    { multi:true },function(err,data){ resolve()}
+
+		// 	    );
+		// });
+  //    });
+//######################################
+    //   (function() {
+    //        return new Promise(function(resolve, reject){
+
+    //         // //reset from start
+    //     [user_model,friends_model,msg_model,archive_msg_model,game_model,archive_game_model].forEach(function(data){
+    //       data.remove({}, function(err) { 
+    //            resolve();
+    //       });
+    //     });
+               
+    //        });
+    //  })()
+    // .then(function(){
+    //   return new Promise(function(resolve,reject){
+    //     var ctr = 0;
+    //      people.forEach(function(data,index,array){
+    //         new user_model(data)
+    //         .save(function(err,data){
+    //             console.log(data);
+    //              ctr++;
+    //              if(ctr === array.length) {
+    //           resolve();
+    //           }
+    //         });
            
             
-//         });
+    //     });
 
-//         });
-//      }).then(function() {
-//            return new Promise(function(resolve, reject){
-//             var ctr = 0;
-//                 friends.forEach(function(data,index,array){
-//              new friends_model(data)
-//             .save(function(err,data){
-//                 console.log(data);
-//                  ctr++;
-//                  if(ctr === array.length) {
-//               resolve();
-//                }
-//             });
-//         });
+    //     });
+    //  }).then(function() {
+    //        return new Promise(function(resolve, reject){
+    //         var ctr = 0;
+    //             friends.forEach(function(data,index,array){
+    //          new friends_model(data)
+    //         .save(function(err,data){
+    //             console.log(data);
+    //              ctr++;
+    //              if(ctr === array.length) {
+    //           resolve();
+    //            }
+    //         });
+    //     });
           
 
-//            });
-//       });
+    //        });
+    //   });
 
 
 
@@ -659,7 +777,7 @@ module.exports.viewMembers = function(userFind,user_id, callback){
         .find()
         .and([
               {$or: [{username:new RegExp(userFind, "i")}]},
-              {$or: [{_id:{$nin:user_id}}]}
+              {$or: [{_id:{$nin:[user_id,'0','-1']}}]}
           ])
         // .select({'username':1,'_id':1})
 
@@ -704,6 +822,82 @@ module.exports.viewMembers = function(userFind,user_id, callback){
 
 // });
 
+
+module.exports.resetPassword  = function(userData,hostname,callback){
+
+
+   (function() {
+           return new Promise(function(resolve, reject){
+               crypto.randomBytes(20, function(err, buf) {
+                  var token = buf.toString('hex');
+                  resolve(token);
+               });;
+                
+           });
+     })().then(function(token) {
+           return new Promise(function(resolve, reject){
+               var transporter = nodemailer.createTransport('smtps://rubiksbattle.master%40gmail.com:rubiksbattlepassword@smtp.gmail.com');
+             
+                // setup e-mail data with unicode symbols 
+                var mailOptions = {
+                    from: '<rubiksbattle.master@gmail.com>', // sender address 
+                    to: userData.user_email, // list of receivers 
+                    subject: "Password reset - Rubik's Battle", // Subject line 
+                    // text: 'Hello world 🐴', // plaintext body 
+                    html: "Hello "+userData.username+", the <b>password reset link</b> is <a href='http://"+hostname+"/reset/?token="+token+"' target='_blank'>http://"+hostname+"/reset/?token="+token+"</a>" // html body 
+                };
+                 
+               // //  console.log("Hello "+userData.username+", <b>password reset link</b> is <a>"+token+"</a>");
+                // //send mail with defined transport object 
+                transporter.sendMail(mailOptions, function(error, info){
+                    if(error){
+                         console.log(error);
+                          
+                    }
+                     resolve(token);               
+                     console.log('Message sent: ' + info.response);
+                });
+                // resolve(token);
+              
+           });
+      }).then(function(token) {
+         return new Promise(function(resolve, reject){
+
+             user_model.update(
+                  { _id: userData._id }, 
+                  {  'resetPasswordToken': token,
+                     'resetPasswordExpires': Date.now()+ 300000 ,
+                  },
+                  
+                     function(err,data){
+                        console.log(data);
+                        callback();
+                     }
+                  );
+               
+
+           });
+     });
+
+
+
+}
+
+module.exports.resetAuthen = function(token,callback){
+    user_model
+      .find()
+      .and([
+          // { $or: [{'user_email': email}] }
+          { $or: [{"resetPasswordToken":token,"resetPasswordExpires":{$gt:Date.now()} }] , 
+            
+          }
+        ]).exec(callback);
+}
+
+// module.exports.resetPassword('',function(){
+
+// });
+
 module.exports.ifTakenEmail = function (email,callback){
     user_model
         .find()
@@ -714,6 +908,8 @@ module.exports.ifTakenEmail = function (email,callback){
         }])
         .exec(callback);
 }
+
+
 
 module.exports.ifTakenUsername = function (username,callback){
 
@@ -735,14 +931,28 @@ module.exports.ifTakenPassword = function (password,callback){
         ])
         .exec(callback);
 }
-module.exports.getUserId = function (username,password,callback){
+module.exports.userLogin = function (username,password,callback){
     user_model
         .find()
         .and([
-          { $or: [{'user_password': password,'username':username}] }
+          // { $or: [{'user_password': password,'username':username}] }
+           { $or: [{username:new RegExp('^'+ username + '$', "i")}] }
         ])
-        .exec(callback);
+        .exec(function(err,data){
+          if (data.length==0){
+            callback(false);
+          } 
+          else{
+            // console.log(data[0].userpassword);
+             callback(bcrypt.compareSync(password, data[0].user_password),data);
+          }
+            // callback()
+            // bcrypt.compareSync("MYPASSWORD", hash)
+          // var hash = bcrypt.hashSync("MYPASSWORD", salt);
+
+        });
 }
+
 module.exports.getUserInfo = function (user_id,callback){
     user_model
         .findOne()
@@ -800,6 +1010,8 @@ module.exports.getUserStats = function(id,cubeType,callback){
                   game_model.find({$and: [
                         { $or : [{'reqFrom_id':id},{'reqTo_id':id}] },
                         { $or : [{'cubeType':cubeType}] },
+                        { $or : [{'reqTo_id':{$nin:-1} }] }, //exclude single player when won stats
+                        
                       ]},'reqFrom_id reqTo_id cubeType').exec(function(err,data){
 
                           var ids = data.map(function(e){
@@ -808,7 +1020,7 @@ module.exports.getUserStats = function(id,cubeType,callback){
 
                            archive_game_model.aggregate(
                               [
-                                { $match: {'gameWinner':Number(id) , game_id:{$in:ids} } },
+                                { $match: {gameWinner:Number(id), game_id:{$in:ids} } },
                                 { $project: {'winnerBy':1,'gameWinner':1}},
                                 { $group: {
                                      // user_id:{$first:'$gameWinner'}, 
@@ -830,7 +1042,7 @@ module.exports.getUserStats = function(id,cubeType,callback){
                                       var w_dc = ((!isEmpty(won_disconnection) ? won_disconnection[0].count:0));
                                       var w_tm = ((!isEmpty(won_time) ? won_time[0].count:0));
                                       var w_rc = ((!isEmpty(won_resignation) ? won_resignation[0].count:0));
-                                   resolve([w_tm, w_dc, w_rc]);
+                                   resolve([w_tm, w_rc, w_dc]);
                               }
                           );
                       });
@@ -848,9 +1060,11 @@ module.exports.getUserStats = function(id,cubeType,callback){
                               return e._id;
                           }); 
 
+
                          archive_game_model.aggregate(
-                            [
-                              { $match: {'game_id':{$in:ids},gameWinner:{$ne:Number(id)} }},
+                            [ 
+                            //exclude single player when getting stats
+                              { $match: {'game_id':{$in:ids},gameWinner:{$nin:[Number(id),-1]} }}, 
                               { $project: {'winnerBy':1,'gameWinner':1}},
                               { $group: {
                                    // user_id:{$first:'$gameWinner'}, 
@@ -901,6 +1115,10 @@ module.exports.getUserStats = function(id,cubeType,callback){
 
       
 }
+
+
+
+
 module.exports.getAllUserStats = function(id,callback){
       module.exports.getUserStats(id,'3x3x3',function(data3){
            module.exports.getUserStats(id,'2x2x2',function(data2){
@@ -968,8 +1186,10 @@ module.exports.getSingleList =function(cubeType,callback){
  })().then(function(single_id) {
     return new Promise(function(mainResolve, reject){
 			  archive_game_model.find({ 'game_id':{$in:single_id},'gameWinner':{$nin:['-1','0']},'winnerBy':'time' },'endedTime gameWinner winnerBy',{sort:{'endedTime':'ascending'}})
-			  .lean()
+			  // archive_game_model.find({ 'game_id':{$in:single_id},'winnerBy':'time' },'endedTime gameWinner winnerBy',{sort:{'endedTime':'ascending'}})
+        .lean()
 			  .exec(function(err,data){
+          // console.log(data);
 			    var tempC =[]; // container to filter id of single time
 			    filterSingle = data.filter(function(item){
 			        if (tempC.indexOf(item.gameWinner)<0){
@@ -997,37 +1217,37 @@ module.exports.getSingleList =function(cubeType,callback){
 
 }
 
+// module.exports.getSingleList('3x3x3',function(data){
+//     console.log(data);
+// });
+
 module.exports.getUserRankSingle = function(id,cubeType,callback){
 
-  console.log(id + " " + cubeType);
+  // console.log(id + " " + cubeType);
   module.exports.getSingleList(cubeType,function(data){
     // console.log(data);
     // console.log(data.length);
 
     var BreakException = {};
+    // console.log(data);
 
-
-    if (data.length ==0) callback(0,0);
+    if (data.length ==0) callback(0,0,0);
 
       try{
         data.forEach(function(e,index){
             // console.log(index);
             if (e.gameWinner.toString() == id) {
-               callback(e.endedTime, (index+1));
+               callback(e.endedTime, (index+1),e._id);
                throw BreakException;
             }
 
-            if (e.gameWinner.toString() != id && (index == (data.length-1))) callback(0,0);
+            if (e.gameWinner.toString() != id && (index == (data.length-1))) callback(0,0,0);
         });
       } catch(e){
         if (e !== BreakException) throw e;
       }
   });
 }
-
-// module.exports.getUserRankSingle('2','3x3x3',function(data,rank){
-//       console.log(data,rank);
-// });
 
 
 module.exports.getMemberSince = function(id,callback){
@@ -1045,6 +1265,34 @@ module.exports.updateFullName =function(id,name,callback){
     );
 }
 
+module.exports.updatePassword =function(id,password,callback){
+      user_model.update(
+    { _id: id }, 
+    {  'user_password': password },
+       function(err,data){
+           user_model.findOne({_id:id}).exec(callback);
+       }
+    );
+}
+
+module.exports.updateEmail =function(id,email,callback){
+      user_model.update(
+    { _id: id }, 
+    {  'user_email': email },
+       function(err,data){
+           user_model.findOne({_id:id}).exec(callback);
+       }
+    );
+}
+
+
+module.exports.removeToken =function(id,callback){
+      user_model.update(
+    { _id: id }, 
+    {  'resetPasswordToken': '','resetPasswordExpires':'' },
+       callback
+    );
+}
 
 
 // module.exports.getUserRankSingle('1','3x3x3',function(endedTime,rank){
@@ -1062,16 +1310,28 @@ module.exports.getAverageList = function(cubeType,callback){
    	});
  })().then(function(single_id) {
     return new Promise(function(mainResolve, reject){
-			   archive_game_model.find({ 'gameWinner':{$nin:['-1','0']},'winnerBy':'time' },'endedTime gameWinner winnerBy',{'sort':{'endedTime':'ascending'}})
+			   archive_game_model.find({ 'game_id':{$in:single_id}, 'gameWinner':{$nin:['-1','0']},'winnerBy':'time', },'endedTime gameWinner winnerBy',{'sort':{'_id':'ascending'}})
 			  .lean()
 			  .exec(function(err,averageList){
+     
 			        module.exports.getSingleList(cubeType,function(singleList){
-			                singleList.forEach(function(item,i){
 
+                  for (i in singleList){
+                        singleList[i].endedTime =  0;
+                    }
+			                singleList.forEach(function(item,i){
+                        // console.log('---------');
 			                    averageList.forEach(function(item1){
+                            // console.log(item1);
 			                        if (singleList[i].gameWinner==item1.gameWinner)
 			                        {
-			                           singleList[i].endedTime = (Number(singleList[i].endedTime) + Number(item1.endedTime))/2;
+                                if (Number(singleList[i].endedTime)==0){
+                                 singleList[i].endedTime = (Number(item1.endedTime));
+                                 }else{
+                                  // console.log('first = ' +singleList[i].endedTime);
+                                 singleList[i].endedTime = (Number(singleList[i].endedTime) + Number(item1.endedTime))/2;
+                                  // console.log(singleList[i].endedTime);
+                                }
 			                        }
 			                    });
 			                });
@@ -1098,11 +1358,17 @@ module.exports.getAverageList = function(cubeType,callback){
 
  }
 
+
+
+// module.exports.getAverageList('3x3x3',function(data){     
+//  // console.log(data);
+// });
+
 module.exports.getUserRankAverage =function(id,cubeType,callback){
   module.exports.getAverageList(cubeType,function(data){
       // console.log(data);
         var sortedData = sortByKey(data,'endedTime');
-
+        // console.log(sortedData);
          var BreakException = {};
             if (data.length ==0) callback(0,0);
 
@@ -1126,15 +1392,19 @@ module.exports.getUserRankAverage =function(id,cubeType,callback){
 
 
 
+// module.exports.getUserRankAverage('1','3x3x3',function(time,rank){
+//   console.log('time = ' + time +' rank = ' + rank);
+// });
+
+
+
+
 
 
  // module.exports.getHighscoreList(function(err,data){
  // 	console.log(data);
  // });
 
-// module.exports.getSingleList('3x3x3',function(data){			
-// 	console.log(data);
-// });
 
 // module.exports.getAverageList('2x2x2',function(data){
 // 	console.log(data);
@@ -1153,9 +1423,6 @@ module.exports.viewAllGames = function(callback){
       .exec(callback);
 };
 
-// exports.getUserId('user1','userpassword',function(err,data){
-//     console.log(data);
-// });
 
 module.exports.createUser = function (user_info,callback){
      new user_model(user_info)

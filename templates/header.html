@@ -13,85 +13,48 @@
     <md-nav-bar md-selected-nav-item="" nav-bar-aria-label="navigation links" style='border:0px solid;'>
      
       <md-nav-item md-nav-href="/" style=''>
-        <md-button class="md-raised allHeader" style='margin:0px; '><md-icon style='fill:black'  md-svg-src="/img/svg/ic_home_black_24px.svg" aria-label="android "></md-icon> Home</md-button>
+        <md-button ng-click='cancel()'  class="md-raised allHeader" style='margin:0px; '><md-icon style='fill:black'  md-svg-src="/img/svg/ic_home_black_24px.svg" aria-label="android "></md-icon> Home</md-button>
       </md-nav-item>
 
-      <md-nav-item md-nav-href="/play" style=''>
-       <md-button class="md-raised  allHeader" style='margin:0px;'><md-icon style='fill:black'  md-svg-src="/img/svg/ic_local_play_black_24px.svg" aria-label="android "></md-icon> Play</md-button>
+      <md-nav-item style="z-index:{{[2,3,4].indexOf(modalPage)>-1?'999999':''}}" md-nav-href="/play" style=''  uib-popover-html="htmlPopover" popover-placement='right'  popover-is-open="[2,3,4].indexOf(modalPage)>-1 ? true:false" 
+                         popover-enable="[2,3,4].indexOf(modalPage)>-1 ? true:false"  >
+     
+       <md-button  ng-click='cancel()' 
+       class="md-raised  allHeader" style='margin:0px;'><md-icon style='fill:black'  md-svg-src="/img/svg/ic_local_play_black_24px.svg" aria-label="android "></md-icon> Play</md-button>
      </md-nav-item>
 
-     <md-nav-item md-nav-href="/profile" style=''>
-       <md-button class="md-raised allHeader" style='margin:0px;'><md-icon style='fill:black'  md-svg-src="/img/svg/ic_person_pin_black_24px.svg" aria-label="android "></md-icon> Profile</md-button>
+     <md-nav-item md-nav-href="/profile" style="z-index:{{[6].indexOf(modalPage)>-1?'999999':''}}"  
+      uib-popover-html="htmlPopover" popover-placement='right'  
+                        popover-is-open="[6].indexOf(modalPage)>-1 ? true:false" 
+                         popover-enable="[6].indexOf(modalPage)>-1 ? true:false">
+       <md-button ng-click='cancel()'  class="md-raised allHeader" style='margin:0px;'><md-icon style='fill:black'  md-svg-src="/img/svg/ic_person_pin_black_24px.svg" aria-label="android "></md-icon> Profile</md-button>
      </md-nav-item>
      
-      <md-nav-item md-nav-href="/invite" style=''>
-       <md-button class="md-raised allHeader" style='margin:0px;'><md-icon style='fill:black'  md-svg-src="/img/svg/ic_find_replace_black_24px.svg" aria-label="android "></md-icon> Invite</md-button>
+      <md-nav-item md-nav-href="/invite" style="z-index:{{[5].indexOf(modalPage)>-1?'999999':''}}"  
+      uib-popover-html="htmlPopover" popover-placement='right'  
+                        popover-is-open="[5].indexOf(modalPage)>-1 ? true:false" 
+                         popover-enable="[5].indexOf(modalPage)>-1 ? true:false">
+       <md-button ng-click='cancel()'  class="md-raised allHeader" style='margin:0px;'><md-icon style='fill:black'  md-svg-src="/img/svg/ic_find_replace_black_24px.svg" aria-label="android "></md-icon> Invite</md-button>
      </md-nav-item>
 
-<!--  <md-nav-item md-nav-href="/">
-         <md-icon style='fill:CornflowerBlue'  md-svg-src="/img/svg/ic_home_black_24px.svg" aria-label="android "></md-icon>  
-         <b>Home</b></md-nav-item>
-
-      <md-nav-item md-nav-href="/play" >
-     <md-icon style='fill:CornflowerBlue'  md-svg-src="/img/svg/ic_local_play_black_24px.svg" aria-label="android "></md-icon> 
-       <b>Play</b></md-nav-item>
-      <md-nav-item md-nav-href="/profile" >
-       <md-icon style='fill:CornflowerBlue'  md-svg-src="/img/svg/ic_person_pin_black_24px.svg" aria-label="android "></md-icon> 
-      <b>Profile</b></md-nav-item>
-      <md-nav-item md-nav-href="/invite" >
-       <md-icon style='fill:CornflowerBlue'  md-svg-src="/img/svg/ic_find_replace_black_24px.svg" aria-label="android "></md-icon> 
-      <b>Invite</b></md-nav-item> -->
       <span flex> </span>
-        
-      
-
-       <md-menu-bar class='md-padding' style='margin:0px; padding-bottom:0px;'>
-        <md-menu>
-                 <button ng-click=""> 
-            
-                <md-icon style='fill:#BDBDBD' md-svg-src="/img/svg/ic_live_help_black_24px.svg" aria-label="android "></md-icon> 
-                        <font color='#848484'>Help</font>
-                      </button>
-                <md-menu-content>
-                   
-                 </md-menu-content>
-
-
-         </md-menu>
-        <md-menu>
-                 <button ng-click="$mdOpenMenu()" style='font-color:#848484'> 
-                <md-icon style='fill:#BDBDBD' md-svg-src="/img/svg/ic_exit_to_app_black_24px.svg" aria-label="android "></md-icon> 
-                        <font color='#848484'>Logout</font></button>
-                <md-menu-content>
-                    <md-menu-item>
-                            <md-button ng-click='logout()'>
-                            Are you sure you want to <b>Logout</b>?
-                            </md-button>
-                    </md-menu-item>
-                 </md-menu-content>
-                 
-
-         </md-menu>
-
-
-      </md-menu-bar>
-
+  <md-button ng-click="showHelp()"> 
+            <font color='#848484'>Help</font>
+                <md-icon  md-svg-src="/img/svg/speech-bubble-with-question-mark.svg" style='width:40px; margin-left:5px; height:40px;' aria-label="android "></md-icon> 
+                        
+      </md-button>
+     
 
       <span flex='10'> </span>
- 
-      <style>
-          .user-container:after{
-/* color:#4D81BF;
-  border-left: 100px solid;
-  border-top: 100px solid transparent;
-  border-bottom: 20px solid transparent;
-  display: inline-block;
-  content: '';
-  position: absolute;
-*/
-          }
+  <!-- <button ng-click="testFunc();">test</button> -->
+       
+   
+       <!-- user container -->
+         <style>
           .user-container{  
                 border-left:1px solid #bdbdbd; 
+                /*border-right:1px solid #bdbdbd; */
+                
                 /*border:1px solid;*/
                 padding-top:5px; 
                 /*border-right:1px solid #bdbdbd; */
@@ -105,7 +68,7 @@
           }
       </style>
 
-      <!-- <md-menu-bar style='padding-bottom:0px;  '> -->
+
       <div class='user-container'>
        
         <table style='margin-left:10px;'>
@@ -135,6 +98,31 @@
      
 
       </div>
+
+      <!-- user container end -->
+      
+
+      <div flex></div>
+       <md-menu-bar class='md-padding' style='margin:0px;border-left:1px solid #d8d8d8;  padding:0px;'>
+     
+        <md-menu style='margin:0px; padding:0px; padding-top:10px;'>
+                 <button ng-click="$mdOpenMenu()" style='font-color:#848484'> 
+                <md-icon style='fill:#bdbdbd' md-svg-src="/img/svg/ic_exit_to_app_black_24px.svg" aria-label="android "></md-icon> 
+                        <font color='#848484'><!-- Logout --></font></button>
+                <md-menu-content>
+                    <md-menu-item>
+                            <md-button ng-click='logout()'>
+                            Are you sure you want to <b>Logout</b>?
+                            </md-button>
+                    </md-menu-item>
+                 </md-menu-content>
+                 
+
+         </md-menu>
+
+
+      </md-menu-bar>
+
       <!-- </md-menu-bar> -->
 
 

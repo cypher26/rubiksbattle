@@ -227,7 +227,89 @@ var prev,prev1;
 
 }
 var sI;
-function checkNotation1(str){
+
+var queueAlgP2 = [];
+var gameUpdate ='';
+function animateFullPerm1(algList){
+    // var algList = algList.split(" ");
+        var requests = algList.reduce((promiseChain, item, index, tempItem) => {
+                return promiseChain.then(() => new Promise((resolve) => {
+
+// console.log('gameUpdate 2 = '  + gameUpdate);
+                 		
+                 	if (!simulateIfSolve(allMovesP2 + " " + allAlgP2) && (gameUpdate=='onGame')){
+                 		checkNotation1(item,function(){
+	                    	resolve();
+	                    });
+                 	}else{
+
+                    	resolve();
+                    }
+                                       
+                }));
+            }, Promise.resolve()).then(function(){
+               
+
+            });
+          
+ }
+  function animatePermSeries1(){ // l_alg letter alg ####################### queue per move
+       var requests = queueAlgP2.reduce((promiseChain, item, index, tempItem) => {
+                return promiseChain.then(() => new Promise((resolve) => {
+                 
+                       animatePerm1(item,function(){
+                        queueAlgP2.splice(0,1);
+                         // console.log(index);
+                         // console.log(queueAlgP2);
+                        resolve();
+                      });
+                                       
+                }));
+            }, Promise.resolve()).then(function(){
+                //queue
+                // console.log(queueAlgP2.length);
+                if (queueAlgP2.length!=0){
+                  animatePermSeries1();
+                }
+             
+
+            });
+          
+
+
+      
+
+  }
+
+function animatePerm1(s_alg,cb){
+              if (['x','y','z'].indexOf(s_alg)>-1){
+                checkNotation1(s_alg,function(){
+                  console.log('callback');
+                  cb();
+                });
+              }
+              else if (['X','Y','Z'].indexOf(s_alg.toUpperCase())>-1){
+                checkNotation1(s_alg.toLowerCase() + 'p',function(){
+                
+                  cb();
+                });
+              }
+               else if (s_alg == s_alg.toUpperCase()){ //s_alg single alg
+                checkNotation1(s_alg + 'p',function(){
+                  cb();
+                });
+              }
+              else if (s_alg == s_alg.toLowerCase()){
+
+                checkNotation1(s_alg.toUpperCase(),function(){
+                  // console.log('callback');
+                   cb();
+                });
+              }
+            
+  }
+
+function checkNotation1(str,cb){
  
 	var rot,turn,width,xtemp,widthCol,axis;
 	//ROTATION
@@ -403,32 +485,32 @@ function checkNotation1(str){
 	//|||||||||||||||||||||||||||||||||||||||||11111111111
 	for (x=0;x<mAlg.length;x++){
 	 if (str == mAlg[x]){
-		 right1(rot,widthCol,width,turn,str);
+		 right1(rot,widthCol,width,turn,str,function(){ cb(); }); return;
 	 }
 	}
 	for (x=0;x<sAlg.length;x++){
 	 if (str == sAlg[x]){
-		 face1(rot,widthCol,width,turn,str);
+		 face1(rot,widthCol,width,turn,str,function(){ cb(); }); return;
 	 }
 	}
 	for (x=0;x<eAlg.length;x++){
 	 if (str == eAlg[x]){
-		 up1(rot,widthCol,width,turn,str);
+		 up1(rot,widthCol,width,turn,str,function(){ cb(); }); return;
 	 }
 	}
 	for (x=0;x<xAlg.length;x++){
 	 if (str == xAlg[x]){
-		rotateX1(rot,turn,str);
+		rotateX1(rot,turn,str,function(){ cb(); }); return;
 	 }
 	}
 	for (x=0;x<yAlg.length;x++){
 	 if (str == yAlg[x]){
-		rotateY1(rot,turn,str);
+		rotateY1(rot,turn,str,function(){ cb(); }); return;
 	 }
 	}
 	for (x=0;x<zAlg.length;x++){
 	 if (str == zAlg[x]){
-		rotateZ1(rot,turn,str);
+		rotateZ1(rot,turn,str,function(){ cb(); }); return;
 	 }
 	}
 	
@@ -440,20 +522,23 @@ function checkNotation1(str){
 			case 'R':
 			case 'L':
 			case 'l':
-				right1(rot,widthCol,width,turn,str);
+				right1(rot,widthCol,width,turn,str,function(){ cb(); }); 
 			break;
 			case 'F':
 			case 'f':
 			case 'B':
 			case 'b':
 			
-				face1(rot,widthCol,width,turn,str);
+				face1(rot,widthCol,width,turn,str,function(){ cb(); }); 
 			break;
 			case 'U':
 			case 'u':
 			case 'D':
 			case 'd':
-				up1(rot,widthCol,width,turn,str);
+				up1(rot,widthCol,width,turn,str,function(){ cb(); }); 
+			break;
+			default:
+				cb();
 			break;
 		
 			

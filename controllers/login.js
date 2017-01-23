@@ -19,6 +19,9 @@ app.config(['$routeProvider','$locationProvider', function ($routeProvider,$loca
     // Home
     .when("/", { templateUrl:"partials/notLogin/login.html", controller: "loginCtrl"})
     .when("/register", { templateUrl:"partials/notLogin/register.html", controller:"registerCtrl"})
+    .when("/recovery", { templateUrl:"partials/notLogin/recovery.html", controller:"recoveryCtrl"})
+    
+    
     // Pages
     // .when("/about", {templateUrl: "partials/about.html", controller: "PageCtrl"})
     // .when("/faq", {templateUrl: "partials/faq.html", controller: "PageCtrl"})
@@ -54,6 +57,8 @@ app.directive('ngEnter', function () {
  * Controls the Blog
  */
 app.controller('registerCtrl', function ( $scope, $location, $http,$q, $window, $rootScope,$timeout,$interval) {
+
+
 
       $scope.yearNow = new Date().getFullYear();
       // $scope.project.username = '123';
@@ -116,9 +121,10 @@ app.controller('registerCtrl', function ( $scope, $location, $http,$q, $window, 
 
       $scope.removeErrDuplicate();
      
-    
+    $scope.enableRegister = true;
     $scope.registerScopeFunc = function(form){
-
+      if ($scope.enableRegister == true){
+        $scope.enableRegister = false;
       $rootScope.registerForm = form;
       
                         // alert('testing');
@@ -141,6 +147,7 @@ app.controller('registerCtrl', function ( $scope, $location, $http,$q, $window, 
                                               if (data.exist == true){
                                                  form.nameUsername.$error.exists =true;
                                                  form.nameUsername.$validate();
+                                                   $scope.enableRegister = true;
                                               }else{
                                                 resolve();
                                                 
@@ -148,6 +155,7 @@ app.controller('registerCtrl', function ( $scope, $location, $http,$q, $window, 
                                                  
                                              }).error(function(data) {
                                                 console.log("error in username");
+                                                  $scope.enableRegister = true;
                                             });
                                  });
                                  return promise;
@@ -161,10 +169,12 @@ app.controller('registerCtrl', function ( $scope, $location, $http,$q, $window, 
                                                      form.clientEmail.$error.exists =true;
                                                      form.clientEmail.$validate();
                                                     // errorBool=true;
+                                                      $scope.enableRegister = true;
                                                    
                                                 }else resolve();
                                              }).error(function(data) {
                                                 console.log("error in email");
+                                                  $scope.enableRegister = true;
                                            });
                                    
                                  });
@@ -187,6 +197,7 @@ app.controller('registerCtrl', function ( $scope, $location, $http,$q, $window, 
 
                                           }).error(function(data){
                                              alert("error in register");
+                                               $scope.enableRegister = false;
                                           });
 
                                     //    }
@@ -195,7 +206,7 @@ app.controller('registerCtrl', function ( $scope, $location, $http,$q, $window, 
                                  });
                                  return promise;
                               });
-                               
+                }
                     
     }
 
@@ -208,6 +219,78 @@ app.controller('registerCtrl', function ( $scope, $location, $http,$q, $window, 
 /**
  * Controls all other Pages
  */
+
+
+ app.controller('resetCtrl', function ($scope, $location, $http, $window, $rootScope, $route) {
+    console.log('reset');
+ });
+
+
+   function isValidEmailAddress(emailAddress) {
+          var pattern = /^([a-z\d!#$%&'*+\-\/=?^_`{|}~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]+(\.[a-z\d!#$%&'*+\-\/=?^_`{|}~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]+)*|"((([ \t]*\r\n)?[ \t]+)?([\x01-\x08\x0b\x0c\x0e-\x1f\x7f\x21\x23-\x5b\x5d-\x7e\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]|\\[\x01-\x09\x0b\x0c\x0d-\x7f\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]))*(([ \t]*\r\n)?[ \t]+)?")@(([a-z\d\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]|[a-z\d\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF][a-z\d\-._~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]*[a-z\d\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])\.)+([a-z\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]|[a-z\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF][a-z\d\-._~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]*[a-z\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])\.?$/i;
+          return pattern.test(emailAddress);
+      };
+
+ app.controller('recoveryCtrl', function ($scope, $location, $http, $window, $rootScope, $route) {
+  console.log('recovery');
+  $scope.errEmail  =false;
+  $scope.enableSend =false;
+    $scope.sendRecovery = function(email){
+      
+          
+          if (!$scope.enableSend){
+               $scope.enableSend = true;
+
+            if (isValidEmailAddress(email)){
+               $http.post('/resetPassword',{email:email}).
+                    success(function(data) {
+                       $scope.enableSend = false;
+                       $scope.errEmail = false;
+                       $scope.inputEmail = '';
+                        if (data.valid){
+                          alert('Message success! Please check your email for reset link');
+                          $scope.redirLogin();
+                        }else{
+                          alert("Error: No account with that email address exists");
+                        }
+                        // console.log("posted successfully " + data.uno + " " + data.dos);
+                    }).error(function(data) {
+                        console.log("error in getUser");
+                    });
+                    
+
+            }else{
+              $scope.enableSend = false;
+              $scope.errEmail = true;
+            }
+          }
+        
+      
+    }
+
+    $scope.redirLogin = function(){
+
+         $('#mainRow').hide();  
+         $('#errorPass').hide();
+         $('#errorUser').hide();      
+
+      $( "#imgPrimary" ).animate({ 
+        top: "+=" + parseInt($('#imgPrimary').height()), //-30 [comment]
+       }, "slow", function(){
+               $( "#imgPrimary" ).delay(0).animate({ 
+                          top: "-=" + parseInt($('#imgPrimary').height()), //-30
+                  },function(){
+                    $rootScope.$apply(function(){
+                        $location.path('/');
+                    });
+                 });
+
+        });
+
+
+         
+    }
+});
 app.controller('loginCtrl', function ($scope, $location, $http, $window, $rootScope, $route) {
 
 // $('#imgPrimary').css({left: (($('body').width()/2)-($('#imgPrimary').width()/2)) + "px", top:'20px' , width:'220px', height:'170px', position:'absolute'})
@@ -240,6 +323,31 @@ console.log('login ctrl');
            // $window.location.href ='/register'; 
          });
   }
+  $scope.redirRecovery = function(){
+
+         $('#mainRow').hide();  
+         $('#errorPass').hide();
+         $('#errorUser').hide();      
+
+      $( "#imgPrimary" ).animate({ 
+        top: "+=" + parseInt($('#imgPrimary').height()), //-30 [comment]
+       }, "slow", function(){
+               $( "#imgPrimary" ).delay(0).animate({ 
+                          top: "-=" + parseInt($('#imgPrimary').height()), //-30
+                  },function(){
+                    $rootScope.$apply(function(){
+                        $location.path('/recovery');
+                    });
+                 });
+
+        });
+
+
+         
+    
+    
+ 
+  }
   $scope.loginScopeFunc = function(){
       
      // $http.post('/checkUserIfTaken',{username:$scope.inputUsername}).
@@ -263,7 +371,7 @@ console.log('login ctrl');
          $('#errorUser').hide();      
 
       $( "#imgPrimary" ).animate({ 
-        // top: "+=" + parseInt($('#imgPrimary').height()), //-30 [comment]
+        top: "+=" + parseInt($('#imgPrimary').height()), //-30 [comment]
        }, "slow", function(){
                
                          (function() {
@@ -275,7 +383,7 @@ console.log('login ctrl');
                                                   // alert('meron');
                                                    resolve();
                                               }else{
-                                                $( "#imgPrimary" ).delay(1500).animate({ 
+                                                $( "#imgPrimary" ).delay(0).animate({ 
                                                     top: "-=" + parseInt($('#imgPrimary').height()), //-30
                                                  
                                                  },function(){
@@ -298,19 +406,19 @@ console.log('login ctrl');
                                                 //$digest or $apply
                                               console.log('testing');
                                               if (data.exist == true){
-                                                $( "#imgPrimary" ).delay(1500).animate({ 
+                                                $( "#imgPrimary" ).delay(0).animate({ 
                       
-                                                  // left: "-=" + parseInt($('#imgPrimary').offset().left - 50),
-                                                  // top: "-=" + parseInt($('#imgPrimary').offset().top - 00), //-30
-                                                  // width: '130px',
-                                                  // height: '100px' //[comment]
+                                                  left: "-=" + parseInt($('#imgPrimary').offset().left - 50),
+                                                  top: "-=" + parseInt($('#imgPrimary').offset().top - 00), //-30
+                                                  width: '130px',
+                                                  height: '100px' //[comment]
                                                 
                                                    }, "slow", function(){
                                                     $window.location.reload();
                                                  });
                                                  
                                               }else{
-                                                  $( "#imgPrimary" ).delay(1500).animate({ 
+                                                  $( "#imgPrimary" ).delay(0).animate({ 
                                                     top: "-=" + parseInt($('#imgPrimary').height()), //-30
                                                        },function(){
                                                         $('#mainRow').show();

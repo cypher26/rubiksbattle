@@ -1,13 +1,44 @@
-<div  role="alert" class="col-xs-12 alert alert" 
+<!-- <div  role="alert" class="col-xs-12 alert alert" 
 style="background-image:url(img/back5.png); border:1px solid #d8d8d8; height:40px; padding:5px;" align=''>
+ -->
+<style>
 
+.bgStyle1{
+/* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#dddddd+0,dbdce2+21,b8bac6+49,dddfe3+80,d8d8d8+100 */
+background: #dddddd; /* Old browsers */
+background: -moz-linear-gradient(-45deg,  #dddddd 0%, #dbdce2 21%, #b8bac6 49%, #dddfe3 80%, #d8d8d8 100%); /* FF3.6-15 */
+background: -webkit-linear-gradient(-45deg,  #dddddd 0%,#dbdce2 21%,#b8bac6 49%,#dddfe3 80%,#d8d8d8 100%); /* Chrome10-25,Safari5.1-6 */
+background: linear-gradient(135deg,  #dddddd 0%,#dbdce2 21%,#b8bac6 49%,#dddfe3 80%,#d8d8d8 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#dddddd', endColorstr='#d8d8d8',GradientType=1 ); /* IE6-9 fallback on horizontal gradient */
+
+}
+.bgStyle2{
+/* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#e2e2e2+0,dbdbdb+76,d1d1d1+81,d8d8d8+100 */
+background: rgb(226,226,226); /* Old browsers */
+background: -moz-linear-gradient(-45deg,  rgba(226,226,226,1) 0%, rgba(219,219,219,1) 76%, rgba(209,209,209,1) 81%, rgba(216,216,216,1) 100%); /* FF3.6-15 */
+background: -webkit-linear-gradient(-45deg,  rgba(226,226,226,1) 0%,rgba(219,219,219,1) 76%,rgba(209,209,209,1) 81%,rgba(216,216,216,1) 100%); /* Chrome10-25,Safari5.1-6 */
+background: linear-gradient(135deg,  rgba(226,226,226,1) 0%,rgba(219,219,219,1) 76%,rgba(209,209,209,1) 81%,rgba(216,216,216,1) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#e2e2e2', endColorstr='#d8d8d8',GradientType=1 ); /* IE6-9 fallback on horizontal gradient */
+
+}
+.bgStyle{
+/* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#e2e2e2+0,dbdbdb+50,d1d1d1+51,d8d8d8+100&1+0,0.31+100 */
+background: -moz-linear-gradient(top,  rgba(226,226,226,1) 0%, rgba(219,219,219,0.66) 50%, rgba(209,209,209,0.65) 51%, rgba(216,216,216,0.31) 100%); /* FF3.6-15 */
+background: -webkit-linear-gradient(top,  rgba(226,226,226,1) 0%,rgba(219,219,219,0.66) 50%,rgba(209,209,209,0.65) 51%,rgba(216,216,216,0.31) 100%); /* Chrome10-25,Safari5.1-6 */
+background: linear-gradient(to bottom,  rgba(226,226,226,1) 0%,rgba(219,219,219,0.66) 50%,rgba(209,209,209,0.65) 51%,rgba(216,216,216,0.31) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#e2e2e2', endColorstr='#4fd8d8d8',GradientType=0 ); /* IE6-9 */
+
+}
+</style>
+<div  role="alert"  class="col-xs-12 alert alert bgStyle1" 
+style=" border:1px solid #d8d8d8; border-bottom:0px; height:40px; padding:5px;" align=''>
 					<!-- <span class='well well-sm' style="height:20px; font-size:12px; margin:0px; "> <span class='glyphicon glyphicon-bookmark'></span>
 					 Welcome <strong>{{userInfo.user_fname}}</strong> <span style='font-size:16px;'><span id='spanUsername' ></span>!</span>
 					</span> -->
 
 
 						<span>
-							<center><span class='well well-sm' style="font-size:20px; width:500px; border-top:2px solid #d8d8d8; display:{{isMember?'none':''}}">	Welcome <b id='spanProfile'>{{userInfo.user_fullName.split(' ')[0]}}!</b><b></b></span></center>
+							<center><span class='well well-sm' style="font-size:20px; width:500px; border-top:2px solid #d8d8d8; display:{{isMember?'none':''}}"> <span class='glyphicon glyphicon-bookmark'></span>	Welcome <b id='spanProfile'>{{userInfo.user_fullName.split(' ')[0]}}!</b><b></b></span></center>
 						</span>
 
 						<span>

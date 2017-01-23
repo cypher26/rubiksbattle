@@ -24,8 +24,9 @@
 											     	<div layout='row'  layout-padding style='padding-bottom:0px;'>
 									  			<div flex='33'>
 							  			
-							  				<strong> <span class='glyphicon glyphicon-stats'></span> Player stats </strong>
-										     		
+							  				<strong > <span class='glyphicon glyphicon-stats'></span> Player stats
+							  				 </strong>
+										    
 										     		
 									  			</div>
 												 <div flex='33'>
@@ -33,8 +34,10 @@
 											     		
 											     </div>
 											     	<div flex='33' layout-align='center center' align='center' 
-											     	style='background-color:#f2f2f2; border-left:60px solid #d8d8d8; border-right:60px solid #D8D8D8;'>
-										     			<strong> <span class='glyphicon glyphicon-star'></span> Rating: <b style='color:#848484; '> {{userRankHighscore.user_score}}</b> <b style='color:orange; margin-left:7px; font-size:17px;'># {{userRankHighscore.rank}} </b>  </strong>
+											     	style='background-color:#fafafa; border-left:60px solid #E6E6E6; border-right:60px solid #E6E6E6;'>
+										     			<md-icon   md-svg-src="/img/svg/star.svg" aria-label="android "></md-icon></span> Rating: <b style='color:#848484; '> {{userRankHighscore.user_score}}</b> <b uib-popover="Overall rank {{userRankHighscore.rank}}" popover-placement='top' popover-trigger="'mouseenter'"
+										     			style='color:orange; margin-left:7px; font-size:17px;'> 
+										     			{{userRankHighscore.rank}} </b>  
 										     		</div>
 											     	</div>
 											     <style>
@@ -81,12 +84,19 @@ border-radius: 25px 10px / 10px 25px;
 													</div>
 													<div layout='row' style='border:0px solid'>
 														<span class='glyphicon glyphicon-flash' style='margin-right:5px;'></span> Best time: <div flex></div><b style='color:#848484; '>
-														{{convertTimeComplete(userRankSingle3.endedTime)}} </b><b style='color:orange; margin-left:7px; font-size:17px;'># {{userRankSingle3.rank}} </b>
+														<a href="/archive/{{userRankSingle3.id}}">
+														{{convertTimeComplete(userRankSingle3.endedTime)}}</a> </b><b 
+														uib-popover="Overall rank {{userRankSingle3.rank}}" popover-placement='top' popover-trigger="'mouseenter'"
+														style='color:orange; margin-left:7px; font-size:17px;'> 
+														{{userRankSingle3.rank==0?'':userRankSingle3.rank}} </b>
 													</div>
 													<div layout='row'style='border:0px solid'>
-														<span class='glyphicon glyphicon-fire' style='margin-right:5px;'></span> 	All time average: <div flex></div><b style='color:#848484; '>
+														<span class='glyphicon glyphicon-fire' style='margin-right:5px;'></span> 	Average: <div flex></div><b style='color:#848484; '>
 														{{convertTimeComplete(userRankAverage3.endedTime)}}
-														 </b><b style='color:orange; margin-left:7px; font-size:17px;'># {{userRankAverage3.rank}} </b> 
+														 </b><b uib-popover="Overall rank {{userRankAverage3.rank}}" popover-placement='top' popover-trigger="'mouseenter'"
+														 style='color:orange; margin-left:7px; font-size:17px;'>
+														{{userRankAverage3.rank==0?'':userRankAverage3.rank}} </b>
+														  </b> 
 													</div>
 													<md-divider style='margin-top:20px;'></md-divider>
 													<md-divider></md-divider>
@@ -96,13 +106,20 @@ border-radius: 25px 10px / 10px 25px;
 													</div>
 														<div layout='row' style='border:0px solid'>
 														<span class='glyphicon glyphicon-flash' style='margin-right:5px;'></span> Best 	time: <div flex></div><b style='color:#848484; '>
-														{{convertTimeComplete(userRankSingle2.endedTime)}}
-														 </b><b style='color:orange; margin-left:7px; font-size:17px;'># {{userRankSingle2.rank}} </b>  
+														<a href="/archive/{{userRankSingle2.id}}">
+														{{convertTimeComplete(userRankSingle2.endedTime)}}</a>
+														 </b><b 
+														 uib-popover="Overall rank {{userRankSingle2.rank}}" popover-placement='top' popover-trigger="'mouseenter'"
+														 style='color:orange; margin-left:7px; font-size:17px;'>
+														 {{userRankSingle2.rank==0?'':userRankSingle2.rank}} </b>
+														  </b>  
 													</div>
 													<div layout='row'style='border:0px solid'>
-														<span class='glyphicon glyphicon-fire' style='margin-right:5px;'></span> 	All time average: <div flex></div><b style='color:#848484; '>
+														<span class='glyphicon glyphicon-fire' style='margin-right:5px;'></span> 	Average: <div flex></div><b style='color:#848484; '>
 														{{convertTimeComplete(userRankAverage2.endedTime)}}
-														</b><b style='color:orange; margin-left:7px; font-size:17px;'># {{userRankAverage2.rank}} </b> 
+														</b><b uib-popover="Overall rank {{userRankAverage2.rank}}" popover-placement='top' popover-trigger="'mouseenter'"
+														style='color:orange; margin-left:7px; font-size:17px;'> 
+														{{userRankAverage2.rank==0?'':userRankAverage2.rank}} </b></b> 
 													</div>
 
 													

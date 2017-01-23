@@ -19,6 +19,19 @@ var models = require('../database/models');
 
 	const net = require('net');
 
+var crypto = require('crypto');
+
+var bcrypt = require('bcryptjs');
+
+var salt = bcrypt.genSaltSync(10);
+
+// var hash = bcrypt.hashSync("MYPASSWORD", salt);
+
+// console.log(hash); // true 
+
+// bcrypt.compareSync("MYPASSWORD", hash); // true 
+
+
 
 
 
@@ -75,13 +88,13 @@ router.post("/logout",function(req,res){
 
 // router.use("*",function(req,res){
 // 	  // res.redirect(__dirname + '/index.html');
-// 	  console.log('up');
+	  // console.log('up');
 // 	  res.sendFile('/webpages/index.html', { root: __dirname });
 // 	})
 
 
 router.post('/login',function(req,res,next){
-		console.log('username = ' + req.body.username + " password = " + req.body.password);
+		// console.log('username = ' + req.body.username + " password = " + req.body.password);
 
 		// if (req.body.username == 'jester' && req.body.password == 'password'){
 
@@ -121,13 +134,13 @@ function timeNow(){
 }
 router.post('/register',function(req,res,next){
 
-	console.log('checkRegister');
+	// console.log('checkRegister');
 			
 	country = '';
      (function() {
            return new Promise(function(resolve, reject){
                	externalip(function (err, ip) {
-				  console.log('ip 123= ' +ip); // => 8.8.8.8
+				  // console.log('ip 123= ' +ip); // => 8.8.8.8
 
 				  	if (ip !=undefined){
 						where.is(ip, function(err, result) {
@@ -152,14 +165,14 @@ router.post('/register',function(req,res,next){
 
                 var newUser = {
 					    username             : req.body.username,
-					    user_password        : req.body.password,
+						user_password        : bcrypt.hashSync(req.body.password, salt),
 					    user_email           : req.body.email,
 					    user_country         : country,
 					    user_since           : timeNow(),
 					    user_score			 : 1500 //initial score for players
    				};
 
-console.log('hahahaha');
+// console.log('hahahaha');
 					// create user
 					models.createUser(newUser,function(err,mainData){
 						// console.log('hihi');
@@ -167,6 +180,10 @@ console.log('hahahaha');
 							// console.log (typeof id);
 							// console.log('user created ' + mainData + ' id=' + mainData._id);
 							req.session.user_id = mainData['_id'];
+
+							req.session.modalHelp = true;
+							req.session.modalLiveHelp = true;
+							
 							req.session.userInfo =mainData;
 							console.log('mainData._id = ' + mainData['_id']);
 							console.log('session = ' + req.session.user_id + " " + req.session.userInfo);
@@ -186,7 +203,7 @@ console.log('hahahaha');
 
 		 // var clientIp = requestIp.getClientIp(req);
 
-		 //  console.log('client ip = ' + clientIp);
+		  // console.log('client ip = ' + clientIp);
 
 			
 
@@ -253,7 +270,8 @@ router.post('/deleteChat',function(req,res,next){
 								    msg_id:item
 							};
 							models.deleteChat(delChat,function(err,data){
-								if (err) throw err; console.log('created ' + data);
+								if (err) throw err; 
+								// console.log('created ' + data);
 								  resolve();
 							});
                        
@@ -263,39 +281,40 @@ router.post('/deleteChat',function(req,res,next){
           });
 
 });
-router.post('/checkPassIfTaken',function(req,res,next){
+// router.post('/checkPassIfTaken',function(req,res,next){
 
-			console.log('checkPass');
-				models.ifTakenPassword(req.body.password,function(err,data){
-					if (err) console.log(err);
-					if (data.length == 0){
-						res.send({exist:false})
-					}else{
-						res.send({exist:true})
-					}
-				});
+			// console.log('checkPass');
+// 				models.ifTakenPassword(req.body.password,function(err,data){
+					// if (err) console.log(err);
+// 					if (data.length == 0){
+// 						res.send({exist:false})
+// 					}else{
+// 						res.send({exist:true})
+// 					}
+// 				});
 
-});
+// });
 router.post('/userLogin',function(req,res,next){
 
 			// console.log('userLogin');
-				models.getUserId(req.body.username,req.body.password,function(err,data){
-					if (err) console.log(err);
-					if (data.length == 0){
-							res.send({exist:false})
-					}else{
-						// console.log(typeof data[0]._id);	
-						req.session.user_id = data[0]._id;
+			models.userLogin(req.body.username,req.body.password,function(ifLogin,data){
+			    // console.log("ifLogin " + ifLogin);
+			    if (ifLogin){
+		    			req.session.user_id = data[0]._id;
 
-						console.log(req.session.user_id);
-						req.session.userInfo = data[0];
-
-						console.log("id = " + data[0]._id);
-						res.send({exist:true})
+						req.session.modalHelp = true;
+						req.session.modalLiveHelp = true;
 						
+						// console.log(req.session.user_id);
+						req.session.userInfo = data[0];
+						res.send({exist:ifLogin});
+					}else{
+						res.send({exist:ifLogin});
 					}
-				});
 
+			    
+			});
+				
 
 
 
@@ -449,7 +468,7 @@ router.post('/viewFriends',function(req,res,next){
 router.post('/editFriendStatus',function(req,res,next){
 		// console.log('editFriendStatus');
 		models.editFriendStatus(req.session.user_id,req.body.user_id,req.body.friend_status,function(data){
-			console.log('success edit');
+			// console.log('success edit');
 		   res.send();
 		});
 });
@@ -467,7 +486,7 @@ router.post('/getArchiveGameInfo',function(req,res,next){
 
 
 		models.getArchiveGameInfo(req.body.id,function(err,data){
-				console.log(data);
+				// console.log(data);
 			if (data == null) res.status(500).send();
 			else res.send({archiveGameData:data});
 		});
@@ -535,13 +554,13 @@ router.post('/getUserRankHighscore',function(req,res,next){
 
 router.post('/getUserRankSingle',function(req,res,next){
 	if (req.body.id != undefined){ //if member is selected
-		models.getUserRankSingle(Number(req.body.id),req.body.cubeType,function(endedTime,rank){
-		     res.send({userRankSingle: {endedTime:endedTime,rank:rank} });
+		models.getUserRankSingle(Number(req.body.id),req.body.cubeType,function(endedTime,rank,id){
+		     res.send({userRankSingle: {endedTime:endedTime,rank:rank,id:id} });
 		});
 	}else{
 		
-		models.getUserRankSingle(req.session.user_id,req.body.cubeType,function(endedTime,rank){
-		    res.send({userRankSingle: {endedTime:endedTime,rank:rank} });
+		models.getUserRankSingle(req.session.user_id,req.body.cubeType,function(endedTime,rank,id){
+		    res.send({userRankSingle: {endedTime:endedTime,rank:rank,id:id} });
 		});
 	}
 		
@@ -582,6 +601,25 @@ router.post('/updateFullName',function(req,res,next){
 			});	
 });
 
+router.post('/updatePassword',function(req,res,next){
+		models.updatePassword(req.session.user_id, bcrypt.hashSync(req.body.password, salt),function(err,data){
+   				res.send({user_data:data});
+			});	
+});
+
+router.post('/updateEmail',function(req,res,next){
+		models.ifTakenEmail(req.body.email,function(err,data){
+				if (data.length == 0){
+					//continue
+					models.updateEmail(req.session.user_id,req.body.email,function(err,data){
+						res.send({valid:true});
+					});
+				}else{
+					res.send({valid:false});
+				}
+		});
+});
+
 
 router.post('/getAllUserStats',function(req,res,next){
 
@@ -615,10 +653,45 @@ router.post('/getUserRating',function(req,res,next){
 		});
 });
 
+router.post('/reqModalHelp',function(req,res,next){
+
+		if (req.session.modalHelp!=undefined){
+			// console.log('modalHelp = ' + req.session.modalHelp);
+			req.session.modalHelp = undefined;
+			res.send({show:true});
+		}else{
+			res.send({show:false});
+		}
+		// else{
+		// 	res.status(500).send();
+		// }
+});
+
+router.post('/stopModalHelp',function(req,res,next){
+		req.session.modalHelp = null;
+		// console.log('stopModalHelp '+req.session.modalHelp);
+
+});
+
+
+router.post('/reqLiveModalHelp',function(req,res,next){
+
+		if (req.session.modalLiveHelp!=undefined){
+			req.session.modalLiveHelp = undefined;
+				res.send({show:true});
+		}else{
+			res.send({show:false});
+		}
+});
+
+
+
+
+
 
 
 router.post("/liveAuthen",function(req,res,next){
-	console.log('live authen');
+	// console.log('live authen');
 		models.getGameInfo(req.body.id,function(err,data){
 			
 			//put session after guessing keyword
@@ -634,6 +707,71 @@ router.post("/liveAuthen",function(req,res,next){
 router.get('/invalid',function(req,res,next){
 	res.render('invalid');
 });
+
+router.get('/reset/',function(req,res,next){
+	res.render('reset');
+	// res.send('hahahaha ' + req.params.token);
+});
+
+router.post('/resetPassword',function(req,res,next){
+			// console.log(req.headers.host);
+			console.log(req.body.email);
+		models.ifTakenEmail(req.body.email,function(err,data){
+			  console.log(data);
+			  if (data.length == 0){
+			    	res.send({valid:false});
+			  }else{
+			      models.resetPassword(data[0],req.headers.host,function(){
+			      		res.send({valid:true});
+			      });
+			  }
+			});
+	
+});
+
+
+router.post("/resetAuthen/",function(req,res,next){
+			// console.log(req.params.token);
+		models.resetAuthen(req.body.token,function(err,data){
+			console.log(data);
+		  	 if (data.length == 0){
+		    	res.send({valid:false});
+			  }else{
+	      		res.send({valid:true});
+			  }
+			});
+});
+
+router.post("/tokenUpdatePassword/",function(req,res,next){
+			// console.log(req.params.token);
+			models.resetAuthen(req.body.token,function(err,data){
+			console.log(data);
+		  	 if (data.length == 0){
+		    	res.send({valid:false});
+			  }else{
+					models.updatePassword(data[0]._id, bcrypt.hashSync(req.body.pass, salt),function(err,u_data){
+
+							req.session.user_id = data[0]._id;
+
+							req.session.modalHelp = true;
+							req.session.modalLiveHelp = true;
+							
+							req.session.userInfo =data[0];
+
+							models.removeToken(data[0]._id,function(){
+								res.send({valid:true});
+							});
+	   					
+					});	
+	      		
+			  }
+			});
+
+		
+});
+
+
+
 
 router.get('/live',function(req,res,next){
 	

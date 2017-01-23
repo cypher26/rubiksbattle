@@ -1,4 +1,44 @@
 					
+<style>
+.containerAvatar {
+    position: relative;
+    /*width: 50%;*/
+}
+
+.image {
+  opacity: 1;
+  /*display: block;*/
+  /*width: 100%;*/
+  height: auto;
+  transition: .5s ease;
+  backface-visibility: hidden;
+}
+
+.middle {
+  transition: .5s ease;
+  opacity: 0;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  -ms-transform: translate(-50%, -50%)
+}
+
+.containerAvatar:hover .image {
+  opacity: 0.3;
+}
+
+.containerAvatar:hover .middle {
+  opacity: 1;
+}
+
+.text {
+  background-color: #4CAF50;
+  color: white;
+  font-size: 16px;
+  padding: 16px 32px;
+}
+</style>
 
 				<div ng-include='"templates/top_template.html"' ></div>
 <style> /*for online circle*/
@@ -9,16 +49,23 @@
 					.photoStyle{max-width:125px; border:0px; margin:auto;}
 			</style>	
 					<div class="col-xs-3" style='border:0px solid;'>
-						<div class='col-xs-12' style='border:0px solid; background-color:#FFFFFF; padding-left:0px; text-align:center;' >
-						  					
+					<div class="col-xs-12 {{!isMember?'containerAvatar':''}}" id='avatarDiv'  align='center' style='border:0px solid; background-color:#FFFFFF;' >
+
+
 						  							<!-- <a href=''><img style='height:200px; width:200px; border:0px solid;' 
 						  								src='{{userInfo.user_avatar}}'/></a> -->
 
 					  								<!-- <div class="menuSide" > -->
-												    <img src="{{side.avatar}}"  style='width:200px; height:200px;' />
-													    <span class="menu_labelSide" style="display:{{isMember?'':'none'}}">
-													           <svg width="25" height="25" style='position: relative; top:-11px; left:-28px; z-index: 3;' >
-		                               <circle cx="15.5" cy="15.5" r="20"   fill="{{onlineList.indexOf(isMember_id.toString())>-1 ? 'LightGreen':'Red'}}" />
+										   			 <img  class="image" src="{{side.avatar}}"  ng- style='width:200px; height:200px; border:0px solid;' />
+									   			   			<div class="middle" style="display:{{isMember?'none':''}}">
+													    <md-button ng-click='showAvatarDialog()' style='background-color:green; color:white;'>Edit avatar</md-button>
+														  </div>
+											  		  <span class="menu_labelSide" style="display:{{isMember?'':'none'}}">
+													           <svg width="25" height="25" style='position: relative; top:-11px; left:-18px; z-index: 3;' >
+		                               <circle cx="15.5" cy="15.5" r="20"   fill="
+		                               {{busyList.indexOf(isMember_id.toString())>-1?'orange':onlineList.indexOf(isMember_id.toString())>-1 ? 'LightGreen':'Red'}}" >
+		                               <title>{{busyList.indexOf(isMember_id.toString())>-1?'Busy':onlineList.indexOf(isMember_id.toString())>-1 ? 'Online':'Offline'}}</title>
+		                               </circle>
 													           </svg> 
 													    </span>                                            
 													<!-- </div> -->
@@ -27,7 +74,9 @@
   						</div>
 					  						<div  class='col-xs-12' style='border:0px solid; background-color:#FFFFFF; margin-top:10px;'>
 					  							<div layout='row' layout-align='center'>
-					  							<b><font style='font-size:25px'>{{side.username}}</font></b>
+					  							<b><font style='font-size:25px'>
+					  							
+					  							{{side.username}}</font></b>
 					  							</div>
 				  							<div layout='row' style='padding-bottom:10px;'  layout-align='center center'>
 					  							<div  style="  display: table-cell; vertical-align: bottom; padding-left:{{isMember?'0':'20'}}px; ">
@@ -46,7 +95,8 @@
 											    <span style="display:{{isMember?'none':''}}">
 											    <md-icon style="fill:blue; display:{{!validName?'':'none'}}" ng-click="edit=!edit" md-svg-src="/img/svg/ic_border_color_black_24px.svg" ></md-icon>
 												
-												<md-icon style="fill:green; display:{{validName?'':'none'}}" ng-click="updateFullName(inputFullName)" md-svg-src="/img/svg/ic_check_black_24px.svg"></md-icon>
+												<md-button class='md-raised' style="display:{{validName?'':'none'}}; min-width:20px" ><md-icon style="fill:green; " ng-click="updateFullName(inputFullName)" md-svg-src="/img/svg/ic_check_black_24px.svg"></md-icon>
+												</md-button>
 												</span>
 											      
 
@@ -147,11 +197,11 @@
 							   <md-list-item >
 								   
 							   	 <md-button flex  
-							          ng-click="listItemClick($index)"
+							          ng-click="showEdit()"
 							       
 							          >
 							        <md-icon md-svg-src="/img/svg/ic_settings_black_24px.svg" class='custom-padding'> </md-icon>
-							        <span class="md-inline-list-icon-label">Edit account</span>
+							        <span class="md-inline-list-icon-label">Edit Account</span>
 							      </md-button>
 							 
 							  </md-list-item>

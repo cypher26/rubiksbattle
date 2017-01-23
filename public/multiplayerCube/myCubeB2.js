@@ -595,7 +595,7 @@
 
 	}
 	
-	function face1(rot,spec,widthSpec,turn,str){
+	function face1(rot,spec,widthSpec,turn,str,cb){
 		if (setFinish1==true){
 				render1();
 				getBlocksZ1(widthSpec,spec); //colsDeg,cols
@@ -607,6 +607,7 @@
 					  renderer1.render(scene1,camera1);
 					   
                   sendAlgDB1(str,function(){
+                  	cb();
                   	setFinish1 = true;
                   });
                 
@@ -646,7 +647,7 @@
 				THREE.SceneUtils.detach(solidC1[tempContX1[x]][tempContY1[x]],pivot1,scene1);
 		}
 	}
-	function right1(rot,spec,widthSpec,turn,str){
+	function right1(rot,spec,widthSpec,turn,str,cb){
 		
 		if (setFinish1==true){
 			render1();
@@ -659,6 +660,7 @@
 					 
               	   renderer1.render(scene1,camera1);
 					sendAlgDB1(str,function(){
+						cb();
 						setFinish1 = true;
 					});
 				 
@@ -707,7 +709,7 @@
 	}
 
 
-	function up1(rot,spec,widthSpec,turn,str){
+	function up1(rot,spec,widthSpec,turn,str,cb){
 		if (setFinish1==true){
 
 				render1();
@@ -720,10 +722,11 @@
 					
 					  renderer1.render(scene1,camera1);
 					  
-sendAlgDB1(str,function(){
-	setFinish1 = true;
-});
-					
+						sendAlgDB1(str,function(){
+							cb();
+							setFinish1 = true;
+						});
+											
 				cancelAnimationFrame(raf1);
 				 removeBlocksX1(widthSpec,spec);
 				  })
@@ -736,7 +739,7 @@ sendAlgDB1(str,function(){
 		
 	}
 	
-	function rotateX1(rot, turn,str){
+	function rotateX1(rot, turn,str,cb){
 		if (setFinish1==true){
 				render1();
 				getBlocksAll1();
@@ -747,6 +750,7 @@ sendAlgDB1(str,function(){
                 .onComplete(function() {
                   renderer1.render(scene1,camera1);
 					 sendAlgDB1(str,function(){
+					 	cb();
 					 	setFinish1 = true;
 					 });
                 
@@ -758,7 +762,7 @@ sendAlgDB1(str,function(){
 			}
 			setFinish1=false;
 	}
-	function rotateZ1(rot, turn,str){
+	function rotateZ1(rot, turn,str,cb){
 		if (setFinish1==true){
 				render1();
 				getBlocksAll1();
@@ -769,6 +773,7 @@ sendAlgDB1(str,function(){
                 .onComplete(function() {
                   renderer1.render(scene1,camera1);
 					  sendAlgDB1(str,function(){
+					  	cb();
 					  	setFinish1 = true;
 					  });
                  
@@ -780,7 +785,7 @@ sendAlgDB1(str,function(){
 			}
 			setFinish1=false;
 	}
-	function rotateY1(rot, turn,str){
+	function rotateY1(rot, turn,str,cb){
 		if (setFinish1==true){
 				render1();
 				getBlocksAll1();
@@ -793,6 +798,7 @@ sendAlgDB1(str,function(){
 				 
 
 				 sendAlgDB1(str,function(){
+				 	cb();
 				 	setFinish1 = true;
 				 });
                  

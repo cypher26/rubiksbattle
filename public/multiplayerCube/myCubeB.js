@@ -33,12 +33,12 @@
 
 	//  init('0');
 	
-dimension = 3;
+	dimension = 3;
 
 	function init(nw){
 
 	//////////////////////////////////////////////////////init scene
-	console.log('initial');
+	// console.log('initial');
 
 		if (nw == '1'){
 			// console.log('init = 1');
@@ -257,7 +257,7 @@ dimension = 3;
 		}
 		for (var y = 0, xMatrix = 1, yMatrix = 1; y<(dimension*dimension);y++){
 						
-						
+						// console.log('d = ' + dimension);
 					switch (x){
 						case 0:
 						// color = upSide;
@@ -660,7 +660,7 @@ dimension = 3;
 
 	}
 	
-	function face(rot,spec,widthSpec,turn,str){
+	function face(rot,spec,widthSpec,turn,str,cb){
 		if (setFinish==true){
 				render();
 				getBlocksZ(	widthSpec,spec); //colsDeg,cols
@@ -672,7 +672,9 @@ dimension = 3;
 					  renderer.render(scene,camera);
 						
                   sendAlgDB(str,function(){
+                  		cb();
                   	setFinish = true;
+                  
                   });
                 
 				
@@ -715,7 +717,7 @@ dimension = 3;
 				THREE.SceneUtils.detach(solidC[tempContX[x]][tempContY[x]],pivot,scene);
 		}
 	}
-	function right(rot,spec,widthSpec,turn,str){
+	function right(rot,spec,widthSpec,turn,str,cb){
 		
 		if (setFinish==true){
 			render();
@@ -726,9 +728,12 @@ dimension = 3;
                 .delay(delayTime)
                 .onComplete(function() {
 					 // console.log('hehe');
-              	   renderer.render(scene,camera);
+					 renderer.render(scene,camera);
+
 					 sendAlgDB(str,function(){
+					 	  cb();
 					 	setFinish=true;
+					 	
 					 });
 				 // setFinish=false;
 				 // alert('haha');
@@ -777,7 +782,7 @@ dimension = 3;
 	}
 
 
-	function up(rot,spec,widthSpec,turn,str){
+	function up(rot,spec,widthSpec,turn,str,cb){
 		if (setFinish==true){
 				render();
 				getBlocksX(widthSpec,spec); //colsDeg,cols
@@ -788,8 +793,11 @@ dimension = 3;
                 .onComplete(function() {
 					
 					  renderer.render(scene,camera);
+					     	
 					   sendAlgDB(str,function(){
+					   	cb();
 					   	setFinish = true;
+					
 					   });
 					
 				cancelAnimationFrame(raf);
@@ -804,7 +812,7 @@ dimension = 3;
 		
 	}
 	
-	function rotateX(rot, turn,str){
+	function rotateX(rot, turn,str,cb){
 		if (setFinish==true){
 				render();
 				getBlocksAll();
@@ -814,7 +822,9 @@ dimension = 3;
                 .delay(delayTime)
                 .onComplete(function() {
                   renderer.render(scene,camera);
+                  
 					  sendAlgDB(str,function(){
+					  		cb();
 					  	setFinish = true;
 					  });
                  
@@ -826,7 +836,7 @@ dimension = 3;
 			}
 			setFinish=false;
 	}
-	function rotateZ(rot, turn,str){
+	function rotateZ(rot, turn,str,cb){
 		if (setFinish==true){
 				render();
 				getBlocksAll();
@@ -836,7 +846,9 @@ dimension = 3;
                 .delay(delayTime)
                 .onComplete(function() {
                   renderer.render(scene,camera);
+                
 					   sendAlgDB(str,function(){
+					   	  cb();
 					   	setFinish = true;
 					   });
                  
@@ -848,7 +860,7 @@ dimension = 3;
 			}
 			setFinish=false;
 	}
-	function rotateY(rot, turn,str){
+	function rotateY(rot, turn,str,cb){
 		if (setFinish==true){
 				render();
 				getBlocksAll();
@@ -858,7 +870,9 @@ dimension = 3;
                 .delay(delayTime)
                 .onComplete(function() {
                   renderer.render(scene,camera);
+                 
 					 sendAlgDB(str,function(){
+					 	 cb();
 					 	setFinish = true;
 					 });
                  
@@ -933,33 +947,19 @@ dimension = 3;
 				}	
 			}
 
-		//if (playerControl == true){
-			// if (scrambler == 1){
-			
-			// 	socket.emit('updatePixels1',arrayAlg);	
-			// 	socket.emit('updatePixels',arrayAlg);
-			// 	console.log('testing');
-			// }else{
+		
 				angular.element(document.getElementById('controller_id')).scope().updatePixels(arrayAlg);
-				// socket.emit('updatePixels',arrayAlg);
-			// }
-			//console.log('exec');
-
-			// console.log('render' + arrayAlg);
-		//}
-
+		
 		renderer.render( scene, camera );
 		// }
 		
 		
 		
 	}
+
 	function sendAlgDB(alg,callback){
 
-		// console.log(alg);
-		// socket.emit('sendAlgP1',alg,function(){
-		// 	callback();
-		// });
+		
 
 		allAlgP1 += alg + " ";
 				angular.element(document.getElementById('controller_id')).scope().sendAlgP1(allAlgP1,arrayAlg,function(){
@@ -980,4 +980,4 @@ dimension = 3;
 
 var allAlgP1 = "";
 
-console.log('assig alg');
+

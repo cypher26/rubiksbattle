@@ -8,9 +8,8 @@
 
 
 var app = angular.module('webApp', [
-  'ngRoute','luegg.directives','ngMaterial','720kb.tooltips','ui.bootstrap'
+  'ngRoute','luegg.directives','ngMaterial','720kb.tooltips','ui.bootstrap','ngAudio','rzModule'
 ]);
-
 
 
 
@@ -87,11 +86,206 @@ app.directive('focusMe', ['$timeout', '$parse', function ($timeout, $parse) {
 }]);
 
   // console.log(doSomething.test2("R U"));
-app.controller('liveCtrl', function ($scope, $location, $http,$q, $window, $rootScope,$timeout,socket,$mdDialog,$sce,$mdSidenav,$mdToast,$interval) {
+app.controller('liveCtrl', function (ngAudio, $scope, $location, $http,$q, $window, $rootScope,$timeout,socket,$mdDialog,$sce,$mdSidenav,$mdToast,$interval) {
+  // document.getElementById('firstRow').style.width = 1266;
+
+  $scope.bodyStyle = {
+    position:'absolute',
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
+    margin: 0,
+    padding: 0,
+    border:'1px solid',
+  }
+
+// popover for modal help
+  $scope.helpPopover = $sce.trustAsHtml("<h4 style='margin:0px;'>Here!</h4>");
+
+
+
+  $scope.modalPage =-1;
+
+  $scope.modalNext =function(){
+      if ($scope.modalPage<6)
+       $scope.modalPage++;
+     else{
+        $mdDialog.cancel();
+     }
+  }
+  $scope.modalBack = function(){
+    if ($scope.modalPage>1)
+    $scope.modalPage--;
+   }
+
+
+  $scope.showHelp = function(){
+
+
+   
+  // document.getElementsByClassName("row")[0].style.width ="500px";
+
+if (['player1','player2'].indexOf($rootScope.playerPerspective)>-1 ){
+        $scope.modalPage = 1;
+        $scope.btnP1 = false;
+        $mdDialog.show({
+                  contentElement: '#helpLiveDialog',
+                  clickOutsideToClose: true,
+                  openFrom:{
+                     top: -50,
+                      width: 30,
+                      height: 80
+                  },
+                  closeTo:{
+                     top: -50,
+                      width: 30,
+                      height: 80
+                  }
+                }).finally(function(){
+                  $scope.btnP1 = true;
+                  $scope.modalPage = -1;
+                   // $http.post('/stopModalHelp',{}). success(function(data) {}).error(function(data) {   });
+
+                // socket.emit('stopModalHelp',{},function(){ });
+                });
+
+           
+    }
+
+  }
+
+
+
+
+// popover for modal help -end
+
+
+
+
+ngAudio.setUnlock( false );
+
+$scope.fx = {
+    hover: ngAudio.load("/sounds/tick.mp3"),
+    move: ngAudio.load("/sounds/live/NFF-single-clap.wav"),
+    count: ngAudio.load("/sounds/beep.mp3")
+}
+$scope.fxBackground = {
+    music: ngAudio.load("/sounds/live/Game-Menu_v001.mp3"),
+    onGame: ngAudio.load("/sounds/live/Quirky-Puzzle-Game-Menu.mp3")
+    // onGame: ngAudio.load("/sounds/live/8-Bit-Mayhem.mp3")
+
+
+}
+
+// $scope.onGame = ngAudio.load("/sounds/live/Quirky-Puzzle-Game-Menu.mp3");
+
+$scope.cb = {
+    fx:true,
+    bg:true,
+}
+
+
+
+
+$scope.fxBackground.onGame.loop = true;
+$scope.fxBackground.music.loop = true;
+
+$scope.fxBackground.music.play();
+
+// $scope.music.volume = 0.01;
+
+$scope.hoverFunc = function(){
+
+    $scope.fx.hover.play();
+}
+
+$scope.changeVol = function(){
+    for (var i in $scope.fxBackground){
+          $scope.fxBackground[i].volume = $scope.bgSlider.value/10;
+          // console.log($scope.fxBackground[i]);     
+    }
+
+}
+
+$scope.fxChangeVol = function(){
+   for (var i in $scope.fx){
+          $scope.fx[i].volume = $scope.fxSlider.value/10;
+          // console.log($scope.fxBackground[i]);     
+    }
+    $scope.fx.move.play();
+}
+
+$scope.fxSlider = {
+   value: 5,
+  options: {
+      floor: 0,
+      ceil: 10,
+      // disabled:!$scope.cb.fx,
+      // disabled:true,
+      hidePointerLabels:true,
+      hideLimitLabels: true,
+      onChange:$scope.fxChangeVol
+  }
+}
+
+
+
+
+$scope.bgSlider = {
+      value: 5,
+      options: {
+          floor: 0,
+          ceil: 10,
+          onChange:$scope.changeVol,
+          hidePointerLabels:true,
+          hideLimitLabels: true
+
+       }
+}
+
+  //init for volume slider
+    $rootScope.$on('initsettings', function(){  
+          console.log('initsettings');  
+         $scope.$broadcast('rzSliderForceRender');
+     
+
+    });
+
+
+$scope.changeCbFx = function(){
+  $scope.fxSlider.options.disabled = !$scope.cb.fx;
+
+    for (i in $scope.fx){
+      $scope.fx[i].muting = !$scope.cb.fx;
+    }
+
+}
+$scope.changeCbBg = function(){
+  $scope.bgSlider.options.disabled = !$scope.cb.bg;
+
+    for (i in $scope.fxBackground){
+      $scope.fxBackground[i].muting = !$scope.cb.bg;
+    }
+
+}
+
+
+// $scope.$on("slideEnded", function() {
+  
+//   // $scope.fxBackground.music.volume =  $scope.bgSlider.value/10;
+
+//     // console.log('slider');
+// });
+
+
+
+
+
 
 $scope.showBlur = function(){
   console.log($scope.gameStatus);
-  if ($scope.gameStatus == 'onGame'){
+  if ($scope.gameStatus == 'onGame' && $rootScope.playerPerspective!='observer'){
     $scope.showToast();
   }
 }
@@ -115,7 +309,7 @@ $scope.hideToast = function(){
     $mdToast.show(toast).then(function(response) {
       if ( response == 'ok' ) {
         // alert('You clicked the \'UNDO\' action.');
-        $scope.ifFocus = true;
+        // $scope.ifFocus = true;
       }
     });
   };
@@ -139,6 +333,8 @@ $scope.hideToast = function(){
       $scope.yearNow = new Date().getFullYear();
 
       //############################-dialogs-#####################################//
+
+
 
 
     $scope.showConfirmAbandon = function(ev) {
@@ -194,6 +390,23 @@ $scope.hideToast = function(){
        
     };
 
+    $scope.showSettings = function(){
+
+           $mdDialog.show({
+              contentElement: '#settings',
+              clickOutsideToClose: true,
+              openFrom:{
+                 top: -50,
+                  width: 30,
+                  height: 80
+              },
+              closeTo:{
+                 top: -50,
+                  width: 30,
+                  height: 80
+              }
+            });
+   }
 
 
     // setTimeout(function(){
@@ -246,19 +459,26 @@ $scope.hideToast = function(){
             return formattedDate;
 
   }
+ $scope.enableSend = true;
   $scope.btnSend = function(){
-    if (['',undefined].indexOf($scope.inputMessage)>=0) return; 
-        
-        socket.emit('sendRoomMsg', {msg:$scope.inputMessage},function (){
-          $scope.inputMessage = '';
-      });
+    if ($scope.enableSend){
+        $scope.enableSend = false;
+          if (['',undefined].indexOf($scope.inputMessage)>=0){
+              $scope.enableSend = true;
+              return; 
+          } 
+              socket.emit('sendRoomMsg', {msg:$scope.inputMessage},function (){
+                $scope.inputMessage = '';
+                 $scope.enableSend = true;
+            });
+      }
   }
 
 
   //################################################# sockets #########################################################
 
 $scope.btnTest = function(){
-    
+      $scope.bgSlider.value = 1;
         // Appending dialog to document.body to cover sidenav in docs app
         // Modal dialogs should fully cover application
         // to prevent interaction outside of dialog
@@ -338,45 +558,177 @@ function wonDialogShow(){
 }
 
 
-  socket.on('updateRating',function(data){
-      // alert(data);
-      $scope.pRating = data;
+// $scope.gameInit = function(){
 
-  });
-  socket.on('multipleLogin',function(data){
-    console.log('data = ' + data + " id = " + $rootScope.userInfo._id);
-    if (data == $rootScope.userInfo._id)
-      $window.location.href = "/invalid";
-  });
 
-  socket.on('roomScoreUpdate',function(data){
-    $scope.scoreP1 = data.p1;
-    $scope.scoreP2 = data.p2;
-      // console.log('p1 = ' + data.p1 + " p2 = " + data.p2);
-  });
+//      $scope.inviteDisplay = 0;
+//      $scope.inviteTimer = 1;
+//       $rootScope.root = {
+//         cubeType:'3x3x3',
+//         roomType:'(Public)',
+//         inviteKeyword:'',
+//         declineModal:0,
+//         notAvailableModal:0
+//     }
 
-  socket.on('matrixComputerUpdate',function(data){
-          // allMovesP2 = data);
-          execPerm1(data);
-          init1('1');
-          // printArrayCube1();
-  });
+//      console.log('inviteDisplay ' + $scope.inviteDisplay);
+//   }
 
-  socket.on('updateAbandon',function(){
-       $scope.showAbandon();
-  });      
+  
+//   $scope.gameInit();
 
-  socket.on('getGameStatus',function (data){
-        // alert(data.gameStatus);
-        $scope.gameStatus = data;
-         // console.log('gs = ' + $scope.gameStatus);
-        if ($scope.gameStatus == 'onGame'){
-         
-          $scope.btnP2=false;
-          $scope.btnP1=false;
 
-          // $scope.btnf
+//   $scope.inviteStatus = 0;
+//   $scope.receivedStatus = 0;
+//   $scope.inviteDisplay = 0;
+
+
+//   $scope.receivedDialog =function(){
+//       // alert('receive');
+//      $scope.receivedStatus =1;  
+//     $mdDialog.show({
+//       contentElement: '#receivedDialog',
+//       clickOutsideToClose: false,
+//       openFrom:{
+//          top: -50,
+//           width: 30,
+//           height: 80
+//       },
+//       closeTo:{
+//         top:-50
+//       }
+//     }).finally(function(){
+//        $scope.receivedStatus =0;
+//     });
+
+//   }
+
+$timeout(function(){
+// $scope.receivedDialog();
+},3000);
+
+
+  $scope.declineGameReq = function(){
+            socket.emit('declineGameReq',{gameData:$scope.reqGameData},function(){
+                console.log('success cancel game req');
+                  $mdDialog.hide();
+
+            });
+            $scope.gameInit();
+    }
+
+
+  $scope.acceptGameReq = function(){
+
+    socket.emit('acceptGameReq',{gameData:$scope.reqGameData},function(){
+        // alert('accept');
+        
+    });
+
+  }
+
+   socket.on('redirGame',function (data){
+
+        $window.location.href = "/live?id="+data
+    });
+
+     socket.on('updateReceived',function (inc,user_data,game_data){
+        $scope.inviteDisplay = 1;
+
+        $scope.receivedData = user_data;
+        $rootScope.root.cubeType = game_data.cubeType;
+        $rootScope.root.roomType = game_data.roomType;        
+        $rootScope.root.inviteKeyword = game_data.reqKeyword;
+        $scope.reqGameData = game_data;
+
+        $scope.receivedTimer = inc;
+        if ($scope.receivedStatus==0 ){
+          $scope.receivedDialog();
         }
+        // console.log('two');
+    });
+
+     socket.on('closeModal',function (){
+
+      // console.log('three');
+          $mdDialog.hide();
+         
+          $scope.gameInit();
+    });
+
+
+
+  
+      socket.on('updateRating',function(data){
+          // alert(data);
+          $scope.pRating = data;
+
+      });
+
+      socket.on('multipleLogin',function(data){
+              console.log('data = ' + data + " id = " + $rootScope.userInfo._id);
+              if (data == $rootScope.userInfo._id)
+                $window.location.href = "/invalid";
+      });
+    
+
+     
+      socket.on('roomScoreUpdate',function(data){
+        $scope.scoreP1 = data.p1;
+        $scope.scoreP2 = data.p2;
+          // console.log('p1 = ' + data.p1 + " p2 = " + data.p2);
+      });
+      socket.on('matrixComputerUpdate',function(data,comAlgSolution,userSpeed){
+         
+        console.log('userSpeed = ' + userSpeed + " length = " + comAlgSolution.length);
+
+          if (data!=''){
+              execPerm1(data);
+              init1('1');
+            }
+                //set computer speed
+                userSpeed = userSpeed/1000;
+
+              if (userSpeed<20) speed1 = 50;
+              else if (userSpeed<30) speed1 = 100;
+              else if (userSpeed<50) speed1 = 150;
+              else if (userSpeed<60) speed1 = 200;
+              else if (userSpeed<80) speed1 = 250;
+              else   speed1 =300;
+                 
+                
+               
+                
+
+                console.log(speed1);
+            if ($rootScope.playerPerspective == 'player1'){
+              $timeout(function(){
+                
+                   animateFullPerm1(comAlgSolution);
+              },1500);
+            }
+            
+              // printArrayCube1();
+      });
+
+      socket.on('updateAbandon',function(){
+           $scope.showAbandon();
+      });      
+
+      socket.on('getGameStatus',function (data){
+            // alert(data.gameStatus);
+            $scope.gameStatus = data;
+             // console.log('gs = ' + $scope.gameStatus);
+            if ($scope.gameStatus == 'onGame'){
+              
+
+              $scope.btnP2=false;
+              $scope.btnP1=false;
+
+              // $scope.btnf
+            }
+
+
 
 
       console.log('gameStatus = ' + $scope.gameStatus);
@@ -401,6 +753,9 @@ function wonDialogShow(){
 
           socket.on('gameStartInit', function (scrambleP1,scrambleP2,gameStatus){
 
+               $scope.fxBackground.music.stop();
+
+               $scope.fxBackground.onGame.play();
 
                     // console.log('three');
                           allMovesP1 = scrambleP1;
@@ -435,12 +790,17 @@ function wonDialogShow(){
         });
 
       socket.on('winnerUpdate',function(winnerPerspective,gameStatus,winnerUser,singleLose,scoreDiff){
+
+         $scope.fxBackground.music.play();
+
+         $scope.fxBackground.onGame.stop();
         
            $scope.btnP1 = true;
            $scope.btnP2 = true;
            
             $scope.gameStatus = gameStatus;
-            
+               gameUpdate = gameStatus;
+               console.log('gameUpdate = ' + gameUpdate);
             animation();
             animation1();
 
@@ -494,7 +854,7 @@ function wonDialogShow(){
 
       socket.on('gameUpdate', function (data,gameStatus,reqRestart,gameStatusColor){
             $scope.gameStatus = gameStatus;
-         
+           gameUpdate = gameStatus;
             $scope.centerMsg = data;
 
             if (reqRestart){
@@ -504,7 +864,25 @@ function wonDialogShow(){
 
             $scope.gameStatusColor = gameStatusColor;
 
+            if ($scope.gameStatus !='reconnect'){
+               $scope.fx.count.play();
+            }else{
+             $scope.fxBackground.music.stop();
+            }
 
+            if ($scope.gameStatus == 'iniGame'){
+              $scope.fxBackground.music.stop();
+            }
+
+            if ($scope.gameStatus == 'onGame'){
+              $scope.ifFocus = true;
+              $scope.fxBackground.onGame.play();
+              $scope.fxBackground.music.stop();
+            }
+
+
+
+            console.log('game stats = ' + $scope.gameStatus);
 
 
             
@@ -516,8 +894,8 @@ function wonDialogShow(){
  $scope.convertTime = function(startVal,type){
   var x =startVal; //max time 
     
-        min = Math.floor( (x/100/60) % 60 );
-        sec = Math.floor( (x/100) % 60 );
+        min = Math.floor( (x/1000/60) % 60 );
+        sec = Math.floor( (x/1000) % 60 );
 
         switch(type){
            case 'min':
@@ -527,7 +905,8 @@ function wonDialogShow(){
             return  (sec.toString().length==1 ? '0'+sec:sec);
            break;
            case 'milli':
-            return  (x.toString().length >= 2 ? x.toString().slice(-2) : '0'+ x );
+            return x.toString().slice(0,-1).slice(-2);
+            // return  (x.toString().length >= 2 ? x.toString().slice(-2) : '0'+ x );
            break;
         }
 
@@ -584,16 +963,23 @@ function wonDialogShow(){
       };
       $scope.sendAlgP1 = function(data,arrayAlg,cb){
           // console.log('player 1 send');
+              
           socket.emit('sendAlgP1',{alg:data,arrayAlg:arrayAlg},function(){
+             $scope.fx.move.play();
                 cb();
           });
           
       };
       $scope.sendAlgP2 = function(data,arrayAlg,cb){
          // console.log('player 2 send');
+
+            // console.log(arrayAlg);
           socket.emit('sendAlgP2',{alg:data,arrayAlg:arrayAlg},function(){
-            
+            if (!($scope.gameData.reqTo_id._id==0)){
+             $scope.fx.move.play();
+            }
                cb();
+            
           });
           
       };
@@ -603,9 +989,12 @@ function wonDialogShow(){
    
 
    
-
+$scope.displayYourCube  ='loading...';
    //########################### initialization ######################### 
     $rootScope.$on('initialised', function(){  
+
+    
+
               $scope.loadComplete =true;
         
       (function(){
@@ -652,7 +1041,7 @@ function wonDialogShow(){
                    });
               }) .then(function() {
                    return new Promise(function(resolve, reject){
-                     console.log('3');
+                     // console.log('3');
                          $http.post('/getUserInfo',{}).
                                 success(function(data) {
                                   $rootScope.userInfo = data.userInfo;
@@ -763,6 +1152,9 @@ function wonDialogShow(){
                       ///////############## - Reconnect - ###########################
                     // console.log('recon = ' + $scope.gameStatus);
                       if ($scope.gameStatus=='onGame' || $scope.gameStatus == 'reconnect'){
+
+                               
+
                            socket.emit('cube_recon',{},function(alg1,arrayAlg,alg2,arrayAlg1,allAlg1,allAlg2){
 
                               // console.log('two, alg=1 = ' + alg1);
@@ -829,7 +1221,7 @@ function wonDialogShow(){
 
              }).then(function(){
                return new Promise(function(resolve, reject){
-
+                  $scope.displayYourCube  ='Your cube';
                         $('#btnReady').tooltipster({
                             trigger: 'custom',
                             animation:'grow',
@@ -844,6 +1236,14 @@ function wonDialogShow(){
                             // originClick:true,
                             // contentCloning:true
                           });
+
+                $timeout(function(){
+                    $http.post('/reqLiveModalHelp',{}).success(function(data){
+                      if (data.show){
+                           $scope.showHelp();
+                      }
+                    }).error(function(data){});
+                  });
                        
                      
                 });
@@ -938,6 +1338,7 @@ function wonDialogShow(){
          console.log('shift ' + $scope.shift);
       }
 
+    
 
       $scope.keydown = function(e){
 
@@ -946,33 +1347,17 @@ function wonDialogShow(){
         if ($rootScope.playerPerspective=='player1' && $scope.gameStatus == 'onGame' && e.key.length ==1 && 
           !simulateIfSolve(allMovesP1 + " " + allAlgP1)){
 
-           // if ($rootScope.playerPerspective=='player1' && $scope.gameStatus == 'onGame' && e.key.length ==1){
-              if (e.key == e.key.toUpperCase()){
-                checkNotation(e.key + 'p');
-              }
-              if (e.key == e.key.toLowerCase()){
-                checkNotation(e.key.toUpperCase());
-              }
-              if (['x','y','z'].indexOf(e.key)>-1){
-                checkNotation(e.key);
-              }
-              if (['X','Y','Z'].indexOf(e.key.toUpperCase())>-1){
-                checkNotation(e.key.toLowerCase() + 'p');
-              }
+             queueAlgP1.push(e.key);
+             animatePermSeries();
+
+
         }else if ($rootScope.playerPerspective=='player2' && $scope.gameStatus == 'onGame' && e.key.length ==1 && 
           !simulateIfSolve(allMovesP2 + " " + allAlgP2)){
-               if (e.key == e.key.toUpperCase()){
-                  checkNotation1(e.key + 'p');
-                }
-                if (e.key == e.key.toLowerCase()){
-                  checkNotation1(e.key.toUpperCase());
-                }
-                if (['x','y','z'].indexOf(e.key)>-1){
-                  checkNotation1(e.key);
-                }
-                if (['X','Y','Z'].indexOf(e.key.toUpperCase())>-1){
-                  checkNotation1(e.key.toLowerCase() + 'p');
-                }
+
+          
+              // $scope.fx.move.play();
+             queueAlgP2.push(e.key);
+             animatePermSeries1();
 
         }
          
@@ -1022,6 +1407,8 @@ app.directive('initialisation',['$rootScope',function($rootScope) {
                             
 
                             $rootScope.$broadcast('initialised');
+
+                             
                         });
                     });
                 }
@@ -1029,3 +1416,22 @@ app.directive('initialisation',['$rootScope',function($rootScope) {
         }]);
 
 
+
+
+app.directive('initsettings',['$rootScope',function($rootScope) {
+            return {
+                restrict: 'A',
+                link: function($scope) {
+                    var to;
+                    var listener = $scope.$watch(function() {
+                        clearTimeout(to);
+                        to = setTimeout(function () {
+                           listener();
+                            
+
+                            $rootScope.$broadcast('initsettings');
+                        });
+                    });
+                }
+            };
+        }]);

@@ -1,9 +1,49 @@
-<div class='row' style='border:0px solid; background-color:#F2F2F2;'>
-               <div ng-include='"templates/top_template.html"' ></div>
+<style>
+  .left-to-right {
+    border-width: 5px 0 3px 5px;
+    border-style: solid;
+  
+    -webkit-border-image: 
+      -webkit-gradient(linear, 100% 0, 0 0, from(red), to(rgba(0, 0, 0, 0))) 1 100%;
+    -webkit-border-image: 
+      -webkit-linear-gradient(right, red, rgba(0, 0, 0, 0)) 1 100%;
+    -moz-border-image:
+      -moz-linear-gradient(right, red, rgba(0, 0, 0, 0)) 1 100%;  
+    -o-border-image:
+      -o-linear-gradient(right, red, rgba(0, 0, 0, 0)) 1 100%;
+    border-image:
+      linear-gradient(to right, red, rgba(0, 0, 0, 0)) 1 100%; 
+}
 
+</style>
+
+
+<div class='row' style='border:0px solid; background-color:#F2F2F2; height:525px;'>
+               <div ng-include='"templates/top_template.html"' ></div>
+           <div class="col-xs-4 no-padding-margin " style='padding-left:40px; border:0px solid; margin-bottom:20px; ' align='left'>
+              <span  style='font-size:30px;  font-family:"Comic Sans MS", cursive, sans-serif; border-left:7px solid #a4a4a4; padding-left:10px; color:#6E6E6E' >Select game  </span>
+               <md-icon md-svg-src="/img/svg/select-area.svg" 
+               ng-style="{'width':'50px', 'height':'50px','padding-bottom':'10px'}" ></md-icon>
+
+           </div>
+            <div class="col-xs-4 no-padding-margin " style='padding-left:40px; border:0px solid; margin-bottom:20px;' align='center'>
+              <span  style='font-size:30px;  font-family:"Comic Sans MS", cursive, sans-serif; border-left:7px solid #a4a4a4; padding-left:10px; color:#6E6E6E' >It's free  </span>
+               <md-icon md-svg-src="/img/svg/logistics-cube-box-ultrathin-outline.svg" 
+               ng-style="{'width':'50px', 'height':'50px','padding-bottom':'10px'}"></md-icon>
+
+           </div>
+            <div class="col-xs-4 no-padding-margin " style='padding-right:40px; border:0px solid; margin-bottom:20px; ' align='right'>
+
+               <span   style='font-size:30px;  font-family:"Comic Sans MS", cursive, sans-serif; border-left:7px solid #a4a4a4; padding-left:10px; color:#6E6E6E' >Enjoy! </span>
+
+              <md-icon md-svg-src="/img/svg/smiley-with-closed-eyes-rounded-square-face.svg" 
+               ng-style="{'width':'50px', 'height':'50px','padding-bottom':'10px'}"></md-icon>
+
+            </div>
+          
+          <div class='row' style='border:0px solid; padding:50px; padding-top:115px;'>            
                         
-                        
-             <div class="col-xs-4" style='border:0px solid;' ng-click='inviteDialog(selfInfo)'>
+             <div class="col-xs-4 hvr-grow-shadow" style='border:0px solid; outline:none;' ng-click='inviteDialog(selfInfo)'>
               <a id='btnSinglePlayer' >
                 <div class="col-xs-12" style='border:0px solid; background-color:#e6e6e6;; padding-left:0px;'>
                 <center>
@@ -23,7 +63,7 @@
                 </a>
                  <div class="col-xs-12" style=' margin-top:10px;'></div>
            </div>
-            <div class="col-xs-4" style='border:0px solid;' ng-click='friendsDialog()'>
+            <div class="col-xs-4 hvr-grow-shadow" style='border:0px solid; outline:none;' ng-click='friendsDialog()'>
               <a>
                 <div class="col-xs-12" style='border:0px solid; background-color:#e6e6e6; padding-left:0px;'>
                 <center>
@@ -42,7 +82,7 @@
                 </a>
                  <div class="col-xs-12" style=' margin-top:10px;'></div>
            </div>
-            <div class="col-xs-4" style='border:0px solid;' ng-click='inviteDialog(computerInfo)'>
+            <div class="col-xs-4 hvr-grow-shadow" style='border:0px solid; outline:none;' ng-click='inviteDialog(computerInfo)'>
               <a id='btnComputer'>
                 <div class="col-xs-12" style='border:0px solid; background-color:#e6e6e6; padding-left:0px;'>
                 <center>
@@ -65,5 +105,5 @@
                 
             </div>
                   
-          
+        </div>
 </div>

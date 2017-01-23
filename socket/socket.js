@@ -24,6 +24,7 @@ var glicko2 = require('glicko2');
 
 
 
+
 //### glicko rating system -dn 
 
 
@@ -48,7 +49,7 @@ var varTimerInc = [];
 var varUserInclude = [];
 
 
-	roomVar={};
+var roomVar={};
 
 	var timers = [];
 
@@ -65,11 +66,104 @@ tempP2 = '1500';
 										// io.in(socket.room).emit('winnerUpdate',perspective,
 										// 	roomVar[socket.room].gameStatus,winnerUser,'0',scoreDiff);
 
-										console.log(scoreDiff);
+										// console.log(scoreDiff);
 										//update database rating
 
 
 								});
+
+
+
+
+function inverseAlg(alg){
+		var inverseStr= '';
+			alg = alg.split(' ');
+
+			for (var x =alg.length-1;x>=0;x--){
+				inverseStr+=alg[x] + " ";
+			}
+		 inverseStr = inverseStr.replace(/\' /g,'p');
+		 inverseStr = inverseStr.replace(/ /g,'\' ');
+		 inverseStr = inverseStr.replace(/p/g,' ');
+
+	return inverseStr;
+}
+
+
+
+
+// var start = new Date().getTime()
+
+
+function convertTimeComplete(startVal){
+    var x =parseInt(startVal); //max time 
+    
+        min = Math.floor( (x/1000/60) % 60 );
+        sec = Math.floor( (x/1000) % 60 );
+
+        displayMin = (min.toString().length==1  ? '0'+min:min+'');
+        displaySec = (sec.toString().length==1 ? '0'+sec:sec+'');
+        displayMilli =  (x.toString().length >= 2 ? x.toString().slice(-2) : '0'+ x );
+      
+      if (isNaN(displaySec) && isNaN(displayMin)){
+        return 'loading ..';
+      }
+      if (displayMin == '00' && displaySec == '00'){
+        return '';
+      }
+      return (displayMin != '00'? displayMin+':':'')+displaySec+'.'+displayMilli + (displayMin != '00'?' min':' sec');
+        // return displayMin + ":"+displaySec+"."+displayMilli;
+}
+// setInterval(function()
+// {
+//     var time = new Date().getTime() - start;
+//     console.log(convertTimeComplete(time));
+
+//     // elapsed = Math.floor(time / 100) / 10;
+//     // if(Math.round(elapsed) == elapsed) { elapsed += '.0'; }
+
+//     // document.title = elapsed;
+//     // console.log(elapsed);
+
+// }, 10);
+
+
+
+// setTest('1500','1500',1,function(p1Rating,p2Rating){
+// 	console.log('p1Rating = ' + p1Rating);
+// 	console.log('p2Rating = ' + p2Rating);
+// });
+// function setTest(p1Rating,p2Rating,whoWon,callback){
+
+
+// 					settings = {
+// 					  // tau : "Reasonable choices are between 0.3 and 1.2, though the system should 
+// 					  //       be tested to decide which value results in greatest predictive accuracy." 
+// 					  tau : 0.2,
+// 					  // rating : default rating 
+// 					  rating : 1500,
+// 					  //rd : Default rating deviation 
+// 					  //     small number = good confidence on the rating accuracy 
+// 					  rd : 50,
+// 					  //vol : Default volatility (expected fluctation on the player rating) 
+// 					  vol : 0.50
+// 					};
+
+// 				    ranking = new glicko2.Glicko2(settings);
+
+// 					p1Rated = ranking.makePlayer(p1Rating,50,0.50);
+// 					p2Rated = ranking.makePlayer(p2Rating,50,0.50);
+
+// 					matches = []
+
+// 					matches.push([p1Rated,p2Rated,parseInt(whoWon) === 1 ? 1:0]);
+
+// 					ranking.updateRatings(matches);
+					
+// 					callback(Math.round(p1Rated.getRating()),Math.round(p2Rated.getRating()));
+// 	}
+
+
 
 function setRatedPoints(p1Rating,p2Rating,whoWon,callback){
 
@@ -97,6 +191,7 @@ function setRatedPoints(p1Rating,p2Rating,whoWon,callback){
 					matches.push([p1Rated,p2Rated,parseInt(whoWon) === 1 ? 1:0]);
 
 					ranking.updateRatings(matches);
+
 					callback(Math.round(p1Rated.getRating()),Math.round(p2Rated.getRating()));
 	}
 
@@ -110,17 +205,40 @@ module.exports.listen = function(app){
 
 	//function update online users
       function funcUpdateOnline(){
-      		//if number or not eg. 1 2 3 not hash then filter
-			return Object.keys(io.sockets.adapter.rooms).filter(function(data){
+      	var busy = [];
+      	for (var key in roomVar) {
+			  if (roomVar.hasOwnProperty(key)) {
+			    // console.log(key + " -> " + roomVar[key]);
+			    // console.log(roomVar[key].userList)
+			    busy = busy.concat(roomVar[key].userList);
+			  }
+			}
+
+			//convert busy to integer
+			// for(var i=0; i<busy.length; i++) { busy[i] = parseInt(busy[i],10); } 
+
+
+			//convert busy to string
+			busy = busy.toString();
+
+		var online =  Object.keys(io.sockets.adapter.rooms).filter(function(data){
     					if (!isNaN(data)) return data;
 					});
+
+		var returnObj = {
+				'online':online,
+				'busy':busy
+      		};
+      		//if number or not eg. 1 2 3 not hash then filter
+		
+		return 	returnObj;
+			
+
 	 }
 
 	 //function update live games
 	 function funcUpdateLiveGames(){
 
-	 	// console.log(util.inspect(roomVar,false,null));
-	 	// console.log(roomVar);
 	 	
 	 		// var data = bson.serialize(roomVar);
 			// console.log('data:', data)
@@ -140,10 +258,7 @@ module.exports.listen = function(app){
 			try {	delete tempVar[data[x]].dcTimer; } catch(err){}
 					// delete tempVar[data[x]]		
 			}
-			// console.log('last hint');
 
-
-			// console.log(roomVar);
 			io.emit('updateLiveGames',JSON.stringify(tempVar));
 			// console.log(roomVar);
 				// console.log('###########');
@@ -185,8 +300,8 @@ module.exports.listen = function(app){
 											//aiAlg
 											//arrayAlg for pixels update
 											//arrayAlg1
-											algP1:'',	//for user algs
-											algP2:'',
+											'algP1':'',	//for user algs
+											'algP2':'',
 											player1Dc:3, //num of disconnected
 											player2Dc:3,
 											//dcInc
@@ -196,6 +311,8 @@ module.exports.listen = function(app){
 												p1:0,
 												p2:0
 											}
+											//comSpeed
+											//algSolution
 										}
 
 										//########game status [ 'onGame, reconnect, idle, iniGame']
@@ -270,10 +387,10 @@ module.exports.listen = function(app){
 				socket.on('abandonGame',function(data,callback){
 
 					  //fix stack size exceeded
-						// clearInterval(timers[socket.room].dcTimer);
-						// clearInterval(timers[socket.room].clockTimer);
-						// clearInterval(timers[socket.room].iniTimer);
-						// clearInterval(timers[socket.room].aiTimer);
+						clearInterval(timers[socket.room].dcTimer);
+						clearInterval(timers[socket.room].clockTimer);
+						clearInterval(timers[socket.room].iniTimer);
+						clearInterval(timers[socket.room].aiTimer);
 
 						// console.log('abandon game');
 
@@ -287,6 +404,7 @@ module.exports.listen = function(app){
 						}
 
 						io.in(socket.room).emit('updateAbandon');
+
 
 						abandonGame(function(){ callback(); });
 
@@ -326,6 +444,7 @@ module.exports.listen = function(app){
 
 						socket.join(socket.room);
 
+
 						//initialize room variables
 						
 						if (roomVar[socket.room].gameStatus =='abandon') return;
@@ -336,6 +455,11 @@ module.exports.listen = function(app){
 						
 						//room all users
 						roomVar[socket.room]['userList'].push(socket.userInfo._id);
+
+						//update online
+						io.emit('updateOnlineUsers',funcUpdateOnline());
+					   
+
 
 						// console.log('userList + ' + roomVar[socket.room]['userList']);
 
@@ -391,8 +515,22 @@ module.exports.listen = function(app){
 					cb();
 					
 				});
+				// function watch(event, obj) {
+				//     PubSub.on(event, function(model) {
+				//         // I want to update the entire object
+				//         // I understand that currently, this is just reassigning
+				//         // I know I can do obj.prop = model, but that's not what I want to do
+				//         obj = model;
+				//     });
+				// }
+			
 
-
+				function reduceString(statement){ //remove extra white spaces
+					statement = statement + "" + " ";
+						    statement = statement.replace(/\s\s+/g, ' ');
+							statement = statement.replace(/\n+/g, ' ');
+							return statement;
+				}
 				function checkIfReady(){
 					if (roomVar[socket.room].playerQueue.length!=2){
 						io.in(socket.room).emit('gameUpdate', 'Waiting for players ..', roomVar[socket.room].gameStatus,false,'red');
@@ -400,6 +538,7 @@ module.exports.listen = function(app){
 						io.in(socket.room).emit('gameUpdate', '', roomVar[socket.room].gameStatus,false,'blue');
 					}
 				}
+
 				function socketWinnerUpdate(perspective,winnerBy,winnerUser){
 						//remove all timer because all timer events are involve
 						// console.log('clockTimer = ' +timers[socket.room].clockTimer);
@@ -431,7 +570,7 @@ module.exports.listen = function(app){
 							var game_set = {
 							        game_id          : roomVar[socket.room].gameData._id,
 							        p1_moves         : roomVar[socket.room].algP1,
-							        p2_moves         : roomVar[socket.room].algP2,
+							        p2_moves         : roomVar[socket.room]['algP2'],
 							        scrambleMoves    : roomVar[socket.room].scramble,
 							        endedTime        : roomVar[socket.room].clockCtr,
 							        gameWinner       : gameWinner,  
@@ -440,23 +579,30 @@ module.exports.listen = function(app){
 
 							models.createArchiveGame(game_set,function(err,data){
 								if (err) console.log(err);
+
+								//clear algs after game
+
+									
+
+									// console.log(roomVar[socket.room]['algP2']);
 								// console.log(data);
 							});
 
+									roomVar[socket.room].scramble = '';
+									roomVar[socket.room]['algP1']='';
+									roomVar[socket.room]['algP2']='';
+									roomVar[socket.room].arrayAlg = null;
+									roomVar[socket.room].arrayAlg1 = null;
+									roomVar[socket.room].player1Dc=3;
+									roomVar[socket.room].player2Dc=3;
 						
-							
+						// console.log('algP2 = ' + roomVar[socket.room].algP2);
+								// watch("anEvent", roomVar[socket.room]['algP2']);
 						//insert database -end
 
-						//initialize
-						roomVar[socket.room].scramble = '';
-						roomVar[socket.room].algP1='';
-						roomVar[socket.room].algP2='';
-						roomVar[socket.room].arrayAlg = null;
-						roomVar[socket.room].arrayAlg1 = null;
-						roomVar[socket.room].player1Dc=3;
-						roomVar[socket.room].player2Dc=3;
+					
 
-						// console.log('pumasok ulit '  + roomVar[socket.room].algP2)
+						// console.log('pumasok ulit '  + roomVar[socket.room]['algP2'])
 
 					
 						if (winnerBy == 'resignation' || winnerBy == 'time'){
@@ -527,6 +673,8 @@ module.exports.listen = function(app){
 					 });
 
 
+
+
 				}
 			
 
@@ -547,8 +695,11 @@ module.exports.listen = function(app){
 
 							 roomVar[socket.room].gameStatus = 'onGame'; //resume clock time
 
+							 roomVar[socket.room].clockStartTime = new Date().getTime()- roomVar[socket.room].clockCtr; //reserve time
 
 							 timers[socket.room].clockTimer = setInterval(function(){
+							 	//continue from reserve time
+							 	roomVar[socket.room].clockCtr = new Date().getTime() - roomVar[socket.room].clockStartTime;
 								 io.in(socket.room).emit('clockUpdate',roomVar[socket.room].clockCtr); 
 						 		roomVar[socket.room].clockCtr++;
 							 },10);
@@ -575,6 +726,9 @@ module.exports.listen = function(app){
 				}
 
 				socket.on('readyGame',function(data,cb){
+
+					// console.log('algp2 = ' + roomVar[socket.room]['algP2']);
+
 								//add queue of ready
 							if ([roomVar[socket.room].gameData.reqTo_id._id,
 								 roomVar[socket.room].gameData.reqFrom_id._id].indexOf(socket.userInfo._id)>-1 &&
@@ -609,15 +763,30 @@ module.exports.listen = function(app){
 											//update scramble
 											if (roomVar[socket.room].gameData.cubeType == '3x3x3'){
 												roomVar[socket.room].scramble = scrambler.cube3();
-												// roomVar[socket.room].scramble = "U2";
+								// roomVar[socket.room].scramble = "F' D R' F2' D' F2' U B L' B' R' U' F R F2' R2' U' B R2' B' U";
+								 // roomVar[socket.room].scramble = "D F2' D F' D' B' R2' B' L2' U' B' L2' U' R B2' U2' L D B R2' F2'";
+								 // roomVar[socket.room].scramble = "F2 R2 B' D' L' U2 B2 R' U L2 B U L2 B R2 B D F D' F2 D'";
 											}else if (roomVar[socket.room].gameData.cubeType == '2x2x2'){
 												roomVar[socket.room].scramble = scrambler.cube2();
 											}
 
+											//send solution
+											roomVar[socket.room].algSolution = inverseAlg(roomVar[socket.room].scramble);
+											roomVar[socket.room]['roomMsg'].push({
+														'username':'Computer',
+														'avatar':'img/user/robotDefault.png',
+														'msg':'Solution: ' + roomVar[socket.room].algSolution
+													});
+
+											io.sockets.in(socket.room).emit('updateRoomMsg',roomVar[socket.room]['roomMsg']);
+
+
+				
 											//computer algorithm
 											if (roomVar[socket.room].gameData.reqTo_id._id == '0'){
-												roomVar[socket.room].aiAlg = pochmann.solve(roomVar[socket.room].scramble).split(' ');
-											
+
+												roomVar[socket.room].aiAlg = reduceString(pochmann.solve(roomVar[socket.room].scramble)).split(' ');
+												console.log(roomVar[socket.room].aiAlg.length);
 												roomVar[socket.room].aiCtr=0;
 												computerTimerInit();
 											}
@@ -630,17 +799,23 @@ module.exports.listen = function(app){
 										 			roomVar[socket.room].scramble,roomVar[socket.room].gameStatus); 
 
 												 // roomVar[socket.room].algP1=roomVar[socket.room].scramble + " ";
-												 // roomVar[socket.room].algP2=roomVar[socket.room].scramble + " ";
+												 // roomVar[socket.room]['algP2']=roomVar[socket.room].scramble + " ";
 												 	 
 											 
 											 //start time
 											 roomVar[socket.room].clockCtr = 0;
+											 roomVar[socket.room].clockStartTime = new Date().getTime();
+
 											 timers[socket.room].clockTimer = setInterval(function(){
 
+										roomVar[socket.room].clockCtr = new Date().getTime() - roomVar[socket.room].clockStartTime;
+										roomVar[socket.room].clockReserve = new Date().getTime();
+
 										 		 io.in(socket.room).emit('clockUpdate',roomVar[socket.room].clockCtr); 
-										 		roomVar[socket.room].clockCtr++;
+										 		// roomVar[socket.room].clockCtr+=10;
 
 
+										 		// console.log('clockUpdate = ' + roomVar[socket.room].clockCtr);
 										 		// console.log(timers[socket.room].clockTimer);
 											 },10);
 											 // console.log('c = ' + util.inspect(roomVar[socket.room],false,null));
@@ -650,7 +825,7 @@ module.exports.listen = function(app){
 									// 3 2 1 go
 									 io.in(socket.room).emit('gameUpdate', 
 								 		roomVar[socket.room].iniStr, roomVar[socket.room].gameStatus,false,'blue');
-
+									 console.log('inictr = ' + roomVar[socket.room].iniCtr);
 									 if (roomVar[socket.room].iniCtr<=0){
 									 	// console.log('remove iniTimer');
 									 	// console.log('r iniTimer ' + timers[socket.room].iniTimer);
@@ -667,24 +842,61 @@ module.exports.listen = function(app){
 					
 				});  
 				function computerTimerInit(){
-						timers[socket.room].aiTimer = setInterval(function(){
+						//get user speed
+						models.getUserRankAverage(roomVar[socket.room].gameData.reqFrom_id._id.toString(),
+												 roomVar[socket.room].gameData.cubeType.toString(),function(time,rank){
+							//set computer speed
+							if (time == 0) time = 120000;
+							
+							// console.log('time = ' + time);
+							// //increase to 15% time for computer
+							// time+=time *.25;
 
-								roomVar[socket.room].algP2+=roomVar[socket.room].aiAlg[roomVar[socket.room].aiCtr] + " ";
-								checkWinner();
+							// console.log('time = ' + time);
 
-								io.in(socket.room).emit('matrixComputerUpdate',
-									roomVar[socket.room].scramble+ " " + roomVar[socket.room].algP2); 
 
-								roomVar[socket.room].aiCtr++;
-								// console.log('computerTimerInit ' + socket.room + " "  + roomVar[socket.room].aiCtr);
-								// console.log(roomVar[socket.room].algP2);
-								if (roomVar[socket.room].aiCtr>=roomVar[socket.room].aiAlg.length){
-									clearInterval(timers[socket.room].aiTimer);
-									timers[socket.room].aiTimer = null;
-								}
-						},100);
+
+							// roomVar[socket.room].comSpeed = (time/100)*6;
+							
+								// timers[socket.room].aiTimer = setInterval(function(){
+
+										// roomVar[socket.room]['algP2']+=roomVar[socket.room].aiAlg[roomVar[socket.room].aiCtr] + " ";
+										// checkWinner();
+
+										//time  = userspeed
+						// console.log('aiAlg = ' + roomVar[socket.room].aiAlg);
+						// console.log('algp2 = ' +roomVar[socket.room]['algP2']);
+						// console.log('aiAlg = ' + roomVar[socket.room].aiAlg);
+
+						if (roomVar[socket.room]['algP2'] == ''){
+							io.in(socket.room).emit('matrixComputerUpdate',roomVar[socket.room].scramble,roomVar[socket.room].aiAlg,time); 
+								// console.log('l = ' + roomVar[socket.room].aiAlg.length + ' initMatrix');
+						
+						}else{
+						    roomVar[socket.room].tempAiAlg = roomVar[socket.room].aiAlg.slice(0);
+							roomVar[socket.room].tempAiAlg.splice(0,roomVar[socket.room]['algP2'].split(' ').length-1);
+
+							io.in(socket.room).emit('matrixComputerUpdate','',roomVar[socket.room].tempAiAlg,time);
+							// console.log(roomVar[socket.room]['algP2']);
+							// console.log('algP2 = ' + roomVar[socket.room].algP2);
+							// console.log('l = ' + roomVar[socket.room].aiAlg.length)
+						}
+								// console.log(roomVar[socket.room].aiAlg);
+										// roomVar[socket.room].aiCtr++;
+										// console.log('computerTimerInit ' + socket.room + " "  + roomVar[socket.room].aiCtr);
+										// console.log(roomVar[socket.room]['algP2']);
+										if (roomVar[socket.room].aiCtr>=roomVar[socket.room].aiAlg.length){
+											clearInterval(timers[socket.room].aiTimer);
+											timers[socket.room].aiTimer = null;
+										}
+								// },roomVar[socket.room].comSpeed);
+								// console.log('time = ' + time);
+						  // console.log('id = ' + roomVar[socket.room].gameData.reqFrom_id._id +' speed = ' + roomVar[socket.room].comSpeed);
+						});
 				}
 				socket.on('sendAlgP1',function(data,cb){  //send players solve algorithm 
+
+					if (roomVar[socket.room].gameStatus != 'onGame') return cb();; //workaround fix for not reset all values
 					roomVar[socket.room].algP1=data.alg;	//letter algs
 					roomVar[socket.room].arrayAlg = data.arrayAlg; //pixels
 					checkWinner();
@@ -692,19 +904,21 @@ module.exports.listen = function(app){
 					// console.log('P1 moves = ' + roomVar[socket.room].algP1);
 				});
 				socket.on('sendAlgP2',function(data,cb){
-					roomVar[socket.room].algP2=data.alg;
+
+					if (roomVar[socket.room].gameStatus != 'onGame') return cb();; 
+					roomVar[socket.room]['algP2']=data.alg;
 					roomVar[socket.room].arrayAlg1 = data.arrayAlg;
 					checkWinner();
 					cb();
 				});
 				function checkWinner (){
-					if (roomVar[socket.room].gameStatus != 'onGame') return;
+					
 
 			// console.log('p1 = ' +checkSolver.isSolve(roomVar[socket.room].scramble + " "+ roomVar[socket.room].algP1) + "  " +
 			// 						roomVar[socket.room].scramble + " " + roomVar[socket.room].algP1  );
 
-			// console.log('p2 = ' +checkSolver.isSolve(roomVar[socket.room].scramble + " "+ roomVar[socket.room].algP2) + " " +
-			// 						roomVar[socket.room].scramble + " " + roomVar[socket.room].algP2  );
+			// console.log('p2 = ' +checkSolver.isSolve(roomVar[socket.room].scramble + " "+ roomVar[socket.room]['algP2']) + " " +
+			// 						roomVar[socket.room].scramble + " " + roomVar[socket.room]['algP2']  );
 				// console.log(roomVar[socket.room].gameData.cubeType.charAt(0) + " hihi");
 					if (checkSolver.isSolve(roomVar[socket.room].scramble + " "+ roomVar[socket.room].algP1,
 						roomVar[socket.room].gameData.cubeType.charAt(0))) {
@@ -712,21 +926,21 @@ module.exports.listen = function(app){
 						 	socketWinnerUpdate('player1','time',roomVar[socket.room].gameData.reqFrom_id);
 					
 					}
-					else if (checkSolver.isSolve(roomVar[socket.room].scramble + " "+ roomVar[socket.room].algP2,
+					else if (checkSolver.isSolve(roomVar[socket.room].scramble + " "+ roomVar[socket.room]['algP2'],
 						roomVar[socket.room].gameData.cubeType.charAt(0))){
 						 	socketWinnerUpdate('player2','time',roomVar[socket.room].gameData.reqTo_id);
 					
 					}
 
 
-					// console.log(roomVar[socket.room].algP2);
+					// console.log(roomVar[socket.room]['algP2']);
 		
 						
 				}
 				socket.on('cube_recon',function(data,cb){
 					cb(roomVar[socket.room].scramble,roomVar[socket.room].arrayAlg,
 					   roomVar[socket.room].scramble,roomVar[socket.room].arrayAlg1,
-					   roomVar[socket.room].algP1,roomVar[socket.room].algP2);
+					   roomVar[socket.room].algP1,roomVar[socket.room]['algP2']);
 				});
 
 				socket.on('sendRoomMsg',function(data,cb){
@@ -837,7 +1051,7 @@ module.exports.listen = function(app){
 							timers[socket.room].clockTimer = null;
 
 							//60 seconds disconnection
-							roomVar[socket.room].dcInc = 6;
+							roomVar[socket.room].dcInc = 30;
 							timers[socket.room].dcTimer = setInterval(function(){ //pause flipclock
 
 								roomVar[socket.room].gameStatus = 'reconnect';
@@ -918,6 +1132,7 @@ module.exports.listen = function(app){
 				socket.join(socket.request.session.user_id);
 				socket.room=socket.request.session.user_id;
 
+				socket.broadcast.to(socket.room).emit('multipleLogin');
 				// console.log('new user ' + socket.room);
 
 
@@ -935,7 +1150,20 @@ module.exports.listen = function(app){
 
 	    		io.emit('updateOnlineUsers',funcUpdateOnline());
 
-	
+	    		
+				if (socket.request.session.modalHelp!=undefined){
+					socket.request.session.modalHelp = null;
+					socket.emit('modalUpdate');
+					socket.request.session.modalHelp = null;
+					// socket.request.session.modalHelp.destroy();
+					console.log('session modalHelp = ' + socket.request.session.modalHelp);
+				}
+
+				
+				// socket.on('stopModalHelp',function(data,callback){
+				// 	socket.request.session.modalHelp = undefined;
+				// 	console.log('socket stop help ' + socket.request.session.modalHelp);
+				// });
 
     		//#################-- online users and live games -end ###########################
 
@@ -966,6 +1194,8 @@ module.exports.listen = function(app){
 						//data from _id is the primary key of temporary request variable
 
 						//#######-computer opponent-############## or single player
+						data.gameReq.reqDate = new Date();
+						
 						if (data.gameReq.reqTo_id == '0' || data.gameReq.reqTo_id == '-1'){
 							//assign room variables of newly created game
 							models.createGame(data.gameReq,function(err,c_data){

@@ -99,8 +99,15 @@
 									    				<td  align='left'  style=' padding-left:20px; border:0px solid;'>
 					    					   <svg width="25" height="25" style='padding-top:5px;'>
                                <circle cx="12.5" cy="12.5" r="5"   fill="
-                               {{onlineList.indexOf((item.msg_from.username === userInfo.username ? '':item.msg_from._id)+
-											    		  	(item.msg_to.username === userInfo.username ? '':item.msg_to._id).toString())>-1 ? 'LightGreen':'Red'}}" /> 
+                               {{busyList.indexOf((item.msg_from.username === userInfo.username ? '':item.msg_from._id)+
+											    		  	(item.msg_to.username === userInfo.username ? '':item.msg_to._id).toString())>-1? 'orange':onlineList.indexOf((item.msg_from.username === userInfo.username ? '':item.msg_from._id)+
+											    		  	(item.msg_to.username === userInfo.username ? '':item.msg_to._id).toString())>-1 ? 'LightGreen':'Red'}}" > 
+											    <title>
+											    {{busyList.indexOf((item.msg_from.username === userInfo.username ? '':item.msg_from._id)+
+											    		  	(item.msg_to.username === userInfo.username ? '':item.msg_to._id).toString())>-1? 'Busy':onlineList.indexOf((item.msg_from.username === userInfo.username ? '':item.msg_from._id)+
+											    		  	(item.msg_to.username === userInfo.username ? '':item.msg_to._id).toString())>-1 ? 'Online':'Offline'}}
+											    </title>
+											    		</circle>
 											    		  	
                       </svg> 
 						<img src="{{item.msg_from.username === userInfo.username ? '':item.msg_from.user_avatar}}

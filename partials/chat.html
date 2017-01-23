@@ -48,13 +48,23 @@
 
 								   			
 								   				</div>
+								   				<style>
+								   					table.fixed { 
+								   						table-layout:fixed; 
+								   						word-break: break-all }
+													table.fixed td { 
+														border:0px solid;
+														overflow: hidden;
+													
+														 }
+								   				</style>
 								   				
 								   			<div id='scrollDiv' scroll-glue="!!glued" class='col-xs-12' style='border:0px solid;  background-color:#ffffff;
-								   			height:290px; overflow:scroll; overflow-x: hidden; padding-top:10px;'>
+								   			height:290px; overflow:scroll; overflow-x:hidden; padding-top:10px;'>
 								   				
 								   				
 								    			<div class='col-xs-12' style='border:0px solid; padding:10px; padding-top:0px'>
-								    			<table style='border:0px solid; width:100%;' id='convoQuery'>
+								    			<table class="fixed" style="border:0px solid;  " id='convoQuery'>
 												
 
 									    		<!-- <tr height='30px;' style='border-top:1px solid #F2F2F2;'>
@@ -102,9 +112,9 @@
 
 													    			</tr>
 								    			<tr ng-repeat-end >
-														    			<td style='color:#6E6E6E;' colspan='2'><font style='font-size:12px;'>{{item.msg_text}}   
+										    			<td style='color:#6E6E6E; width:810px;'  colspan='2'><font style='font-size:12px;'>{{item.msg_text}}   
 														    		
-														    			</font></td>
+													    			</font></td>
 													    			
 												</tr >
 												
@@ -133,14 +143,20 @@
 									    </div>
 										  	<div id='manageFooter'class='col-xs-12' style='border:0px solid; width:100%; background-color:#E6E6E6;'>
 											  		<div style="display:{{manageChat === 0 ? 'block' : 'none'}};" >
-											  	    	 <div class='col-xs-9' style='border-top:0px solid; padding-left:00px' >
+											  	    	 <div class='col-xs-10' style='border:0px solid; padding-left:00px' >
 												  		<input ng-model='inputMessage'  my-enter="sendFunc()"  style='width:100%; height:50px; margin-bottom:10px; margin-top:10px;'
 												  		 placeholder=' Type message here..'></input>
 													 	 </div>
-													  	<div class='col-xs-3' style='border:0px solid'>
-													  	 <button ng-click='sendFunc()' class='btn btn-default' style='width:90%; 
+													  	<div class='col-xs-2' style='border:0px solid; padding-left:0px;'>
+
+											  	<md-button class='md-raised md-primary' ng-click='sendFunc()' style='width:130px; height:50px;'>
+											  	<md-icon style="fill:white;" md-svg-src="/img/svg/ic_check_black_24px.svg"></md-icon>
+												</span>
+													Send</md-button>
+													 <!--  	 <button ng-click='sendFunc()' class='btn btn-default' style='width:90%; 
 													  	 height:50px; margin-top:10px;'><center>Send<br><font style='font-size:12px; color:#a4a4a4'>Enter</font>
-													  	 </center></button>
+													  	 </center></button> -->
+													  	 </md-button>
 													  	</div>
 													  	<div class='col-xs-0' style='border:0px solid'>
 													  		
