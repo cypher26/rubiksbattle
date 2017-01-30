@@ -1,0 +1,266 @@
+
+
+<div class='row' id="controller_id" ng-controller='archiveCtrl' style='border:0px solid; background-color:#F2F2F2; margin-bottom:5px;' initialisation>
+				
+	  				<div class="col-xs-12" style='border:0px solid;'>
+	  						<div class="col-xs-12" style='border:0px solid; '>
+ 							
+	  								<div class='col-xs-2' style='border:0px solid; background-color:#bdbdbd; padding:2.8px; '> 
+			  								<img src="
+		  								{{gameData.game_id.reqTo_id._id==0 ? 'img/user/pvb.png':
+                                       (gameData.game_id.reqTo_id._id==-1 ? 'img/user/p.png':'img/user/pvp.png')}}
+			  								" style='width:25px; height:25px; border:1px solid #ffffff;'></img>
+				  									<font style='color:#ffffff; font-size:15px;' >
+										  {{gameData.game_id.reqTo_id._id==0 ? 'Versus Computer':
+					                      (gameData.game_id.reqTo_id._id==-1 ? 'Single Player':'Battle PvP')}}
+				  									</font>
+				  								 </div> 
+				  								
+				  								 <div class='col-xs-9' style='border:0px solid;
+				  								  padding:5px; '> 
+			  										<font style='color:#6E6E6E; font-size:12px;'>{{convertToDate(gameData.game_id.reqDate)}}</font>
+			  								 		<span style='margin-left:10px; margin-right:10px;'>|</span> 
+				  								 	<font style='color:#6E6E6E; font-size:12px;'>Cube: {{gameData.game_id.cubeType}}</font> 
+				  								 	<span style='margin-left:10px; margin-right:10px;'>|</span> 
+				  								 	<font style='color:#6E6E6E; font-size:12px;'>
+				  								 	<span style="display:
+				  								 		{{gameData.game_id.reqTo_id._id == '-1' ? 'none':''}}">
+				  								 	{{gameData.game_id.reqFrom_id.username}}
+				  								 	vs
+				  								 	<span id='p2Headeruser'>{{gameData.game_id.reqTo_id.username}}</span>
+
+	  								 					</font>
+				  								 </div>
+	  								
+	  								 <div class='col-xs-1' style='border:0px solid; background-color:; padding:2.8px; '> 
+	  								
+	  								  
+	  								</div>
+
+
+	  						</div>
+							
+					 	
+	  						
+	  				</div>
+	  		</div>
+			<div class='row' style='border:0px solid; background-color:#F2F2F2; margin-bottom:0px;'>
+				<div  role="alert" class="col-xs-3 alert " style='border:0px solid; margin-bottom:0px;'>
+				<table style='margin:5px; border:0px solid;' >
+											<tr>
+												<td rowspan='4' style='border:0px solid;'>
+
+													<img id='p1Image' 
+		src="/img/user/userDefault.png" style='height=50px; width:50px; margin-left:10px; margin-right:10px;'></img>
+												</td>
+												<td style='border:0px solid; padding-bottom:5px;'>
+													<b><font id='p1Username' style='font-size:17px; color:#6E6E6E;'>
+														{{gameData.game_id.reqFrom_id.username}}
+													</font> </b>
+													
+									</font></strong>
+													
+
+												</td>
+											</tr>
+											
+											<tr>
+												<td style='border:0px solid; padding-right:10px;'>
+													<font style='font-size:12px;'><span class='glyphicon glyphicon-menu-right'></span> Rating:</font>
+														<strong style='color:grey'>
+														{{userRating[0]}}</strong>
+													</font>
+												</td>
+											</tr>
+											
+										<!-- 	<button ng-click='test()'>test</button>
+											<button ng-click='test1()'>test</button> -->
+											
+											<tr>
+												<td style='padding-top:0px; font-size:20px;'>
+													<span id='p1Status' class="label label-{{gameData.gameWinner == gameData.game_id.reqFrom_id._id ?'success':'danger'}}"><span class="glyphicon glyphicon-arrow-{{gameData.gameWinner == gameData.game_id.reqFrom_id._id ?'up':'down'}}"></span> {{gameData.gameWinner == gameData.game_id.reqFrom_id._id ?'Winner':'Loser'}}</span>
+
+													
+												</td>
+											</tr>
+											
+										</table>
+
+				</div>
+				<div  role="alert" class="col-xs-6" style='border:0px solid;'>
+					<div class='row  alert alert-info'>
+					<center id='centerWonBy'>	<b><span id='wonUsername'>
+						{{gameData.gameWinner == gameData.game_id.reqFrom_id._id ? gameData.game_id.reqFrom_id.username:
+							(gameData.gameWinner == '-1')?gameData.game_id.reqFrom_id.username:gameData.game_id.reqTo_id.username}}
+
+
+					</span></b> {{gameData.gameWinner == '-1' ? 'lost':'won'}} by <span><b><u id='wonBy'>{{gameData.winnerBy}}  </u></b></span> <span class='glyphicon glyphicon-ok'></span></center>
+					</div>
+					<div class='row' align='center'>
+							<font style=' color:#6E6E6E;'>Ended Time - </font>
+	  						<font style='font-size:20px; color:#04B431;'><strong id='endedTime'>
+	  							<!-- {{clockMin =='00'?'':clockMin+':'}}{{clockSec =='00'?'0.':clockSec+'.'}}{{clockMilli}} -->
+	  							{{convertTimeComplete(gameData.endedTime)}}
+	  							</strong></font>
+	  						
+					</div>
+				</div>
+
+				<div  role="alert" class="col-xs-3 alert " style="border:0px solid; display:{{gameData.game_id.reqTo_id._id == '-1' ?'none':''}}; margin-bottom:0px;">
+					<table style='margin:5px; border:0px solid;' align='right'>
+											<tr>
+												
+												<td align='right' style='border:0px solid; padding-bottom:5px;'>
+													<b><font id='p2Username' style='font-size:17px; color:#6E6E6E;'>
+													{{gameData.game_id.reqTo_id.username}}
+													</font> 
+												</td>
+												<td align='right' rowspan='4' style='border:0px solid;'>
+													<img id='p2Image' src="/img/user/userDefault.png" style='height=50px; width:50px; margin-left:10px; margin-right:10px;' style='height=50px; width:50px; margin-right:10px; margin-left:10px;'></img>
+												</td>
+
+											</tr>
+
+											<tr>
+												<td align='right'>
+													
+													<font style='font-size:12px;'>
+													<span class='glyphicon glyphicon-menu-right'></span> Rating:</font>
+														<strong style='color:grey'>
+														{{userRating[1]}}</strong>
+													</font>
+													</td>
+											</tr>
+											<tr align='right'>
+												<td style='padding-top:0px; font-size:20px;'>
+													<span id='p1Status' class="label label-{{gameData.gameWinner == gameData.game_id.reqTo_id._id ?'success':'danger'}}"><span class="glyphicon glyphicon-arrow-{{gameData.gameWinner == gameData.game_id.reqTo_id._id ?'up':'down'}}"></span> {{gameData.gameWinner == gameData.game_id.reqTo_id._id ?'Winner':'Loser'}}</span>
+
+													
+												</td>
+											</tr>
+										</table>
+
+				</div>
+			</div>
+		<!-- 	<div class='col-xs-3'></div>
+			<div class='col-xs-6'>test</div>
+			<div class='col-xs-3'></div>
+				 -->
+				<style>
+					.nopadding {
+					   padding: 0 !important;
+					   margin: 0 !important;
+					}
+				</style>
+			<div class='row' style='border:0px solid; background-color:#F2F2F2; margin-top:5px;'>
+				<div  class="col-xs-3" style='border:0px solid; height:35%;'>
+
+				
+					<div  class='row' style='border:0px solid; background-color:#d8d8d8;' align='center'>
+						<strong>Moves</strong>
+					</div>
+					<div class='row' style='border:0px solid;; padding:5px;'>
+						<div id='divAlgo1' style='background-color:#ffffff;
+						 font-size:15px; height:320px; overflow:scroll; padding:10px; overflow-x: hidden;' >
+								<!-- {{gameData.p1_moves}} -->
+				<span  ng-style="p1Index == -1 ? algColor:''" ng-click='p1ClickAlg(-1)'>scramble </span>			
+				<span ng-repeat='item in arrP1Moves track by $index' style=' margin:3px;' ng-click='p1ClickAlg($index)' ng-style="p1Index == $index ? algColor:''"> {{item}} </span>
+			
+									
+
+
+
+						</div>
+					</div>
+				</div>
+					
+
+				<div class='col-xs-6 nopadding'>
+						<div id='player1' class="col-xs-6 nopadding" style="border:0px solid; 
+						width:{{gameData.game_id.reqTo_id._id == '-1' ? '644':'322'}}px; height:270px;" align='right'>
+					
+						</div>
+						<div id='player2' class="col-xs-6 nopadding" style="border:0px solid; width:322px; height:270px;
+						display:{{gameData.game_id.reqTo_id._id == '-1' ?'none':''}}">
+								
+						</div>
+
+						 <!-- new row -->
+					<div class='row'>
+					<div class='col-xs-3'></div>
+					<div class='col-xs-6' style='padding-bottom:0px; padding-top:0px;'>
+						<center >
+
+							
+								<!-- 	 <md-slider-container >
+								      <span >Speed</span>
+								      <md-slider  ng-init='speedSlider=30'  ng-model='speedSlider' step="10" min="0" max="50" aria-label="blue"  class="md-primary" >
+								      </md-slider>
+								   
+								    </md-slider-container> -->
+							
+							<!-- 	    <div ng-controller='sliderCtrl as vm'>
+					 <rzslider rz-slider-model="vm.slider_toggle.value" rz-slider-options="vm.slider_toggle.options"></rzslider>
+									</div> -->
+
+			  					<!--  <rzslider rz-slider-model="slider_toggle.value" rz-slider-options="slider_toggle.options"></rzslider>
+									 -->
+							 <div layout='row' layout-padding style='padding-bottom:0px;'>
+							 	<label>Speed: </label>
+							<input ng-model="sliderValue" ng-change='changeSlider(sliderValue)' type="text" id="mySlider1" slider options="options" />							</div>
+							
+					</center>
+					</div>
+					<div class='col-xs-3'></div>
+				</div>
+
+
+						<div class='row nopadding' style='border:0px solid; background-color:#F2F2F2; margin-top:0px;'>
+
+									<div id='p1Control' class="col-xs-{{gameData.game_id.reqTo_id._id == '-1' ?'12':'6'}}" style="border:0px solid; padding-bottom:20px;" align='center'>
+										<!-- <button onclick='testing()'>test</button> -->
+										<button id='btnPlay'  ng-click='funcP1Play();' class='btn btn-default'><span class="glyphicon glyphicon-{{p1Play ? 'pause':'play' }}"></span></button>
+										<button  ng-click='p1FastBack()' class='btn btn-default'><span class='glyphicon glyphicon-fast-backward'></span></button>
+										<button  ng-click='p1Back()' class='btn btn-default'><span class='glyphicon glyphicon-step-backward'></span></button>
+										<button  ng-click='p1Next()' class='btn btn-default'><span class='glyphicon glyphicon-step-forward'></span></button>
+										<button  ng-click='p1FastNext()' class='btn btn-default'><span class='glyphicon glyphicon-fast-forward'></span></button>
+									</div>		
+									<div id='p2Control' class='col-xs-6' style="border:0px solid; display:{{gameData.game_id.reqTo_id._id == '-1' ?'none':''}}; padding-bottom:20px;"align='center'>
+										<button id='btnPlay' ng-click='funcP2Play();' class='btn btn-default'><span class="glyphicon glyphicon-{{p2Play ? 'pause':'play' }}"></span></button>
+										<button  ng-click='p2FastBack()' class='btn btn-default'><span class='glyphicon glyphicon-fast-backward'></span></button>
+										<button  ng-click='p2Back()' class='btn btn-default'><span class='glyphicon glyphicon-step-backward'></span></button>
+										<button  ng-click='p2Next()' class='btn btn-default'><span class='glyphicon glyphicon-step-forward'></span></button>
+										<button  ng-click='p2FastNext()' class='btn btn-default'><span class='glyphicon glyphicon-fast-forward'></span></button>
+									</div>	
+
+
+									
+
+								</div>
+
+
+				</div>
+				
+				
+				<div  class="col-xs-3" style="border:0px solid; height:35%; display:{{gameData.game_id.reqTo_id._id == '-1' ?'none':''}};" id='p2Moves'>
+					<div class='row' style='border:0px solid; background-color:#d8d8d8;' align='center'>
+						<strong>Moves</strong>
+					</div>
+					<div class='row' style='border:0px solid;; padding:5px;'>
+						<div id='divAlgo1' style='background-color:#ffffff;
+						 font-size:15px; height:320px; overflow:scroll; padding:10px; overflow-x: hidden;' >
+
+
+				<span  ng-style="p2Index == -1 ? algColor:''"  ng-click='p2ClickAlg(-1)'>scramble </span>			
+				<span ng-repeat='item in arrP2Moves track by $index' ng-click='p2ClickAlg($index)' style=' margin:3px;' ng-style="p2Index == $index ? algColor:''"> {{item}} </span>
+				
+
+
+						</div>
+					</div>
+				</div>
+				
+							
+			</div>
+			
+		

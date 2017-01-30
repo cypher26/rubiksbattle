@@ -1,0 +1,134 @@
+
+			<img id='imgPrimary' src='img/primaryGif.gif' style='width:220px;
+				 position:absolute; height:170px;  left:571px; top:20px;  border:0px solid;  z-index:9999;' ></img>
+		<div id='mainRow' style='border:0px solid;' > 
+			<!-- 	<ol class="breadcrumb">
+			 <li><a href="#">  <img  style='height:50px; width:100px;'
+				  	src="img/primaryLogo.png">  </a> </li>
+				  <li >Home</a></li>
+				  <li><a href="#">Library</a></li>
+				  <li><a href="#">Data</li>
+				</ol> -->
+				
+				
+				<script>
+				// $('#imgPrimary').css({left: (($('body').width()/2)-($('#imgPrimary').width()/2)) + "px", top:'20px' });
+			   </script>
+				<div class='col-xs-4' style='border:0px solid'></div>
+			<div class='col-xs-4' style='border:0px solid;' align='center'>
+				
+				<div class='row' style='border:0px solid; padding-top:12%; margin-bottom:5px; height:200;'>
+				</div>
+				<!-- <div id = 'errorUser' class='row' style='border:0px solid; font-size:12px; color:#FF0000;'>
+						Invalid username, please try again.
+				</div> -->
+				<div class='row' style='border:0px solid; font-size:12px; color:#848484;'>
+						
+				</div>
+				
+				<div id = '' class='row' style='border:0px solid; font-size:12px;'>
+						<h4><span class='glyphicon glyphicon-send'></span> Password recovery</h4>
+						<hr>
+				</div>
+				<div id= 'divSuccess' class='row' style='border:0px solid; font-size:12px; color:#848484; '>
+						<!-- Enter the email you signed-up with. <br>We will then send you a reset link to help you recover your account. -->
+						Enter the email you signed-up for verification.
+				</div>
+				<script>
+				
+					$('#errorUser').hide();
+				</script>
+				<div class='row' style='border:0px solid; margin-bottom:0px;' align='center'>
+					<div class='col-xs-1'></div>
+					<div class='col-xs-10'  style='margin-top:10px; '>
+							<input ng-model="inputEmail" ng-enter="sendRecovery(inputEmail)" type='' placeholder='Email' class='form-control' style=''></input></div>
+					<div class='col-xs-1'></div>
+					
+			
+				</div>
+					<div  style="visibility:{{errEmail?'':'hidden'}}; margin-bottom:10px">
+						<!-- <h4><span class='label label-danger'>Please enter a valid email account.</span></h4> -->
+						<font style='color:#ff0000;'>Please enter a valid email address.</font>
+					</div>
+					<div id=''>
+						<!-- <h4><span class='label label-success'>Email Sent. Please check your
+						 email inbox for the reset link.</span></h4> -->
+					
+					</div>
+
+					<script>
+						// jQuery(function($){
+							$('#divError').hide();
+							// $('#divSuccess').hide();
+						// });
+					</script>
+				<div class='row' style='border:0px solid; margin-bottom:5px; ' align='center'>
+					<div class='col-xs-1'></div>
+						<div class='col-xs-10'>
+							<button ng-disabled="[undefined,''].indexOf(inputEmail)>-1 || enableSend" ng-click="sendRecovery(inputEmail)"class='form-control btn-info'>Send</button>
+						</div>
+						
+					<div class='col-xs-1'></div>
+					
+			
+				</div>
+				<div class='row' style='border:0px solid;'>
+						<a id='btnBack'  ng-click='redirLogin()' href='#'><font style=' font-size:12px; color:#848484;'>Back to login page</font></a>
+				</div>
+
+			</div>
+			<div class='col-xs-4' style='border:0px solid'>
+					
+
+
+			</div>
+
+		</div>
+		
+		
+		<script>	
+		// $( "#btnLogin" ).click(function(){
+		
+				
+		// });
+	
+
+
+		$("#inputUsername").keypress(function(e) {
+		    if(e.which == 13) {
+		    $("#btnLogin").click();
+		    }
+		});
+		$("#inputPassword").keypress(function(e) {
+		    if(e.which == 13) {
+		    $("#btnLogin").click();
+		    }
+		});
+
+		$( "#btnReset" ).click(function(){
+				 $('#mainRow').hide();	
+		 		 $('#errorPass').hide();
+		 		 $('#errorUser').hide();  	 	
+
+	 		$( "#imgPrimary" ).animate({ 
+  			 
+			  top: "+=" + parseInt($('#imgPrimary').height()), //-30
+			 
+			
+			 
+		  	 }, "slow", function(){
+ 						$( "#imgPrimary" ).delay(1500).animate({ 
+								 top: "-=" + parseInt($('#imgPrimary').height()), //-30
+															 
+								
+							  
+							  	 }, "slow", function(){
+							  	 	window.location.href='password_recovery.php';
+							  	 });
+												  				
+				});
+				
+		});
+		</script>
+
+

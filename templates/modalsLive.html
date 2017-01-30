@@ -1,0 +1,370 @@
+<div style="visibility: hidden">
+    <!--############################# won dialog ######################################-->
+    <div  ng-click='cancel()'class="md-dialog-container lg-modal" id="wonDialog" style=''>
+      <md-dialog layout-padding class='demo' layout='row' style='background-color:#088A29; padding:10px; width:400px;' layout-align='center' >
+           
+                
+            <!-- <div class="modal-content demo"  style="background-color:#088A29; padding:10px;" align='center'> -->
+                        
+                          <!-- <h3 id="gridSystemModalLabel" style=' color:#ffffff;' > Result</h3> -->
+<span type="button" ng-click='cancel()'class="close" style='opacity:1; left:10px; top:-1; z-index:1; position:absolute;' data-dismiss="modal" aria-label="Close"><span 
+            style='color:#ffffff'>&times;</span></span>
+                     <img src ='img/winner.png' style='width:250px; height: 130px;  top:-60px; right:105px; padding-top:px;'></img>
+                            
+                      <div class=""style='background-color:#04B431; color:#ffffff;' align='center'>
+               
+                         <h3 style=''>You won!</h3>
+                         <div layout='row' layout-align='center' style="margin-top:20px; display:{{gameData.reqTo_id._id === -1 ? 'none':''}}" >
+
+
+                            <div flex>
+                               <h1 style='font-size:40px; margin-right:0px; display:inline;'>+{{wonDiff}} </h1>
+                            </div>
+
+                            <span>
+                                pts
+                            </span>
+                         
+                         </div> 
+                      
+
+
+                        <!--  <button id='modalTest' style='z-index:1; position:relative;'>modal</button> -->
+                      </div>
+                        <div class="show-off" ></div>
+             <!-- </div> -->
+                 
+      </md-dialog>
+  </div>
+<!--############################# won dialog ######################################-->
+
+<!--############################# lose dialog ######################################-->
+      <div class="md-dialog-container lg-modal" id="loseDialog" style=''>
+          <md-dialog ng-click='cancel()' class='demo' layout-padding layout='row' style='background-color:#8A0808;  width:400px;' layout-align='center' >
+              <span type="button" ng-click='cancel()'class="close" style='opacity:1; left:10px; top:-1; z-index:1; position:absolute;' data-dismiss="modal" aria-label="Close"><span 
+            style='color:#ffffff'>&times;</span></span>
+      
+        <!-- <div class="modal-content demo"  style="background-color:#8A0808; padding:10px;" align='center'> -->
+  
+            <!-- <h3 id="gridSystemModalLabel" style=' color:#ffffff;' > Result</h3> -->
+
+            <!-- <img src ='img/loser.png' style='width:200px; height: 130px;  top:-60px; right:105px; padding-top:px;'></img> -->
+            
+          <div layout='row' style='background-color:#B40404; color:#ffffff;' >
+             <span style='margin-left:10px; font-size:30px; display:inline; margin-right:20px; '>You lose! 
+
+            <div style="display:{{gameData.reqTo_id._id === -1 ? 'none':''}}">
+              <span style='margin-left:20px; font-size:16px;'>-{{loseDiff}} pts </span>
+            </div>
+            </span> 
+          </div>
+            <div class="show-off" />
+          <!-- </div> -->
+       
+                     
+          </md-dialog>
+      </div>
+
+<!--############################# lose dialog ######################################-->
+
+
+<!-- settings dialog -->
+
+       <div class="md-dialog-container lg-modal" id="settings" style='' initsettings>
+          <md-dialog  layout-padding style=' width:400px; height:250px; border:0px solid;'  >
+                
+              <span type="button" ng-click='cancel()'class="close" style='opacity:1; left:350px; top:20; z-index:1; position:absolute;' data-dismiss="modal" aria-label="Close"><span 
+            style='color:#ffffff; font-size:25px;' >&times;</span></span>
+                <div style='border:1px solid #d8d8d8'>
+                   
+                   <div layout='row' layout-align='center' style='background-color:#6E6E6E; color:white;  height:50px;' >
+
+                           <h4 style='padding-top:5px;'><span class='glyphicon glyphicon-align-right'></span> Volume settings</h4>
+                     </div>
+
+                      <div layout='row' flex style='border:0px solid; height:75px;'>
+                  <span flex='10' style='margin-left:20px; margin-top:25px;'>
+                       <md-checkbox class='md-primary' ng-model="cb.fx" ng-change = "changeCbFx()" aria-label="Checkbox 1"> </md-checkbox>
+                  </span>
+                      <span flex='25'  style='border:0px solid; margin-top:15px;'> 
+        <h4>Fx:</h4></span><span flex='66'  style='border:0px solid'> <rzslider 
+                    rz-slider-model="fxSlider.value"  rz-slider-options="fxSlider.options"  
+                       ></rzslider></span>
+                      </div>       
+                       <div layout='row' flex style='border:0px solid; height:75px;' >
+                        <span flex='10' style='margin-left:20px; margin-top:25px;'>
+                           <md-checkbox   class='md-primary' ng-model="cb.bg"  ng-change = "changeCbBg()" aria-label="Checkbox 1">  </md-checkbox>
+                        </span>
+                          <span flex='25'  style='border:0px solid; margin-top:15px;'>
+        <h4>Music:</h4></span><span flex='66' style='border:0px solid; '> <rzslider 
+                      rz-slider-model="bgSlider.value"     rz-slider-options="bgSlider.options"  
+                           ></rzslider></span>
+                      </div> 
+                  </div>
+          
+          <!-- </div> -->
+       
+                     
+          </md-dialog>
+      </div>
+
+
+<!-- settings dialog  end-->
+
+
+<!-- help dialog -->
+    <style>
+    .animate-switch-container {
+          position:relative;
+        
+        
+         height:350px;
+          overflow:hidden;
+          padding:30px;
+          padding-top:2px;
+        }
+
+        .animate-switch {
+           /* padding:30px;*/
+            border:1px solid #000000;
+          height:350px;
+        }
+
+        .animate-switch.ng-animate {
+          transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
+
+          position:absolute;
+          top:0;
+          left:0;
+          right:0;
+          bottom:0;
+        }
+
+        .animate-switch.ng-leave.ng-leave-active,
+        .animate-switch.ng-enter {
+          top:-50px;
+        }
+        .animate-switch.ng-leave,
+        .animate-switch.ng-enter.ng-enter-active {
+          top:0;
+        }
+    </style>
+       <div class="md-dialog-container lg-modal" id="helpLiveDialog" style="top:0px; margin-left:{{modalPage==-1?'0':'100'}}px;"> <!-- 55 -->
+          <md-dialog  layout-padding style=' width:600px; border:0px solid; background-color:#0431B4; padding:10px; color:#ffffff; 
+             '  >
+                
+            <div layout='row' >
+             
+        
+
+             <span id="" style='padding-left:20px;  
+              font-size:20px; border:0px solid #ffffff; position:relative;   font-family:"Comic Sans MS", cursive, sans-serif;' > 
+                        <span class='glyphicon glyphicon-question-sign'></span> Help</span>
+                    <div class='col-xs-8' style='border:0px solid #ffffff;'>
+                            <div class='col-xs-5' style='border:0px solid;' align='right'>
+                                <button ng-disabled="modalPage === 1?true:false"ng-click='modalBack()' class='btn btn-default' style='' > &#9668; </button>
+                            </div>
+                             <div class='col-xs-2' style='border:0px solid; color:#ffffff'>
+                                <h4 id='pagination'>{{modalPage}}/6</h4>
+                            </div>
+                            <div class='col-xs-5' style='border:0px solid;'>
+                                <button ng-click="modalNext()" class='btn btn-default' style=''>  &#9658;</button>
+                            </div>
+                    </div>
+                    <div flex></div>
+<span type="button" ng-click='cancel()'class="close" style='' data-dismiss="modal" aria-label="Close"><span 
+            style='color:#ffffff; font-size:25px;' >&times;</span></span>
+            </div>
+
+        <div ng-switch on="modalPage"    class="animate-switch-container" style=' overflow-y:auto; margin:0px; background-color:#EFF2FB'>
+                    <div class='row'  class="animate-switch" ng-switch-when="1"style="background-color:#EFF2FB; border:0px solid;   color:#000000;"  align='center'>
+                            <h4> Keyboard controls <span class='glyphicon glyphicon-tasks'></span></h4>
+                            Keyboard controls are used to rotate the sides of the cube.<br>
+                            <br>
+                            <img  class="md-whiteframe-5dp" src='img/helpLive/keyboard.png' style='width:365px; height:200px; margin-bottom:15px;'></img>
+                            <br>
+                            To see the full list of keyboard controls, just hit the button located above.
+                                     
+                                        
+                    </div>
+                   <div class='row'  class="animate-switch" ng-switch-when="2"style="background-color:#EFF2FB; border:0px solid;   color:#000000;"  align='center'>
+                             <h4> Starting the game <span class='glyphicon glyphicon-check'></span></h4>
+                           Simply hit the <b>Ready</b> button once you're ready and <b>Forfeit</b> button to voluntarily give up<br>
+                            <br>
+                            <img  class="md-whiteframe-5dp" src='img/helpLive/checked.png' style='width:245px; height:180px; margin-bottom:15px;'></img>
+                             <img  class="md-whiteframe-5dp" src='img/helpLive/traffic-light.png' style='width:245px; height:180px; margin-bottom:15px;'></img>
+                            <br>
+                           <b>Note:</b> Both party must be ready if you are playing with another player (Battle PvP).
+                                     
+                                     
+                                        
+                    </div>
+
+                    <div class='row'  class="animate-switch" ng-switch-when="3"style="background-color:#EFF2FB; border:0px solid;   color:#000000;"  align='center' >
+                             <h4> Settings <span class='glyphicon glyphicon-align-left'></span></h4>
+                            Settings button is where you can change/remove the <b>Volume</b> of the game.<br>
+                            <br><br>
+                           <img  class="md-whiteframe-5dp" src='img/helpLive/volume.png' style='width:245px; height:180px; margin-bottom:15px;'></img>
+                                      
+                    </div> 
+                       <div class='row'  class="animate-switch" ng-switch-when="4"style="background-color:#EFF2FB; border:0px solid;   color:#000000;"  align='center'>
+                              <h4> Leaving the room <span class='glyphicon glyphicon-home'></span></h4>
+                           If yu want to leave the room and abandon the match, just click the <b>Home</b> button.
+                            <br><br>
+
+                           <img  class="md-whiteframe-5dp" src='img/helpLive/house.png' style='width:275px; height:200px; margin-bottom:15px;'></img>
+                             <br>
+                           <b>Note:</b> If you leave while playing, you will lose the game.
+                      </div>
+
+
+                     <div class='row'  class="animate-switch" ng-switch-when="5"style="background-color:#EFF2FB; border:0px solid;   color:#000000; "  align='center'>
+                            
+
+                              <h4> Using chat <span class='glyphicon glyphicon-comment'></span></h4>
+                              <br><br>
+                           
+                           <img  class="md-whiteframe-5dp" src='img/helpLive/chat.png' style='width:245px; height:180px; margin-bottom:15px;'></img>
+                            <br><br>
+                            Chat with other players! 
+                           
+                       
+                    </div>
+                      <div class='row'  class="animate-switch" ng-switch-when="6"style="background-color:#EFF2FB; border:0px solid;   color:#000000;"  align='center'>
+                             <h4> Winning a match <span class='glyphicon glyphicon-flag'></span></h4>
+                         Be the one who will solve the cube first to win the match.
+                           <br><br>
+                           <img  class="md-whiteframe-5dp" src='img/winner.png' style='width:275px; height:200px; margin-bottom:15px;'></img>
+                             <br>
+
+                       
+                             Goodluck!
+                                   
+                                        
+                    </div>
+                         
+                             
+        
+      
+        </div>
+      </md-dialog>
+      </div>
+
+
+
+
+<!-- help dialog  end-->
+
+
+<!--############################# received dialog ######################################-->
+
+
+    <div class="md-dialog-container lg-modal" id="receivedDialog" style=''>
+      <md-dialog layout-padding style='background-color:#000000; color:#ffffff; width:300px;' >
+           
+                   <div layout="row" layout-align="center center" style='border-bottom:1px solid red;'>
+                     <img src='img/user/pvp.png' style='width:25px; height:25px; background-color:#a4a4a4;
+                                    border:1px solid #ffffff; margin-right:10px;'></img>
+                                    <font style='color:#ffffff; font-size:15px;'> <strong>
+                                        Battle PvP
+                                    </strong> </font>
+                    </div>
+                 
+                       <!--  <div layout="row"  align='center' style='border:0px solid #ffffff;'>
+                                 <div flex layout="column" align='right' style=' border:0px solid #ffffff;' >
+                                        <div flex></div>
+                                         <div flex style='border:0px solid #ffffff;' ><span class='glyphicon glyphicon-fire'></span> Opponent: </div>
+                                          
+                                </div>
+                                <div flex layout="column" align='center' style='border:0px solid #ffffff;' >
+                                        <div flex><img src='img/user/userDefault.png' style='width:30px; height:30px;'></img></div>
+                                        <div flex><strong>winnie26</strong></div>
+                                          
+                                </div>
+                         </div> -->
+                            <center style='margin-top:20px; '>
+                                     <b id='requestUsernameR' style='font-size:20; color:#ffffff'> 
+                                      <img style='height:30px; width:30px;' src='{{receivedData.user_avatar}}'></img>
+                                {{receivedData.username}}</b><br>
+                                    <font style='font-size:15px; color:#ffffff; margin-left:5px; '>
+                                        invited you to a game
+                                    </font></center>
+
+                          <div layout="row"   style='border:0px solid #ffffff;'>
+                                 <div  flex layout="column" align='center' style='  border:0px solid #ffffff;' >
+                                         <div  style='border:0px solid #ffffff;' >
+                                           <strong><span class='glyphicon glyphicon-cog'></span> Game options</strong>
+                                         </div>
+                                          
+                                </div>
+                               
+                          </div>
+                         <div layout="row" layout-align='center'  style='border:0px solid #ffffff;'>
+                                     <table style='border:0px solid #ffffff; color:#ffffff;  margin-left:20px; '>
+                                        <tr >
+                                            <td style='padding-right:10px; width:50%; padding-bottom:10px;'>
+                                                <font style='font-size:15px; color:#ffffff'>Cube type: </font>
+                                            </td>
+                                            <td style='padding-right:0px; padding-bottom:10px;'>
+                                                 <span class="glyphicon glyphicon{{root.cubeType == '3x3x3'?'-th':'-th-large'}}"></span> {{root.cubeType}}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style='padding-right:10px;  padding-bottom:10px;'>
+                                                <font style='font-size:15px; color:#ffffff'>Room: </font>
+                                            </td>
+                                            <td style='padding-right:0px; border:0px solid #ffffff; padding-bottom:10px;'>
+                                           <span class="glyphicon glyphicon-eye-{{root.roomType == '(Public)'?'open':'close'}}"></span> {{root.roomType}}
+                                            </td>
+
+                                        </tr>
+                                        <tr style="display:{{root.roomType=='(Private)' ? '':'none'}}" >
+                                            <td style='padding-right:10px; padding-bottom:10px;'>
+                                                <font style='font-size:15px; color:#ffffff'>Keyword: </font>
+                                            </td>
+                                            <td style='padding-right:00px; padding-bottom:10px;'>
+                                                ' {{root.inviteKeyword}} '
+
+                                            </td>
+                                        </tr>
+                                    </table>
+                                          
+                         
+                          </div>
+                            <div >
+                            <center>   
+                                <progress-arc
+                                        size="70"
+                                        stroke="#a4a4a4"
+                                        stroke-width="100"r
+                                        complete="100"
+                                       counter-clockwise="">
+                                    </progress-arc>
+                                </center>
+                                   
+                                </div>
+                          <div layout='row' align='center' ng-init='receiveDialogAccept=false'>
+                                <div flex>
+                                    <!-- <md-button class="md-raised md-warn" style='font-size:12px;'>Send Request</md-button> -->
+                                    <!-- ng-click='acceptGameReq();'  -->
+                                    <button ng-model='receiveDialogAccept' ng-click='receiveDialogAccept = true; acceptGameReq();' ng-disabled = 'receiveDialogAccept' class='btn btn-success btn-md'><strong>Accept</strong></button>
+                                     <button id='btnCancel' ng-click="declineGameReq()" class='btn btn-danger btn-md'>Decline</button>
+                                </div>
+
+                                 
+                          </div>
+      </md-dialog>
+    </div>
+
+ <!--############################# received dialog -end ######################################-->
+
+
+
+
+
+
+
+</div>
+
+
+       

@@ -1,0 +1,243 @@
+
+<html ng-app='webApp'>
+<head>
+	<base href="/">
+	 <link rel='stylesheet' href='/css/bootstrap.css'>
+    <link rel='stylesheet' href='/css/bootstrap-theme.css'>
+    <script src = 'js/jquery.js'></script>
+</head>
+
+<style>
+[ng\:cloak], [ng-cloak], .ng-cloak {
+  display: none !important;
+}
+</style>
+<body ng-cloak ng-controller="resetCtrl">
+
+				<img id='imgPrimary' src='img/primaryGif.gif' style='width:220px;
+				 position:absolute; height:170px;  left:571px; top:20px;  border:0px solid;  z-index:9999;' ></img>
+		<div id='mainRow' style='border:0px solid;' > 
+			<!-- 	<ol class="breadcrumb">
+			 <li><a href="#">  <img  style='height:50px; width:100px;'
+				  	src="img/primaryLogo.png">  </a> </li>
+				  <li >Home</a></li>
+				  <li><a href="#">Library</a></li>
+				  <li><a href="#">Data</li>
+				</ol> -->
+				
+				
+				<script>
+				// $('#imgPrimary').css({left: (($('body').width()/2)-($('#imgPrimary').width()/2)) + "px", top:'20px' });
+			   </script>
+				<div class='col-xs-4' style='border:0px solid'></div>
+			<div class='col-xs-4' style='border:0px solid;' align='center'>
+				
+				<div class='row' style='border:0px solid; padding-top:12%; margin-bottom:5px; height:200;'>
+				</div>
+				
+				<div class='row' style='border:0px solid; font-size:12px; color:#848484;'>
+						
+				</div>
+				
+				<div id = '' class='row' style='border:0px solid; font-size:12px;'>
+						<h4><span class='glyphicon glyphicon-send'></span> Password recovery</h4>
+						<hr>
+				</div>
+				<div class='row' style="margin-bottom:20px; display:{{validToken?'none':''}}">
+				<h2>{{ifValid}}</h2>
+				</div>
+			<div style="display:{{validToken?'':'none'}}">
+
+				<div id= 'divSuccess' class='row' style='border:0px solid; font-size:12px; color:#848484; '>
+						<!-- Enter the email you signed-up with. <br>We will then send you a reset link to help you recover your account. -->
+						New password
+				</div>
+			
+				<div class='row' style='border:0px solid; margin-bottom:0px;' align='center'>
+					<div class='col-xs-1'></div>
+					<div class='col-xs-10'  style='margin-top:10px; '>
+							<input ng-model="inputPass" ng-enter="updatePassword(inputPass,inputRetypePass)" type='password' placeholder='' class='form-control' style=''></input></div>
+					<div class='col-xs-1'></div>
+					
+			
+				</div>
+				<div id= 'divSuccess' class='row' style='border:0px solid; margin-top:10px; font-size:12px; color:#848484; '>
+						<!-- Enter the email you signed-up with. <br>We will then send you a reset link to help you recover your account. -->
+						Re-type password
+				</div>
+			
+				<div class='row' style='border:0px solid; margin-bottom:0px;' align='center'>
+					<div class='col-xs-1'></div>
+					<div class='col-xs-10'  style='margin-top:10px; '>
+							<input ng-model="inputRetypePass" ng-enter="updatePassword(inputPass,inputRetypePass)" type='password' placeholder='' class='form-control' style=''></input></div>
+					<div class='col-xs-1'></div>
+					
+			
+				</div>
+
+					<div  style=" margin-top:10px">
+						<!-- <h4><span class='label label-danger'>Please enter a valid email account.</span></h4> -->
+						<font style='color:#ff0000;'>{{errPass}}</font>
+					</div>
+					
+					<div id=''>
+						<!-- <h4><span class='label label-success'>Email Sent. Please check your
+						 email inbox for the reset link.</span></h4> -->
+					
+					</div>
+
+			
+				<div class='row' style='border:0px solid; margin-bottom:5px; margin-top:20px; ' align='center'>
+					<div class='col-xs-1'></div>
+						<div class='col-xs-10'>
+							<button ng-disabled='disableSend'  ng-click="updatePassword(inputPass,inputRetypePass)"class='form-control btn-info'>Update password</button>
+						</div>
+						
+					<div class='col-xs-1'></div>
+					
+			
+				</div>
+			</div>
+				<div class='row' style='border:0px solid;'>
+						<a id='btnBack'  ng-click='redirLogin()' href='#'><font style=' font-size:12px; color:#848484;'>Back to login page</font></a>
+				</div>
+
+			</div>
+			<div class='col-xs-4' style='border:0px solid'>
+					
+
+
+			</div>
+
+		</div>
+
+
+</body>
+
+</html>
+<script src="/node_modules/angular/angular.js"></script>
+<script src="/js/angular-route.min.js"></script>
+     <link rel="stylesheet" href="/node_modules/angular-material/angular-material.css">
+       
+       <script src="/node_modules/angular-aria/angular-aria.js"></script> 
+        <script src="/node_modules/angular-animate/angular-animate.js"></script> 
+        <script src="/node_modules/angular-material/angular-material.js"></script>
+<script>
+	var app = angular.module('webApp', ['ngMaterial','ngRoute']);
+
+
+app.config(['$routeProvider','$locationProvider', function ($routeProvider,$locationProvider) {
+  $locationProvider.html5Mode(true);
+   $routeProvider
+  	
+    // .otherwise("/404", {templateUrl: "partials/404.html", controller: "PageCtrl"});
+   
+}]);
+
+app.directive('ngEnter', function () {
+    return function (scope, element, attrs) {
+        element.bind("keydown keypress", function (event) {
+            if(event.which === 13) {
+                scope.$apply(function (){
+                    scope.$eval(attrs.ngEnter);
+                });
+ 
+                event.preventDefault();
+            }
+        });
+    };
+});
+
+	app.controller('resetCtrl', function ($routeParams, $timeout, $scope, $location, $http,$mdDialog,$window,$rootScope) {
+					
+					// $scope.errPass = 'Mismatched type of password';
+					// $scope.errPass = 'Minimum of 4 characters only';
+					// $scope.errPass = '';
+					$scope.ifValid = 'loading ..';
+					$scope.disableSend = false;
+				// console.log()
+				// alert($location.search()['token']);				
+					$http.post('/resetAuthen',{token:$location.search()['token']}).
+                    success(function(data) {
+                    	console.log(data.valid);
+                      		if (data.valid){
+                      			$scope.validToken = true;
+
+                      		}else{
+                      			$scope.validToken = false;	
+                  				$scope.ifValid = "Password reset link is invalid or has expired.";
+						
+                      		}
+                        // console.log("posted successfully " + data.uno + " " + data.dos);
+                    }).error(function(data) {});
+
+					
+
+
+					$scope.updatePassword = function(pass,retypePass){
+						// alert('pass = ' + pass + ' retypePass = ' + retypePass);
+
+						if (!$scope.disableSend){	
+								if (pass.toString().length<4 || retypePass.toString().length<4) {
+									$scope.errPass = 'Minimum of 4 characters only';
+
+								}else{
+									if (pass!=retypePass){
+										$scope.errPass = 'Mismatched type of password';
+									}else{
+										$scope.errPass ='';
+										$scope.disableSend = true;
+						                    
+										//update password
+										$http.post('/tokenUpdatePassword',{pass:pass,token:$location.search()['token']}).
+						                    success(function(data) {
+						                    	console.log(data.valid);
+						                      		if (data.valid){
+						                      			alert('Success updating your account!');
+						                      			$window.location.href = "/";
+													}else{
+						                      			$scope.validToken = false;	
+						                  				$scope.ifValid = "Password reset link is invalid or has expired.";
+												
+						                      		}
+						                        // console.log("posted successfully " + data.uno + " " + data.dos);
+						                    }).error(function(data) {});
+
+									}
+								}
+						}
+
+					
+					}
+
+			    $scope.redirLogin = function(){
+
+			         $('#mainRow').hide();  
+			         $('#errorPass').hide();
+			         $('#errorUser').hide();      
+
+			      $( "#imgPrimary" ).animate({ 
+			        top: "+=" + parseInt($('#imgPrimary').height()), //-30 [comment]
+			       }, "slow", function(){
+			               $( "#imgPrimary" ).delay(0).animate({ 
+			                          top: "-=" + parseInt($('#imgPrimary').height()), //-30
+			                  },function(){
+			                    $rootScope.$apply(function(){
+			                        // $location.path('/');
+			                        $window.location.href="/";
+			                    });
+			                 });
+
+			        });
+
+			      }
+	});
+
+
+</script>
+
+
+
+		
+		
+	

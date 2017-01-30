@@ -1,0 +1,9 @@
+    <script type="text/ng-template" id="readyPopover">
+      <div class="triangle"></div>
+      <div class="ns-popover-tooltip">
+          <ul>
+              <li ng-repeat="item in items"><input type="checkbox">{{item.name}}</li>
+          </ul>
+        <button ng-click="hidePopover()">Close</button>
+      </div>
+    </script>
