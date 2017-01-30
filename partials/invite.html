@@ -92,7 +92,9 @@
 									    				<div class='col-xs-4' style='border:0px solid; padding-top:1%;'>
 									    					<h4> 
 									    						
-									    					<button ng-click='changeFriendStatus(item._id,item.status)'class="
+								    						<button ng-click='changeFriendStatus(item._id,item.status)'
+								    						ng-disabled="!ifFriendStatus"
+								    						class="
 									    					{{item.status==='0' ? 'btn btn-success btn-xs':''}}
 									    					{{item.status==='1' ? 'btn btn-danger btn-xs':''}}
 									    					{{item.status==='2' ? 'btn btn-warning btn-xs':''}}

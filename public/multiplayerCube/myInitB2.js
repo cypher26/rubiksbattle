@@ -256,13 +256,20 @@ function animateFullPerm1(algList){
   function animatePermSeries1(){ // l_alg letter alg ####################### queue per move
        var requests = queueAlgP2.reduce((promiseChain, item, index, tempItem) => {
                 return promiseChain.then(() => new Promise((resolve) => {
-                 
-                       animatePerm1(item,function(){
+                 	
+
+                 	if ( !simulateIfSolve(allMovesP2 + " " + allAlgP2)){
+                 		animatePerm1(item,function(){
                         queueAlgP2.splice(0,1);
                          // console.log(index);
                          // console.log(queueAlgP2);
                         resolve();
                       });
+                 	}
+                 	else{
+                 		 queueAlgP2.splice(0,1);
+                         resolve();
+                  	 }
                                        
                 }));
             }, Promise.resolve()).then(function(){

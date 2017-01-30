@@ -409,6 +409,13 @@ var friends = [friend1,friend2,friend3];
 
 
 
+module.exports.cleanUser = function(callback){
+  user_model.find().exec(callback);
+}
+
+// module.exports.cleanUser(function(err,data){
+//       console.log(data);
+// });
 
 
 

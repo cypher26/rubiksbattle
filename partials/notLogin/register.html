@@ -23,7 +23,7 @@
 
 
  <md-content layout-padding>
-    <form name="projectForm" ng-model='modelForm' ng-submit="registerScopeFunc(projectForm)" >
+    <form name="projectForm"  ng-model='modelForm' ng-submit="registerScopeFunc(projectForm)" >
 
 	<div layout='row'>
 		 <md-input-container flex='5'>
@@ -88,7 +88,7 @@
       <div layout='row' layout-align='center' >
 
 
-		      <md-button type='submit'  class="md-raised md-warn"><span class='glyphicon glyphicon-heart'></span> Create your account</md-button>
+		      <md-button type='submit'  ng-disabled="!enableRegister"  class="md-raised md-warn"><span class='glyphicon glyphicon-heart'></span> Create your account</md-button>
 		
 		       <md-button class="md-default" ng-click='aLogin()'>Back</md-button>
 		  

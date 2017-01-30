@@ -249,13 +249,21 @@ function animateFullPerm(algList){
   function animatePermSeries(){ // l_alg letter alg ####################### queue per move
        var requests = queueAlgP1.reduce((promiseChain, item, index, tempItem) => {
                 return promiseChain.then(() => new Promise((resolve) => {
-                 
-                       animatePerm(item,function(){
-                        queueAlgP1.splice(0,1);
-                         // console.log(index);
-                         // console.log(queueAlgP1);
-                        resolve();
-                      });
+                 	
+                 	
+
+                 		if (!simulateIfSolve(allMovesP1 + " " + allAlgP1)){
+                 			 animatePerm(item,function(){
+		                        queueAlgP1.splice(0,1);
+		                         // console.log(index);
+		                         // console.log(queueAlgP1);
+		                        resolve();
+		                      });
+                 			}else{
+                 				queueAlgP1.splice(0,1);
+		                        resolve();
+                 			}
+                      
                                        
                 }));
             }, Promise.resolve()).then(function(){

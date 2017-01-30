@@ -59,7 +59,7 @@
 														 }
 								   				</style>
 								   				
-								   			<div id='scrollDiv' scroll-glue="!!glued" class='col-xs-12' style='border:0px solid;  background-color:#ffffff;
+								   			<div id='scrollDiv' scroll-glue="glued" class='col-xs-12' style='border:0px solid;  background-color:#ffffff;
 								   			height:290px; overflow:scroll; overflow-x:hidden; padding-top:10px;'>
 								   				
 								   				
@@ -88,7 +88,7 @@
 															    		<img src="
 										    		{{item.msg_from.username === userInfo.username ? item.msg_from.user_avatar:''}}
 								    				{{item.msg_to.username === userInfo.username ? item.msg_from.user_avatar:''}}"
-															    		 style='border:1px solid; height:30px; width:30px; margin-right:0px;'></img>
+															    		 style='border:1px solid #D8D8D8; height:30px; width:30px; margin-right:0px;'></img>
 													    			</td>
 				    			<td><b><a href="/member/{{item.msg_from.username === userInfo.username ? item.msg_from._id:''}}{{item.msg_to.username === userInfo.username ? item.msg_from._id:''}}"><font style="font-size:14px; color:
 								    				{{item.msg_from.username === userInfo.username ? '':'red'}}

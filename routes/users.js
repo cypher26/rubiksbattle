@@ -142,16 +142,16 @@ router.post('/register',function(req,res,next){
                	externalip(function (err, ip) {
 				  // console.log('ip 123= ' +ip); // => 8.8.8.8
 
-				  	if (ip !=undefined){
-						where.is(ip, function(err, result) {
-				  				// console.log('country = ' + result.get('country'));
-				  				country = result.get(('country'));
-				  				resolve();
-						});
-				  	}else{
+				  // 	if (ip !=undefined){
+						// where.is(ip, function(err, result) {
+				  // 				// console.log('country = ' + result.get('country'));
+				  // 				country = result.get(('country'));
+				  // 				resolve();
+						// });
+				  // 	}else{
 				  		country = 'Philippines';
 			  		    resolve();
-				  	}
+				  	// }
 				});
               
            });

@@ -309,7 +309,7 @@ $scope.hideToast = function(){
     $mdToast.show(toast).then(function(response) {
       if ( response == 'ok' ) {
         // alert('You clicked the \'UNDO\' action.');
-        // $scope.ifFocus = true;
+        $scope.ifFocus = true;
       }
     });
   };
@@ -478,28 +478,12 @@ $scope.hideToast = function(){
   //################################################# sockets #########################################################
 
 $scope.btnTest = function(){
-      $scope.bgSlider.value = 1;
-        // Appending dialog to document.body to cover sidenav in docs app
-        // Modal dialogs should fully cover application
-        // to prevent interaction outside of dialog
-        // confirm = $mdDialog.alert()
-        //     // .parent(angular.element(document.querySelector('#popupContainer')))
-        //     .clickOutsideToClose(false)
-        //     // .title('Click here to enable keyboard controls')
-        //     // .textContent('You can now leave the room.')
-        //     .ariaLabel('Alert Dialog Demo')
-        //     .ok('Click here to enable keyboard controls')
-        //     .hasBackdrop(false)
-        //     // .clickOutsideToClose(false);
-        //     // .targetEvent(ev);
+     
+    $interval(function(){
+          queueAlgP1.push("x");
+          animatePermSeries();
 
-      
-        // $mdDialog.show(confirm).then(function(){
-        //        // focus('player1');
-         
-        //     // $mdDialog.cancel();
-        // })
-
+    },1000);
 
 }
 $scope.shouldDisplayPopover = function(){
@@ -747,7 +731,13 @@ $timeout(function(){
 
       
       });
-        socket.on('updateRoomMsg',function (data){
+
+        
+  $scope.glued = true;
+   socket.on('updateRoomMsg',function (data){
+          // $scope.glued = false;
+             $scope.glued = true;
+          console.log('updateRoomMsg');
           $scope.roomMsg = data;
       });
 
@@ -1286,25 +1276,23 @@ $scope.displayYourCube  ='loading...';
    
       $scope.moveClick = function(alg){
          console.log(alg);
-
+ // alert(alg);
          if ($rootScope.playerPerspective=='player1' && $scope.gameStatus == 'onGame'  && 
           !simulateIfSolve(allMovesP1 + " " + allAlgP1)){
 
+
+           
+
               if (!$scope.shift){
-                if (['X','Y','Z'].indexOf(alg) > -1){
-                  checkNotation(alg.toLowerCase());
-                }else{
-                  checkNotation(alg.toUpperCase());
-            }
+                  queueAlgP1.push(alg.toLowerCase());
+                  animatePermSeries();
               }
               if ($scope.shift){
                 
-                if (['X','Y','Z'].indexOf(alg) > -1){
-                  checkNotation(alg.toLowerCase() + 'p');
-                }else{
-                  checkNotation(alg + 'p');
-                }
+                  queueAlgP1.push(alg.toUpperCase());
+                  animatePermSeries();
               }
+
 
 
 
@@ -1314,20 +1302,15 @@ $scope.displayYourCube  ='loading...';
           !simulateIfSolve(allMovesP2 + " " + allAlgP2)){
 
               if (!$scope.shift){
-                if (['X','Y','Z'].indexOf(alg) > -1){
-                  checkNotation1(alg.toLowerCase());
-                }else{
-                  checkNotation1(alg.toUpperCase());
-            }
+                queueAlgP2.push(alg.toLowerCase());
+                animatePermSeries1();
               }
               if ($scope.shift){
-                
-                if (['X','Y','Z'].indexOf(alg) > -1){
-                  checkNotation1(alg.toLowerCase() + 'p');
-                }else{
-                  checkNotation1(alg + 'p');
-                }
+                queueAlgP2.push(alg.toUpperCase());
+                animatePermSeries1();
               }
+
+
 
 
 
@@ -1343,7 +1326,7 @@ $scope.displayYourCube  ='loading...';
       $scope.keydown = function(e){
 
         
-        
+       
         if ($rootScope.playerPerspective=='player1' && $scope.gameStatus == 'onGame' && e.key.length ==1 && 
           !simulateIfSolve(allMovesP1 + " " + allAlgP1)){
 

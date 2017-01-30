@@ -763,6 +763,7 @@ module.exports.listen = function(app){
 											//update scramble
 											if (roomVar[socket.room].gameData.cubeType == '3x3x3'){
 												roomVar[socket.room].scramble = scrambler.cube3();
+												// roomVar[socket.room].scramble = "R U R'";
 								// roomVar[socket.room].scramble = "F' D R' F2' D' F2' U B L' B' R' U' F R F2' R2' U' B R2' B' U";
 								 // roomVar[socket.room].scramble = "D F2' D F' D' B' R2' B' L2' U' B' L2' U' R B2' U2' L D B R2' F2'";
 								 // roomVar[socket.room].scramble = "F2 R2 B' D' L' U2 B2 R' U L2 B U L2 B R2 B D F D' F2 D'";

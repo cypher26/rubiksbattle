@@ -58,7 +58,7 @@ app.directive('ngEnter', function () {
  */
 app.controller('registerCtrl', function ( $scope, $location, $http,$q, $window, $rootScope,$timeout,$interval) {
 
-
+    // $scope.registerDisable  = false;
 
       $scope.yearNow = new Date().getFullYear();
       // $scope.project.username = '123';
@@ -123,9 +123,11 @@ app.controller('registerCtrl', function ( $scope, $location, $http,$q, $window, 
      
     $scope.enableRegister = true;
     $scope.registerScopeFunc = function(form){
+
       if ($scope.enableRegister == true){
         $scope.enableRegister = false;
       $rootScope.registerForm = form;
+
       
                         // alert('testing');
                           // form.nameUsername.$setValidity('exists',true);

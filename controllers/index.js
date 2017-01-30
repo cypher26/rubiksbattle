@@ -339,6 +339,10 @@ app.run(function ($rootScope, ngProgressFactory,$http,$window) {
     $rootScope.progressbar.setColor("#bdbdbd");
     // $rootScope.progressbar.setHeight('3px');
     $rootScope.$on("$routeChangeStart", function () {
+
+        //for archive cube animate to stop
+         enableAnimate = false;
+         enableAnimate1 = false;
        $rootScope.progressbar.start();
          // alert('start');
              $http.post('/getUserInfo',{}).
@@ -421,6 +425,7 @@ app.controller('globalCtrl',function (Upload,$mdToast, $sce,$scope,$location,$ht
 
 
 
+ $scope.glued = true;
   socket.on('multipleLogin',function(){
         $window.location.href = "/invalid";
   });
@@ -979,9 +984,11 @@ $timeout(function(){
     $rootScope.updateChat =function (){
         $http.post('/viewMsg',{user:$routeParams.id}).
         success(function(data) {
+          console.log('updateChat');
                  $scope.msg_convo = data.msg;
-                 $scope.glued = true;
+               
                  $rootScope.progressbar.complete();
+                   $scope.glued = true;
         }).error(function(data) { 
             console.log("error in view chat");
         });
@@ -1282,128 +1289,169 @@ $rootScope.convertTimeComplete = function(startVal){
 
  // console.log($rootScope.sliderValue);
     $scope.p1Next = function(){
-        if ($scope.p1Index<$scope.arrP1Moves.length-2){
-         $scope.p1Index++;
-         p1Exec();
+        if ($scope.p1Play){
+            enableAnimate = false;
+        }else{
+             if ($rootScope.p1Index<$scope.arrP1Moves.length-2){
+          
+               $rootScope.p1Index++;
+               $scope.p1Exec();
+             }
         }
     }
     $scope.p1Back = function(){
-      if ($scope.p1Index>=0){
-        $scope.p1Index--;
-         p1Exec();
+      if ($scope.p1Play){
+            enableAnimate = false;
+      }else{
+          if ($rootScope.p1Index>=0){
+            
+            $rootScope.p1Index--;
+             $scope.p1Exec();
+           }
       }
     }
     $scope.p1FastNext = function(){
-         $scope.p1Index = $scope.arrP1Moves.length -2;
-         p1Exec();
+          if ($scope.p1Play){
+            enableAnimate = false;
+          }else{
+         $rootScope.p1Index = $scope.arrP1Moves.length -2;
+         $scope.p1Exec();
+       }
     }
     $scope.p1FastBack = function(){
-          $scope.p1Index = $scope.gameData.scrambleMoves.split(' ').length;
-          p1Exec();
+        if ($scope.p1Play){
+            enableAnimate = false;
+          }else{
+          $rootScope.p1Index = $scope.gameData.scrambleMoves.split(' ').length;
+          $scope.p1Exec();
+        }
     }
 
 
-    function p1Exec(){
-           execPerm(concatAlgIndex($scope.arrP1Moves,$scope.p1Index));
+   $scope.p1Exec = function(){
+           execPerm(concatAlgIndex($scope.arrP1Moves,$rootScope.p1Index));
            init('1');
     }
 
     $scope.p1ClickAlg = function(index){
-          $scope.p1Index = index;
-          p1Exec();
+          if ($scope.p1Play){
+            enableAnimate = false;
+          }else{
+              $rootScope.p1Index = index;
+
+               $scope.p1Exec();
+          }
     }
 
-    
+    $scope.p1Play = false;
     $scope.p1Timer;
     $rootScope.funcP1Play = function(){
-        // alert($scope.p1Play);
-        $scope.p1Play=!$scope.p1Play;
-
-        console.log($scope.p1Play);
-        if ($scope.p1Play){
-
-          console.log('set time');
-          $scope.p1Timer = $interval(function(){
-
-              $scope.p1Index++;
-
-                   if ($scope.p1Index > $scope.arrP1Moves.length-2 ){
-                    $rootScope.funcP1Play();
-                      clearInterval($scope.p1Timer);
-                      return;
-                    }
-                      
-                p1Exec();
-                  console.log($rootScope.sliderValue);
-
-          },$rootScope.sliderValue);
+      $scope.p1Play=!$scope.p1Play;
+        if ($scope.p1Play){ 
+            // speed = 50; 
+             animateFullPerm(trimAlgIndex($scope.arrP1Moves,$rootScope.p1Index),function(){
+                    $scope.$apply(function(){
+                      $scope.p1Play=!$scope.p1Play;
+                    });
+               
+             });
         }else{
-            console.log('cancel time');
-
-          $interval.cancel($scope.p1Timer);
+           $scope.p1Play=!$scope.p1Play;
+            enableAnimate =false;
         }
+        // if ($scope.p1Play){ 
+
+          
+        //   $scope.p1Timer = $interval(function(){
+
+        //       $rootScope.p1Index++;
+
+        //            if ($rootScope.p1Index > $scope.arrP1Moves.length-2 ){
+        //             $rootScope.funcP1Play();
+        //               clearInterval($scope.p1Timer);
+        //               return;
+        //             }
+                      
+        //         $scope.p1Exec();
+        //           console.log($rootScope.sliderValue);
+
+        //   },$rootScope.sliderValue);
+        // }else{
+        //   $interval.cancel($scope.p1Timer);
+        // }
     }
       // --end if p1
 
     $scope.p2Next = function(){
-        if ($scope.p2Index<$scope.arrP2Moves.length-2){
-         $scope.p2Index++;
-         p2Exec();
+      if ($scope.p2Play){
+            enableAnimate1 = false;
+      }else{
+        if ($rootScope.p2Index<$scope.arrP2Moves.length-2){
+         $rootScope.p2Index++;
+         $scope.p2Exec();
         }
+      }
     }
     $scope.p2Back = function(){
 
-      $scope.sliderSpeed = '10';
-      if ($scope.p2Index>=0){
-        $scope.p2Index--;
-         p2Exec();
+      if ($scope.p2Play){
+            enableAnimate1 = false;
+      }else{
+          if ($rootScope.p2Index>=0){
+            $rootScope.p2Index--;
+             $scope.p2Exec();
+          }
       }
     }
     $scope.p2FastNext = function(){
-         $scope.p2Index = $scope.arrP2Moves.length -2;
-         p2Exec();
+         if ($scope.p2Play){
+            enableAnimate1 = false;
+        }else{
+         $rootScope.p2Index = $scope.arrP2Moves.length -2;
+         $scope.p2Exec();
+        }
     }
     $scope.p2FastBack = function(){
-          $scope.p2Index = $scope.gameData.scrambleMoves.split(' ').length;
-          p2Exec();
+      if ($scope.p2Play){
+            enableAnimate1 = false;
+        }else{
+          $rootScope.p2Index = $scope.gameData.scrambleMoves.split(' ').length;
+          $scope.p2Exec();
+        }
     }
 
-    function p2Exec(){
-           execPerm1(concatAlgIndex($scope.arrP2Moves,$scope.p2Index));
+      $scope.p2Exec = function (){
+
+           execPerm1(concatAlgIndex($scope.arrP2Moves,$rootScope.p2Index));
            init1('1');
     }
 
       $scope.p2ClickAlg = function(index){
-          $scope.p2Index = index;
-          p2Exec();
+          if ($scope.p2Play){
+            enableAnimate1 = false;
+          }else{
+              $rootScope.p2Index = index;
+
+               $scope.p2Exec();
+          }
     }
-    $scope.p2Timer;
+
+     $scope.p2Play = false;
+       $scope.p2Timer;
     $rootScope.funcP2Play = function(){
-        // alert($scope.p1Play);
-        $scope.p2Play=!$scope.p2Play;
-
-    
-        if ($scope.p2Play){
-
-          console.log('set time');
-          $scope.p2Timer = $interval(function(){
-
-              $scope.p2Index++;
-
-                   if ($scope.p2Index > $scope.arrP2Moves.length-2 ){
-                    $rootScope.funcP2Play();
-                      clearInterval($scope.p2Timer);
-                      return;
-                    }
-                      
-                p2Exec();
-                  console.log($rootScope.sliderValue);
-
-          },$rootScope.sliderValue);
+       $scope.p2Play=!$scope.p2Play;
+        if ($scope.p2Play){ 
+            // speed = 50; 
+            // console.log(trimAlgIndex($scope.arrP2Moves,$rootScope.p2Index));
+             animateFullPerm1(trimAlgIndex($scope.arrP2Moves,$rootScope.p2Index),function(){
+                    $scope.$apply(function(){
+                      $scope.p2Play=!$scope.p2Play;
+                    });
+               
+             });
         }else{
-            console.log('cancel time');
-
-          $interval.cancel($scope.p2Timer);
+           $scope.p2Play=!$scope.p2Play;
+            enableAnimate1 =false;
         }
     }
 
@@ -1517,22 +1565,46 @@ $rootScope.convertTimeComplete = function(startVal){
 
                         }
                         //for player 1
-                        $scope.p1Index = $scope.gameData.scrambleMoves.split(' ').length; //for alg index
-                        $scope.gameData.p1_moves = $scope.gameData.scrambleMoves + " end-scramble " + $scope.gameData.p1_moves;
+                        $rootScope.p1Index = $scope.gameData.scrambleMoves.split(' ').length; //for alg index
+                        $scope.gameData.p1_moves = reduceString($scope.gameData.scrambleMoves + " end-scramble " + $scope.gameData.p1_moves);
 
                         //for player 2
-                        $scope.p2Index = $scope.gameData.scrambleMoves.split(' ').length; //for alg index
-                        $scope.gameData.p2_moves = $scope.gameData.scrambleMoves + " end-scramble " + $scope.gameData.p2_moves;
+                        $rootScope.p2Index = $scope.gameData.scrambleMoves.split(' ').length; //for alg index
+                        $scope.gameData.p2_moves = reduceString($scope.gameData.scrambleMoves + " end-scramble " + $scope.gameData.p2_moves);
 
-                        $scope.arrP1Moves = $scope.gameData.p1_moves.split(' '); // to distribute from objects
+
+                        // console.log($scope.gameData.p1_moves);
+                        function reduceString(statement){ //remove extra white spaces
+                          statement = statement + "" + " ";
+                                statement = statement.replace(/\s\s+/g, ' ');
+                              statement = statement.replace(/\n+/g, ' ');
+                              return statement;
+                        }
+
+                        $scope.arrP1Moves = $scope.gameData.p1_moves.split(' ') // to distribute from objects
                         $scope.arrP2Moves = $scope.gameData.p2_moves.split(' '); // to distribute from objects
-                                
+                        
+                        // $scope.arrP1Moves.pop();
+                        // console.log($scope.arrP1Moves);
+
                                 // $scope.p1Play = false;
                 
-                   execPerm(concatAlgIndex($scope.arrP1Moves,$scope.p1Index));
+                                //##init archive algs
+
+                         //  speedBak =speed;
+                         //  speed = 0;
+                         // animateFullPerm(concatAlgIndex($scope.arrP1Moves,$rootScope.p1Index),function(){
+                         //       speed = speedBak;
+                         // });
+
+                          // speed = speedBak;
+                          // console.log($scope.arrP1Moves);
+                          // console.log(concatAlgIndex($scope.arrP1Moves,$rootScope.p1Index));
+
+                   execPerm(concatAlgIndex($scope.arrP1Moves,$rootScope.p1Index));
                    init('1');
 
-                    execPerm1(concatAlgIndex($scope.arrP2Moves,$scope.p2Index));
+                    execPerm1(concatAlgIndex($scope.arrP2Moves,$rootScope.p2Index));
                     init1('1');
 
 
@@ -1573,15 +1645,75 @@ $rootScope.convertTimeComplete = function(startVal){
                         }
                       return alg;
     }
+  function trimAlgIndex(algList,index){
+    var alg = '';
+      for (var x = index+1; x<algList.length;x++){
+          alg+=algList[x]+" ";
+      }
+      return alg;
+  }
                         
 
 
-app.controller('archiveCtrl',function ($scope,$location,$http,$window,$rootScope,socket,$route,$routeParams){
-    $rootScope.sliderValue = "400";
+app.controller('archiveCtrl',function ($timeout,$rootScope,$scope,$location,$http,$window,$rootScope,socket,$route,$routeParams){
+
+  // $scope.$apply();
+
+
+  $scope.updateP1Index = function(){
+     
+        $timeout(function(){
+           $rootScope.p1Index++;
+        });
+       
+    
+   
+  }
+    $scope.updateP2Index = function(){
+     
+        $timeout(function(){
+           $rootScope.p2Index++;
+        });
+       
+    
+   
+  }
+  $scope.test1 = function(){
+    // speed = 50;
+    // enableAnimate=false;
+    console.log($rootScope.p1Index);
+    // $rootScope.p1Index = 3;
+  }
+
+  $scope.test = function(){
+    // alert('testing');
+    // speedBak =speed;
+    // speed = 0;
+    //  queueAlgP1.push("R");
+    //  animatePermSeries();
+
+     // console.log($rootScope.p1Index);
+     // $rootScope.p1Index = 0;
+     //  execPerm(concatAlgIndex($scope.arrP1Moves,$rootScope.p1Index));
+     //     init('1');
+     // speed = 50;
+     // execPerm(trimAlgIndex($scope.arrP1Moves,$rootScope.p1Index));
+     // init('1');
+  
+
+
+
+     // console.log(trimAlgIndex($scope.arrP1Moves,$rootScope.p1Index));
+
+  }
+      
+
+
+    $rootScope.sliderValue = 400;
      $scope.options = {       
-        from: 1000,
-        to: 100,
-        step: 100,
+        from: 500,
+        to: 50,
+        step: 50,
          css: {
           background: {"background-color": "silver"},
           before: {"background-color": "purple"},
@@ -1592,17 +1724,19 @@ app.controller('archiveCtrl',function ($scope,$location,$http,$window,$rootScope
         // dimension: " km",
           
       };
-
+      speed = 400;
+      speed1 = 400;
       $scope.changeSlider = function(val){
         console.log(val);
-        $rootScope.sliderValue = val;
+        // $rootScope.sliderValue = val;
+        speed = val;
+        speed1 = val;
 
+        // $rootScope.funcP1Play();
+        // $rootScope.funcP1Play();
 
-        $rootScope.funcP1Play();
-        $rootScope.funcP1Play();
-
-        $rootScope.funcP2Play();
-        $rootScope.funcP2Play();
+        // $rootScope.funcP2Play();
+        // $rootScope.funcP2Play();
 
       }
 });
@@ -1900,45 +2034,72 @@ app.controller('inviteCtrl',function ($route,$timeout,$scope,$location,$http,$wi
    // $rootScope.memberIni(function(){});
 $rootScope.progressbar.complete();
    console.log('inviteCtrl');
+ $timeout(function(){
+    $rootScope.ifFriendStatus = true;
+ });
+
+  // alert('inviteCtrl');
+  // alert('')
    $scope.changeFriendStatus = function(user_id,friendStatus){
+      if ($rootScope.ifFriendStatus){
+          $rootScope.ifFriendStatus = false;
 
-        $http.post('/editFriendStatus',{user_id:user_id,friend_status:friendStatus}).
-          success(function(data) {
+            $http.post('/editFriendStatus',{user_id:user_id,friend_status:friendStatus}).
+              success(function(data) {
 
-             // $scope.btnEnter($scope.inputUsername);
-             $route.reload();
-             // console.log('update first');
+                 // console.log('update first');
 
-             socket.emit('reqUpdateFriendReq',user_id,function(){
-                      // $scope.manageInbox = 0;
-                      // console.log('naguupdate naman');
-               });
+                 socket.emit('reqUpdateFriendReq',user_id,function(){
+                 
+                      if (friendStatus == '2'){ //accepted
 
-             if (friendStatus == '2'){
+                           $http.post('/createMsg',{msg:"accepted your friend request",user:user_id}).
+                                success(function(data) {
+                                    socket.emit('reqUpdateChat',user_id,function(){
+                                            // $rootScope.ifFriendStatus = true;
+                                              $scope.inputMessage = '';  
+                                              // $route.reload();
+                                              $window.location.reload();
+                                              // alert('testing');
+                                     });
+                                 }).error(function(data) {});
+                       }else if (friendStatus == '0'){
+                          // $rootScope.ifFriendStatus = true;
+                          
+                          alert('Successfully sent friend request');
+                             $window.location.reload();
 
-                console.log('accepted');
-                 $http.post('/createMsg',{msg:"accepted your friend request",user:user_id}).
-                      success(function(data) {
-                          // alert('testing');
-                             socket.emit('reqUpdateChat',user_id,function(){
-                                    $scope.inputMessage = '';  
-                             });
-                             
-                            
-                      }).error(function(data) { 
-                          console.log("error in view chat");
-                  });
-             }
+                           
+                       }else if (friendStatus == '1'){
+                          // $rootScope.ifFriendStatus = true;
+                          alert('Successfully removed from friends list');
+                            $window.location.reload();
+                       
+                       }else if (friendStatus == '3'){
+                          // $rootScope.ifFriendStatus = true;
+                          alert('Successfully cancel friend request');
+                          $window.location.reload();
+                       }else{
+                          $window.location.reload();
+                       }
+                       // alert(friendStatus);
+                     
+                          // $scope.manageInbox = 0;
+                          // console.log('naguupdate naman');
+                   });
 
-          }).error(function(data) {
-              console.log("error in changeFriendStatus'");
-        });
+               
 
+              }).error(function(data) {
+                  console.log("error in changeFriendStatus'");
+            });
 
-        
+      }
+      
    }
-   $scope.btnEnter = function(str){
-
+   $rootScope.btnEnter = function(str){
+    $rootScope.searchStr = str;
+    $rootScope.ifFriendStatus = true;
     if (str.toString().length <3){
       alert('Please enter atleast 3 characters');
       return;
