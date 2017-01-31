@@ -948,7 +948,7 @@
 			}
 
 		
-				angular.element(document.getElementById('controller_id')).scope().updatePixels(arrayAlg);
+		angular.element(document.getElementById('controller_id')).scope().updatePixels(arrayAlg);
 		
 		renderer.render( scene, camera );
 		// }
@@ -962,6 +962,8 @@
 		
 
 		allAlgP1 += alg + " ";
+				angular.element(document.getElementById('controller_id')).scope().updatePixels(arrayAlg);
+		
 				angular.element(document.getElementById('controller_id')).scope().sendAlgP1(allAlgP1,arrayAlg,function(){
 					// callback();
 				});

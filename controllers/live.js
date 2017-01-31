@@ -479,11 +479,23 @@ $scope.hideToast = function(){
 
 $scope.btnTest = function(){
      
-    $interval(function(){
-          queueAlgP1.push("x");
-          animatePermSeries();
 
-    },1000);
+
+    // if ($rootScope.playerPerspective == 'player1'){
+      speed = 50;
+      // speed1 = 50;
+      $interval(function(){
+            queueAlgP1.push("x");
+            animatePermSeries();
+
+      },1000);
+    // }else {
+      // $interval(function(){
+      //       queueAlgP2.push("x");
+      //       animatePermSeries1();
+      // },1000);
+    // // }
+
 
 }
 $scope.shouldDisplayPopover = function(){
@@ -926,21 +938,28 @@ $timeout(function(){
                  solidC1[x][y].position.setFromMatrixPosition(data[x][y] ); //ok
                solidC1[x][y].setRotationFromMatrix(data[x][y]);
               }
+               renderer1.render(scene1,camera1);
             }
-            renderer1.render(scene1,camera1);
+           
 
           // }
         });
       socket.on('playerPixels', function (data){
          // if ($rootScope.playerPerspective == 'player2' || $rootScope.playerPerspective == 'observer'){
+
+            
             for (var x=0;x<dimension;x++){
-                
-                  for (var y = 0;y<(dimension*dimension);y++){
+                 for (var y = 0;y<(dimension*dimension);y++){
                      solidC[x][y].position.setFromMatrixPosition(data[x][y] ); //ok
                    solidC[x][y].setRotationFromMatrix(data[x][y]);
+
                   }
+                   
             }
-            renderer.render(scene,camera);
+                   renderer.render(scene,camera);
+         
+        
+          
           // }
 
         });

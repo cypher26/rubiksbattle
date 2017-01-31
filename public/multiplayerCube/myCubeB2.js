@@ -906,6 +906,8 @@
 	function sendAlgDB1(alg,callback){
 		// console.log(alg);
 		allAlgP2 += alg + " ";
+			angular.element(document.getElementById('controller_id')).scope().updatePixels1(arrayAlg1);
+			
 					angular.element(document.getElementById('controller_id')).scope().sendAlgP2(allAlgP2,arrayAlg1,function(){
 						
 					});
