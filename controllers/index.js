@@ -559,6 +559,7 @@ $scope.updateEmail = function(email){
 
 
 $scope.showAvatarDialog = function(){
+   $rootScope.editAvatarDisable =false;
     $mdDialog.show({
               contentElement: '#avatarDialog',
               clickOutsideToClose: true,
@@ -726,22 +727,32 @@ $scope.gameInit();
 
 
 
-  $scope.modalPage =1;
-  $scope.modalNext =function(){
-      if ($scope.modalPage<6)
-       $scope.modalPage++;
+  $rootScope.modalPage =1;
+  $rootScope.modalNext =function(){
+    console.log('next');
+      if ($rootScope.modalPage<6)
+       $rootScope.modalPage++;
      else{
         $mdDialog.cancel();
      }
   }
-  $scope.modalBack = function(){
-    if ($scope.modalPage>1)
-    $scope.modalPage--;
+  $rootScope.modalBack = function(){
+    if ($rootScope.modalPage>1)
+    $rootScope.modalPage--;
      }
 
+     $timeout(function(){
+        // document.getElementById('popupContainer').style.border = '1px solid';
+
+      });
+   
   $scope.showHelp = function(){
-    $scope.modalPage = 1;
+    $rootScope.modalPage = 1;
+
     $mdDialog.show({
+
+              // parent(angular.element(document.querySelector('#popupContainer'))),
+              // parent: angular.element(document.getElementById('popupContainer')),
               contentElement: '#helpDialog',
               clickOutsideToClose: true,
               openFrom:{
@@ -755,7 +766,7 @@ $scope.gameInit();
                   height: 80
               }
             }).finally(function(){
-              $scope.modalPage = 1;
+              $rootScope.modalPage = 1;
                // $http.post('/stopModalHelp',{}). success(function(data) {}).error(function(data) {   });
 
             // socket.emit('stopModalHelp',{},function(){ });
@@ -803,6 +814,7 @@ $timeout(function(){
 
    $scope.cancel = function() {
       $mdDialog.cancel();
+      // $rootScope.modalPage =1;
     };
 
 //-############################################## modal invite  #######################################
@@ -943,6 +955,12 @@ $timeout(function(){
       // var data = !{JSON.stringify(onlineList)}; // <====
 
         $rootScope.liveGames = JSON.parse(onlineList);
+
+        // $rootScope.liveGames = [];
+        // for (var x = 0;x<50;x++){
+        //   $rootScope.liveGames.push(x);
+        // }
+ 
           // console.log($rootScope.liveGames);
           // $rootScope.liveGames = onlineList;
           // console.log(bson.deserialize.onlineList);
@@ -2132,12 +2150,13 @@ app.controller('imageCtrl',['Upload','$window','$scope','$rootScope',function (U
 // up.file || '/img/user/userDefault.png'
 
  // alert(vm);
-
+ $rootScope.editAvatarDisable =false;
     $rootScope.updateAcct = function(){
-    
+           $rootScope.editAvatarDisable =true;
         if (vm.upload_form.file.$valid && vm.file ) { //check if from is valid
            
             vm.upload(vm.file); //call upload function
+
         }
        
     }
@@ -2166,6 +2185,7 @@ app.controller('imageCtrl',['Upload','$window','$scope','$rootScope',function (U
             // console.log('progress: ' + progressPercentage + '% ' + evt.config.data.file.name);
           $scope.progress = 'progress: ' + progressPercentage + '% '; // capture upload progress
             if (progressPercentage ==100) {
+               $rootScope.editAvatarDisable =false;
               //     alert("Avatar successfully changed! ");
               // $window.location.reload();
                 console.log('ok na');
@@ -2376,6 +2396,7 @@ app.controller('aboutCtrl', function ( $scope, $location, $http,$route, ngProgre
 app.controller('homeCtrl', function ( $scope, $location, $http,$route, ngProgressFactory,$sce ,$rootScope) {
   console.log("home Controller reporting for duty.");
  // $rootScope.memberIni(function(){});
+
 
 
   

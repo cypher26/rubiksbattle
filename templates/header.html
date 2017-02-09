@@ -8,39 +8,58 @@
             /*width:100px;*/
         }
     </style>
-  <md-content class="md-padding header-background" style='padding-left:140px;
-   padding-top:0px;'>
-    <md-nav-bar md-selected-nav-item="" nav-bar-aria-label="navigation links" style='border:0px solid;'>
+  <md-content class="md-padding header-background" style="padding-left:140px;
+   padding-top:0px; border:0px solid; z-index:{{[2,3,4,5,6].indexOf(modalPage)>-1?'100':''}};"
+   ng-init="headerStyle = {'font-family': 'gameFont','font-size':'25px','color':'#585858','border-right':'',
+   'padding-right':'10px','display':'inline-block','line-height':'25px','z-index':''};
+      headerIconColor = 'gray'">
+      <!-- #81BEF7 -->
+    <md-nav-bar md-selected-nav-item="" nav-bar-aria-label="navigation links" style=''>
      
-      <md-nav-item md-nav-href="/" style=''>
-        <md-button ng-click='cancel()'  class="md-raised allHeader" style='margin:0px; '><md-icon style='fill:black'  md-svg-src="/img/svg/ic_home_black_24px.svg" aria-label="android "></md-icon> Home</md-button>
-      </md-nav-item>
+      <md-button ng-click="cancel();  redirect('/')" style=" " ng-style="headerStyle">
+<!--         <md-button ng-click='cancel()'  class="md-raised allHeader" style='margin:0px; '><md-icon style='fill:black'  md-svg-src="/img/svg/ic_home_black_24px.svg" aria-label="android "></md-icon> Home</md-button>
+ -->
+       <md-icon style="fill:{{headerIconColor}}"  md-svg-src="/img/svg/ic_home_black_24px.svg" aria-label="android "></md-icon> Home
 
-      <md-nav-item style="z-index:{{[2,3,4].indexOf(modalPage)>-1?'999999':''}}" md-nav-href="/play" style=''  uib-popover-html="htmlPopover" popover-placement='right'  popover-is-open="[2,3,4].indexOf(modalPage)>-1 ? true:false" 
+      </md-button>
+      <span style='border-right:1px solid #d8d8d8;'></span>
+
+      <md-button ng-style="headerStyle" style="" ng-click="cancel(); redirect('/play');" style=''  uib-popover-html="htmlPopover" popover-placement='right'  popover-is-open="[2,3,4].indexOf(modalPage)>-1 ? true:false" 
                          popover-enable="[2,3,4].indexOf(modalPage)>-1 ? true:false"  >
      
-       <md-button  ng-click='cancel()' 
-       class="md-raised  allHeader" style='margin:0px;'><md-icon style='fill:black'  md-svg-src="/img/svg/ic_local_play_black_24px.svg" aria-label="android "></md-icon> Play</md-button>
-     </md-nav-item>
+       <!-- <md-button  ng-click='cancel()' 
+       class="md-raised  allHeader" style='margin:0px;'><md-icon style='fill:black'  md-svg-src="/img/svg/ic_local_play_black_24px.svg" aria-label="android "></md-icon> Play</md-button> -->
+       <md-icon style="fill:{{headerIconColor}}"  md-svg-src="/img/svg/ic_local_play_black_24px.svg" aria-label="android "></md-icon> 
+       <span style='border:0px solid'>Play</span>
+     </md-button>
+      <span style='border-right:1px solid #d8d8d8;'></span>
 
-     <md-nav-item md-nav-href="/profile" style="z-index:{{[6].indexOf(modalPage)>-1?'999999':''}}"  
+     <md-button ng-style="headerStyle" ng-click="cancel();  redirect('/profile')" style=""  
       uib-popover-html="htmlPopover" popover-placement='right'  
                         popover-is-open="[6].indexOf(modalPage)>-1 ? true:false" 
                          popover-enable="[6].indexOf(modalPage)>-1 ? true:false">
-       <md-button ng-click='cancel()'  class="md-raised allHeader" style='margin:0px;'><md-icon style='fill:black'  md-svg-src="/img/svg/ic_person_pin_black_24px.svg" aria-label="android "></md-icon> Profile</md-button>
-     </md-nav-item>
-     
-      <md-nav-item md-nav-href="/invite" style="z-index:{{[5].indexOf(modalPage)>-1?'999999':''}}"  
+   <!--     <md-button ng-click='cancel()'  class="md-raised allHeader" style='margin:0px;'><md-icon style='fill:black'  md-svg-src="/img/svg/ic_person_pin_black_24px.svg" aria-label="android "></md-icon> Profile</md-button> -->
+       <md-icon style="fill:{{headerIconColor}}"  md-svg-src="/img/svg/ic_person_pin_black_24px.svg" aria-label="android "></md-icon> Profile
+     </md-button>
+      <span style='border-right:1px solid #d8d8d8;'></span>
+
+      <md-button ng-style="headerStyle" ng-click="cancel();  redirect('/invite')" style=""  
       uib-popover-html="htmlPopover" popover-placement='right'  
                         popover-is-open="[5].indexOf(modalPage)>-1 ? true:false" 
                          popover-enable="[5].indexOf(modalPage)>-1 ? true:false">
-       <md-button ng-click='cancel()'  class="md-raised allHeader" style='margin:0px;'><md-icon style='fill:black'  md-svg-src="/img/svg/ic_find_replace_black_24px.svg" aria-label="android "></md-icon> Invite</md-button>
-     </md-nav-item>
+       <!-- <md-button ng-click='cancel()'  class="md-raised allHeader" style='margin:0px;'><md-icon style='fill:black'  md-svg-src="/img/svg/ic_find_replace_black_24px.svg" aria-label="android "></md-icon> Invite</md-button> -->
+
+       <md-icon style="fill:{{headerIconColor}}"  md-svg-src="/img/svg/ic_find_replace_black_24px.svg" aria-label="android "></md-icon> Invite
+     </md-button>
+     <span style='border-right:1px solid #d8d8d8;'></span>
+
 
       <span flex> </span>
+
   <md-button ng-click="showHelp()"> 
-            <font color='#848484'>Help</font>
-                <md-icon  md-svg-src="/img/svg/speech-bubble-with-question-mark.svg" style='width:40px; margin-left:5px; height:40px;' aria-label="android "></md-icon> 
+   <md-icon  md-svg-src="/img/svg/speech-bubble-with-question-mark.svg" style="fill='blue'; width:40px; margin-right:5px; height:40px;" aria-label="android "></md-icon> 
+            <font color='black'>Help</font>
+               
                         
       </md-button>
      
@@ -79,15 +98,15 @@
       
                 </td>
                 <td rowspan='2'>
-                   <img src="{{userInfo.user_avatar}}" style='width:50px;  border:1px solid #ffffff; height:50px; margin-left:10px; border-radius:50%;' class="md-user-avatar" alt="image caption"></img>
+                   <img src="{{userInfo.user_avatar}}" style='width:55px;  border:1px solid #ffffff; height:55px; margin-left:10px; border-radius:50%;' class="md-user-avatar" alt="image caption"></img>
                 </td>
             </tr>
             <tr>
                 <td>
                   <div class="tabs tabs-striped" style='border:0px solid;' align='center'>
                     <span style='color:#bdbdbd'>
-        <i ng-click="redirect('/profile/messages')" class="glyphicon glyphicon-envelope" style='font-size:14px;'><span style="display:{{numMsg==0?'none':''}}"class="badge">{{numMsg}}</span></i>
-                  <i ng-click="redirect('/invite')"class="glyphicon glyphicon-user" style='font-size:14px; '><a ><span style="display:{{numFriends==0?'none':''}}" class="badge" >{{numFriends}}</span></a></i>
+        <i ng-click="cancel();  redirect('/profile/messages')" class="glyphicon glyphicon-envelope" style='font-size:14px;'><span style="display:{{numMsg==0?'none':''}}"class="badge">{{numMsg}}</span></i>
+                  <i ng-click="cancel();  redirect('/invite')"class="glyphicon glyphicon-user" style='font-size:14px; '><a ><span style="display:{{numFriends==0?'none':''}}" class="badge" >{{numFriends}}</span></a></i>
                   </span>
                   </div>
 

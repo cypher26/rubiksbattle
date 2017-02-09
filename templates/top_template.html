@@ -38,7 +38,14 @@ style=" border:1px solid #d8d8d8; border-bottom:0px; height:40px; padding:5px;" 
 
 
 						<span>
-							<center><span class='well well-sm' style="font-size:20px; width:500px; border-top:2px solid #d8d8d8; display:{{isMember?'none':''}}"> <span class='glyphicon glyphicon-bookmark'></span>	Welcome <b id='spanProfile'>{{userInfo.user_fullName.split(' ')[0]}}!</b><b></b></span></center>
+		<center>
+		<span class='well well-sm' style="display:{{isMember?'none':''}}; font-size:20px; width:500px; border-top:2px solid #d8d8d8; 
+		display:{{isMember?'none':''}}"> 
+			Welcome <b id='spanProfile'>{{userInfo.user_fullName.split(' ')[0]}}!</b>
+
+		</span>
+<!-- 		 <img	 style="display:{{isMember?'none':''}}; width:180px;   height:60px; top:-15px; border:0px solid; position:relative;" src="/img/traffic-sign.png"></img> -->
+		</center>
 						</span>
 
 						<span>

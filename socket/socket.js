@@ -197,7 +197,10 @@ function setRatedPoints(p1Rating,p2Rating,whoWon,callback){
 
 module.exports.listen = function(app){
     io = socketIO.listen(app)
- 
+// io.set('transports', [ 'websocket', 'flashsocket', 'polling' ] );
+
+// io.set('heartbeat timeout', 6); // default 6 
+// io.set('heartbeat interval', 5); // default 5
 
 	hotel = new Hotel(io.sockets.adapter)
 
@@ -386,6 +389,7 @@ module.exports.listen = function(app){
 				});
 				socket.on('abandonGame',function(data,callback){
 
+					if (timers[socket.room] == undefined) return callback();
 					  //fix stack size exceeded
 						clearInterval(timers[socket.room].dcTimer);
 						clearInterval(timers[socket.room].clockTimer);
@@ -945,6 +949,7 @@ module.exports.listen = function(app){
 				});
 
 				socket.on('sendRoomMsg',function(data,cb){
+						if (roomVar[socket.room] == undefined) return cb();
 
 						roomVar[socket.room]['roomMsg'].push({
 									'username':socket.userInfo.username,
@@ -1052,7 +1057,7 @@ module.exports.listen = function(app){
 							timers[socket.room].clockTimer = null;
 
 							//60 seconds disconnection
-							roomVar[socket.room].dcInc = 30;
+							roomVar[socket.room].dcInc = 60;
 							timers[socket.room].dcTimer = setInterval(function(){ //pause flipclock
 
 								roomVar[socket.room].gameStatus = 'reconnect';

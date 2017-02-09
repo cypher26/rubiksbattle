@@ -407,6 +407,23 @@ var friends = [friend1,friend2,friend3];
 
 
 
+// user_model.find({}, function(err, doc){
+//   //use promises for forEach
+//  var requests = doc.reduce((promiseChain, item, index, tempItem) => { 
+//               return promiseChain.then(() => new Promise((resolve) => {
+                       
+//                        setTimeout(function(){
+//                          console.log(item);
+//                              resolve();
+//                          },1000);
+                        
+//               }));
+//           }, Promise.resolve()).then(function(){
+//               // last execution
+//               console.log('finish all');
+//           });
+ 
+// });
 
 
 module.exports.cleanUser = function(callback){

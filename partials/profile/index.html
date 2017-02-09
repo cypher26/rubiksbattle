@@ -82,7 +82,9 @@ border-radius: 25px 10px / 10px 25px;
 															</strong>
 
 													</div>
-													<div layout='row' style='border:0px solid'>
+
+												<!-- 	<div style="display:{{convertTimeComplete(userRankSingle3.endedTime)==''?'none':''}}"> -->
+													<div layout='row' style="border:0px solid; display:{{convertTimeComplete(userRankSingle3.endedTime)==''?'none':''}} ">
 														<span class='glyphicon glyphicon-flash' style='margin-right:5px;'></span> Best time: <div flex></div><b style='color:#848484; '>
 														<a href="/archive/{{userRankSingle3.id}}">
 														{{convertTimeComplete(userRankSingle3.endedTime)}}</a> </b><b 
@@ -90,7 +92,8 @@ border-radius: 25px 10px / 10px 25px;
 														style='color:orange; margin-left:7px; font-size:17px;'> 
 														{{userRankSingle3.rank==0?'':userRankSingle3.rank}} </b>
 													</div>
-													<div layout='row'style='border:0px solid'>
+												
+													<div layout='row'style="border:0px solid; display:{{convertTimeComplete(userRankSingle3.endedTime)==''?'none':''}}">
 														<span class='glyphicon glyphicon-fire' style='margin-right:5px;'></span> 	Average: <div flex></div><b style='color:#848484; '>
 														{{convertTimeComplete(userRankAverage3.endedTime)}}
 														 </b><b uib-popover="Overall rank {{userRankAverage3.rank}}" popover-placement='top' popover-trigger="'mouseenter'"
@@ -98,13 +101,26 @@ border-radius: 25px 10px / 10px 25px;
 														{{userRankAverage3.rank==0?'':userRankAverage3.rank}} </b>
 														  </b> 
 													</div>
+													<!-- </div> -->
+													<div layout='row' style="display:{{convertTimeComplete(userRankSingle3.endedTime)==''?'':'none'}}; padding-top:20px;" layout-align='center' >
+														<span ng-hide="isMember">
+															To set your record 
+															<a href='/play' style='margin-left:5px; '>Play now!</a>
+														</span>
+														<span ng-hide="!isMember">
+															No record
+														</span>
+														
+														
+													</div>
+
 													<md-divider style='margin-top:20px;'></md-divider>
 													<md-divider></md-divider>
 													
 													<div layout='row' layout-align='center' style='background-color:#F8E0E6'> 
 															<span style='margin-right:5px' class='glyphicon glyphicon-th-large'></span>2x2x2
 													</div>
-														<div layout='row' style='border:0px solid'>
+														<div layout='row' style="border:0px solid; display:{{convertTimeComplete(userRankSingle2.endedTime)==''?'none':''}}" >
 														<span class='glyphicon glyphicon-flash' style='margin-right:5px;'></span> Best 	time: <div flex></div><b style='color:#848484; '>
 														<a href="/archive/{{userRankSingle2.id}}">
 														{{convertTimeComplete(userRankSingle2.endedTime)}}</a>
@@ -114,12 +130,24 @@ border-radius: 25px 10px / 10px 25px;
 														 {{userRankSingle2.rank==0?'':userRankSingle2.rank}} </b>
 														  </b>  
 													</div>
-													<div layout='row'style='border:0px solid'>
+													<div layout='row' style="border:0px solid; display:{{convertTimeComplete(userRankSingle2.endedTime)==''?'none':''}}" >
 														<span class='glyphicon glyphicon-fire' style='margin-right:5px;'></span> 	Average: <div flex></div><b style='color:#848484; '>
 														{{convertTimeComplete(userRankAverage2.endedTime)}}
 														</b><b uib-popover="Overall rank {{userRankAverage2.rank}}" popover-placement='top' popover-trigger="'mouseenter'"
 														style='color:orange; margin-left:7px; font-size:17px;'> 
 														{{userRankAverage2.rank==0?'':userRankAverage2.rank}} </b></b> 
+													</div>
+
+													<div layout='row' style="display:{{convertTimeComplete(userRankSingle2.endedTime)==''?'':'none'}}; padding-top:20px;" layout-align='center' >
+
+															<span ng-hide="isMember">
+															To set your record 
+															<a href='/play' style='margin-left:5px; '>Play now!</a>
+															</span>
+															<span ng-hide="!isMember">
+																No record
+															</span>
+														
 													</div>
 
 													

@@ -381,7 +381,7 @@
         }
     </style>
        <div class="md-dialog-container lg-modal" id="helpDialog" style='top:0px;'>
-          <md-dialog  layout-padding style=' width:600px; border:0px solid; background-color:#2E2E2E; padding:10px; color:#ffffff; 
+          <md-dialog  layout-padding style='margin-top:100px; width:600px; border:0px solid; background-color:#2E2E2E; padding:10px; color:#ffffff; 
              '  >
                 
             <div layout='row' >
@@ -580,14 +580,14 @@
                                                     ngf-pattern="'image/*'"
                                                     accept="image/*" 
                                                     ngf-max-size="2MB" 
-                                                 
+                                                    
                                                      />
                                                                  
                                                  </div>
                     </form>
             </div>
             <div layout='row' layout-align='center'>
-                    <md-button ng-click='updateAcct()' class='md-raised md-primary'>Update avatar</md-button>
+                    <md-button ng-click='updateAcct()'  ng-disabled="editAvatarDisable" class='md-raised md-primary'>Update avatar</md-button>
             </div>
 
           </md-dialog>

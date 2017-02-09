@@ -143,8 +143,12 @@ if (['player1','player2'].indexOf($rootScope.playerPerspective)>-1 ){
                       height: 80
                   }
                 }).finally(function(){
-                  $scope.btnP1 = true;
-                  $scope.modalPage = -1;
+                       $scope.modalPage = -1;
+                     
+                  if (['onGame','reconnect'].indexOf($scope.gameStatus)<0){ // if not reconnect and onGame
+                              $scope.btnP1 = true;
+                  }
+                 
                    // $http.post('/stopModalHelp',{}). success(function(data) {}).error(function(data) {   });
 
                 // socket.emit('stopModalHelp',{},function(){ });

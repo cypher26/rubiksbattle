@@ -51,10 +51,11 @@
 												<td rowspan='4' style='border:0px solid;'>
 
 													<img id='p1Image' 
-		src="/img/user/userDefault.png" style='height=50px; width:50px; margin-left:10px; margin-right:10px;'></img>
+		src="{{gameData.game_id.reqFrom_id.user_avatar}}" style='height=50px; width:50px; margin-left:10px; margin-right:10px;'></img>
 												</td>
 												<td style='border:0px solid; padding-bottom:5px;'>
 													<b><font id='p1Username' style='font-size:17px; color:#6E6E6E;'>
+
 														{{gameData.game_id.reqFrom_id.username}}
 													</font> </b>
 													
@@ -116,7 +117,7 @@
 													</font> 
 												</td>
 												<td align='right' rowspan='4' style='border:0px solid;'>
-													<img id='p2Image' src="/img/user/userDefault.png" style='height=50px; width:50px; margin-left:10px; margin-right:10px;' style='height=50px; width:50px; margin-right:10px; margin-left:10px;'></img>
+													<img id='p2Image' src="{{gameData.game_id.reqTo_id.user_avatar}}" style='height=50px; width:50px; margin-left:10px; margin-right:10px;' style='height=50px; width:50px; margin-right:10px; margin-left:10px;'></img>
 												</td>
 
 											</tr>
