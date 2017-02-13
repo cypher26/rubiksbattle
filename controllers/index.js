@@ -352,7 +352,7 @@ app.run(function ($rootScope, ngProgressFactory,$http,$window,$timeout) {
         // $rootScope.progressbar.complete();
         // ON CHANGE CONTROLLER
         // setConstantWidth(); 
-        
+
                   //for archive cube animate to stop
                                enableAnimate = false;
                                enableAnimate1 = false;
@@ -381,7 +381,7 @@ app.run(function ($rootScope, ngProgressFactory,$http,$window,$timeout) {
                                                       $rootScope.validName = false;
 
 
-
+ 
 
                                                       $rootScope.fullName = $rootScope.userInfo.user_fullName;
                                                       $rootScope.inputFullName = $rootScope.fullName;
@@ -409,8 +409,15 @@ app.run(function ($rootScope, ngProgressFactory,$http,$window,$timeout) {
                                                           }
 
                                                       }
+
+
                                                        $rootScope.memberIni(function(){});
                                                       //###################### side template end ################
+
+
+                                                      //update inbox and friends list
+                                                       $rootScope.updateInbox();
+                                                       $rootScope.updateFriendReq();
                                                 
                                                 }).error(function(data) {
                                                     console.log("error in get user info");
@@ -1091,10 +1098,7 @@ $timeout(function(){
 
 
 
-$timeout(function(){
-   $rootScope.updateInbox();
-   $rootScope.updateFriendReq();
-});     
+
 
     socket.on('updateInvite',function (inc,user_data,game_data){
         $scope.inviteDisplay = 1;
