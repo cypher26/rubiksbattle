@@ -15,11 +15,11 @@ mongoose.Promise = global.Promise;
 
 
 //without internet
-var mongoStr = "mongodb://127.0.0.1/rubiksbattle";
+// var mongoStr = "mongodb://127.0.0.1/rubiksbattle";
 
 // var mongoStr = "mongodb://localhost/rubiksbattle";
 
-// var mongoStr = 'mongodb://rubiksbattle_user:rubiksbattledbpassword@jello.modulusmongo.net:27017/eja4timI';
+var mongoStr = 'mongodb://rubiksbattle_user:rubiksbattledbpassword@jello.modulusmongo.net:27017/eja4timI';
 
 
 mongoose.connect(mongoStr);
