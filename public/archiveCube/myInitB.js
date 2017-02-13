@@ -242,8 +242,14 @@ function animateFullPerm(algList,callback){
                  	if (item == "" || item.length > 4) { resolve(); }else{ // end-scramble or unknown
 						if (enableAnimate){
 	                 		 checkNotation(item,function(){
-		                       angular.element(document.getElementById('controller_id')).scope().updateP1Index(function(){});
-		                      resolve();
+	                 		 	try{
+	                 		 		 angular.element(document.getElementById('controller_id')).scope().updateP1Index(function(){});
+		                     	}catch(e){
+		                     		//workaround fix
+		                     		resolve();
+
+	                 		 	}
+		                       resolve();
 		                    });
 	                 	}else{                 
 		                   resolve();

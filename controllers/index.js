@@ -331,7 +331,7 @@ onDomChange(function(){
 });
 
 var iniWidth  = 0;
-app.run(function ($rootScope, ngProgressFactory,$http,$window) { 
+app.run(function ($rootScope, ngProgressFactory,$http,$window,$timeout) { 
 
     // first create instance when app starts
     $rootScope.progressbar = ngProgressFactory.createInstance();
@@ -340,68 +340,11 @@ app.run(function ($rootScope, ngProgressFactory,$http,$window) {
     // $rootScope.progressbar.setHeight('3px');
     $rootScope.$on("$routeChangeStart", function () {
 
-        //for archive cube animate to stop
-         enableAnimate = false;
-         enableAnimate1 = false;
-       $rootScope.progressbar.start();
-         // alert('start');
-             $http.post('/getUserInfo',{}).
-                    success(function(data) {
-                          // alert(data.userInfo.username);
-                          $rootScope.userInfo = data.userInfo;
-                          $rootScope.computerInfo = data.computerInfo;
-                          $rootScope.selfInfo = data.selfInfo;
+      // $timeout(function(){
+      //     console.log('change link');
+      // });
 
-                             // $rootScope.side = {
-                             //      username : data.userInfo.username,
-                             //      avatar : data.userInfo.user_avatar,
-                             //      fullName : data.userInfo.user_fullName,
-                             //      country : data.userInfo.user_country
-                             //   } 
-                        
-
-
-                               // $rootScope.memberIni(function(){});
-                                //###################### side template ################
-
-                                $rootScope.edit = false;
-                                $rootScope.validName = false;
-
-
-
-
-                                $rootScope.fullName = $rootScope.userInfo.user_fullName;
-                                $rootScope.inputFullName = $rootScope.fullName;
-
-                                // console.log($rootScope.userInfo);
-                              
-                                $rootScope.inputFullNameFunc = function(e){
-                                    if (e.length>0){
-                                      $rootScope.validName = true;
-                                    }else $rootScope.validName = false;
-                                }
-
-                                $rootScope.updateFullName = function(e){
-                                    if ($rootScope.validName){
-                                         $http.post('/updateFullName',{fullName:e})
-                                          .success(function(data) {
-                                             $rootScope.userInfo = data.user_data;
-                                             alert('Success updating display name!');
-                                             // $rootScope.edit = false;
-                                             $window.location.reload();
-                                             // console.log(data.friendsData);
-                                          }).error(function(data) {
-                                            
-                                        });
-                                    }
-
-                                }
-                                 $rootScope.memberIni(function(){});
-                                //###################### side template end ################
-                          
-                          }).error(function(data) {
-                              console.log("error in get user info");
-                          });
+      
 
     });
 
@@ -409,6 +352,69 @@ app.run(function ($rootScope, ngProgressFactory,$http,$window) {
         // $rootScope.progressbar.complete();
         // ON CHANGE CONTROLLER
         // setConstantWidth(); 
+        
+                  //for archive cube animate to stop
+                               enableAnimate = false;
+                               enableAnimate1 = false;
+                             $rootScope.progressbar.start();
+                               // alert('start');
+                                   $http.post('/getUserInfo',{}).
+                                          success(function(data) {
+                                                // alert(data.userInfo.username);
+                                                $rootScope.userInfo = data.userInfo;
+                                                $rootScope.computerInfo = data.computerInfo;
+                                                $rootScope.selfInfo = data.selfInfo;
+
+                                                   // $rootScope.side = {
+                                                   //      username : data.userInfo.username,
+                                                   //      avatar : data.userInfo.user_avatar,
+                                                   //      fullName : data.userInfo.user_fullName,
+                                                   //      country : data.userInfo.user_country
+                                                   //   } 
+                                              
+
+
+                                                     // $rootScope.memberIni(function(){});
+                                                      //###################### side template ################
+
+                                                      $rootScope.edit = false;
+                                                      $rootScope.validName = false;
+
+
+
+
+                                                      $rootScope.fullName = $rootScope.userInfo.user_fullName;
+                                                      $rootScope.inputFullName = $rootScope.fullName;
+
+                                                      // console.log($rootScope.userInfo);
+                                                    
+                                                      $rootScope.inputFullNameFunc = function(e){
+                                                          if (e.length>0){
+                                                            $rootScope.validName = true;
+                                                          }else $rootScope.validName = false;
+                                                      }
+
+                                                      $rootScope.updateFullName = function(e){
+                                                          if ($rootScope.validName){
+                                                               $http.post('/updateFullName',{fullName:e})
+                                                                .success(function(data) {
+                                                                   $rootScope.userInfo = data.user_data;
+                                                                   alert('Success updating display name!');
+                                                                   // $rootScope.edit = false;
+                                                                   $window.location.reload();
+                                                                   // console.log(data.friendsData);
+                                                                }).error(function(data) {
+                                                                  
+                                                              });
+                                                          }
+
+                                                      }
+                                                       $rootScope.memberIni(function(){});
+                                                      //###################### side template end ################
+                                                
+                                                }).error(function(data) {
+                                                    console.log("error in get user info");
+                                                });
         
     });
 });

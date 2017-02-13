@@ -105,8 +105,8 @@
                 <td>
                   <div class="tabs tabs-striped" style='border:0px solid;' align='center'>
                     <span style='color:#bdbdbd'>
-        <i ng-click="cancel();  redirect('/profile/messages')" class="glyphicon glyphicon-envelope" style='font-size:14px;'><span style="display:{{numMsg==0?'none':''}}"class="badge">{{numMsg}}</span></i>
-                  <i ng-click="cancel();  redirect('/invite')"class="glyphicon glyphicon-user" style='font-size:14px; '><a ><span style="display:{{numFriends==0?'none':''}}" class="badge" >{{numFriends}}</span></a></i>
+        <i ng-click="cancel();  redirect('/profile/messages')" class="glyphicon glyphicon-envelope" style='font-size:14px;'><span style="display:{{numMsg==0?'none':''}}; background-color:red;"class="badge">{{numMsg}}</span></i>
+                  <i ng-click="cancel();  redirect('/invite')"class="glyphicon glyphicon-user" style='font-size:14px; '><a ><span style="display:{{numFriends==0?'none':''}}; background-color:red;" class="badge" >{{numFriends}}</span></a></i>
                   </span>
                   </div>
 
