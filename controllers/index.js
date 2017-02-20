@@ -1033,7 +1033,7 @@ $timeout(function(){
               $scope.numMsg =0;
              
              
-
+              
             $scope.msg_text.forEach(function(item){
                  if (item.msg_status === 'unseen' && item.msg_from.username != $rootScope.userInfo.username){
                     $scope.numMsg++;

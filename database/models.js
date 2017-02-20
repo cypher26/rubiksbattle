@@ -625,6 +625,7 @@ module.exports.viewInbox = function(user_id,mainCallback){
         })
         .select('msg_to msg_from msg_text').populate('msg_to').populate('msg_from')
         .exec(function(err,data){
+                if (data.length == 0) return mainCallback([]);
                 
                     (function() {
                          
@@ -636,6 +637,7 @@ module.exports.viewInbox = function(user_id,mainCallback){
                          
                        return new Promise(function(resolve, reject){
                             // if no inbox
+
 
                             // if (data == null) console.log('no laman'); 
                           
