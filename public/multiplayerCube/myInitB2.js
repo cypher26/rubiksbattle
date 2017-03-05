@@ -230,7 +230,7 @@ var sI;
 
 var queueAlgP2 = [];
 var gameUpdate ='';
-function animateFullPerm1(algList){
+function animateComputerFullPerm1(algList,cb){
     // var algList = algList.split(" ");
         var requests = algList.reduce((promiseChain, item, index, tempItem) => {
                 return promiseChain.then(() => new Promise((resolve) => {
@@ -248,8 +248,31 @@ function animateFullPerm1(algList){
                                        
                 }));
             }, Promise.resolve()).then(function(){
-               
+               	
+            		cb();
+            });
+          
+ }
+function animateFullPerm1(algList,cb){
+    var algList = algList.split(" ");
+        var requests = algList.reduce((promiseChain, item, index, tempItem) => {
+                return promiseChain.then(() => new Promise((resolve) => {
 
+// console.log('gameUpdate 2 = '  + gameUpdate);
+                 		
+                 	if (!simulateIfSolve(allMovesP2 + " " + allAlgP2) && (gameUpdate=='onGame')){
+                 		checkNotation1(item,function(){
+	                    	resolve();
+	                    });
+                 	}else{
+
+                    	resolve();
+                    }
+                                       
+                }));
+            }, Promise.resolve()).then(function(){
+               	
+            		cb();
             });
           
  }

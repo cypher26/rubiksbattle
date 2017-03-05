@@ -777,14 +777,15 @@ module.exports.listen = function(app){
 
 											//send solution
 											roomVar[socket.room].algSolution = inverseAlg(roomVar[socket.room].scramble);
-											roomVar[socket.room]['roomMsg'].push({
-														'username':'Computer',
-														'avatar':'img/user/robotDefault.png',
-														'msg':'Solution: ' + roomVar[socket.room].algSolution
-													});
+											// roomVar[socket.room]['roomMsg'].push({
+											// 			'username':'Computer',
+											// 			'avatar':'img/user/robotDefault.png',
+											// 			'msg':'Solution: ' + roomVar[socket.room].algSolution
+											// 		});
 
-											io.sockets.in(socket.room).emit('updateRoomMsg',roomVar[socket.room]['roomMsg']);
+											// io.sockets.in(socket.room).emit('updateRoomMsg',roomVar[socket.room]['roomMsg']);
 
+											io.sockets.in(socket.room).emit('updateAlgSolution',roomVar[socket.room]['algSolution']);
 
 				
 											//computer algorithm

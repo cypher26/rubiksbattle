@@ -230,23 +230,28 @@ var sI;
 
 
 var queueAlgP1 = [];
-function animateFullPerm(algList){
+function animateFullPerm(algList,cb){
     var algList = algList.split(" ");
-        var requests = algList.reduce((promiseChain, item, index, tempItem) => {
+          var requests = algList.reduce((promiseChain, item, index, tempItem) => {
                 return promiseChain.then(() => new Promise((resolve) => {
-                 
-                    checkNotation(item,function(){
-                      resolve();
-                    });
+
+             	if (!simulateIfSolve(allMovesP1 + " " + allAlgP1) && (gameUpdate=='onGame')){
+                 		checkNotation(item,function(){
+	                    	resolve();
+	                    });
+                 	}else{
+
+                    	resolve();
+                    }
                                        
                 }));
             }, Promise.resolve()).then(function(){
-               
-
+               	cb();
+            		// console.log('finish');
             });
           
  }
-  function animatePermSeries(){ // l_alg letter alg ####################### queue per move
+  function animatePermSeries(cb){ // l_alg letter alg ####################### queue per move
        var requests = queueAlgP1.reduce((promiseChain, item, index, tempItem) => {
                 return promiseChain.then(() => new Promise((resolve) => {
                  	
@@ -270,7 +275,11 @@ function animateFullPerm(algList){
                 //queue
                 // console.log(queueAlgP1.length);
                 if (queueAlgP1.length!=0){
-                  animatePermSeries();
+                  animatePermSeries(function(){});
+                }else{
+                	//finish
+                	// resolve();
+                	cb();
                 }
                 // animatePermSeries()
 

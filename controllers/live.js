@@ -89,6 +89,8 @@ app.directive('focusMe', ['$timeout', '$parse', function ($timeout, $parse) {
 app.controller('liveCtrl', function (ngAudio, $scope, $location, $http,$q, $window, $rootScope,$timeout,socket,$mdDialog,$sce,$mdSidenav,$mdToast,$interval) {
   // document.getElementById('firstRow').style.width = 1266;
 
+  $scope.algSolution = '';
+
   $scope.bodyStyle = {
     position:'absolute',
     top: 0,
@@ -334,6 +336,8 @@ $scope.hideToast = function(){
     }
 
      $scope.htmlPopover = $sce.trustAsHtml("<span class='glyphicon glyphicon-fire'></span> Click here to begin!");
+     $scope.undoPopover = $sce.trustAsHtml("<span style='width:500px;'>Undo your last move</span>");
+     
       $scope.yearNow = new Date().getFullYear();
 
       //############################-dialogs-#####################################//
@@ -490,7 +494,7 @@ $scope.btnTest = function(){
       // speed1 = 50;
       $interval(function(){
             queueAlgP1.push("x");
-            animatePermSeries();
+            animatePermSeries(function(){});
 
       },1000);
     // }else {
@@ -704,7 +708,7 @@ $timeout(function(){
             if ($rootScope.playerPerspective == 'player1'){
               $timeout(function(){
                 
-                   animateFullPerm1(comAlgSolution);
+                   animateComputerFullPerm1(comAlgSolution,function(){});
               },1500);
             }
             
@@ -750,6 +754,11 @@ $timeout(function(){
 
         
   $scope.glued = true;
+   socket.on('updateAlgSolution',function (data){
+          // $scope.glued = false;
+           $scope.algSolution = data;
+      });
+
    socket.on('updateRoomMsg',function (data){
           // $scope.glued = false;
              $scope.glued = true;
@@ -976,7 +985,7 @@ $timeout(function(){
       };
       $scope.sendAlgP1 = function(data,arrayAlg,cb){
           // console.log('player 1 send');
-              
+             
           socket.emit('sendAlgP1',{alg:data,arrayAlg:arrayAlg},function(){
              $scope.fx.move.play();
                 cb();
@@ -985,7 +994,7 @@ $timeout(function(){
       };
       $scope.sendAlgP2 = function(data,arrayAlg,cb){
          // console.log('player 2 send');
-
+ // console.log(allAlgP2);
             // console.log(arrayAlg);
           socket.emit('sendAlgP2',{alg:data,arrayAlg:arrayAlg},function(){
             if (!($scope.gameData.reqTo_id._id==0)){
@@ -1308,15 +1317,15 @@ $scope.displayYourCube  ='loading...';
 
               if (!$scope.shift){
                   queueAlgP1.push(alg.toLowerCase());
-                  animatePermSeries();
+                  animatePermSeries(function(){});
               }
               if ($scope.shift){
                 
                   queueAlgP1.push(alg.toUpperCase());
-                  animatePermSeries();
+                  animatePermSeries(function(){});
               }
 
-
+       
 
 
 
@@ -1344,8 +1353,109 @@ $scope.displayYourCube  ='loading...';
          console.log('shift ' + $scope.shift);
       }
 
-    
+  function reduceString(statement){
 
+    statement = statement + "" + " ";
+    statement = statement.replace(/\s\s+/g, ' ');
+    statement = statement.replace(/\n+/g, ' ');
+    return statement;
+}
+
+function removeTrailing(str){
+ str =  str.replace(/^[ ]+|[ ]+$/g,'');
+ return str;
+}
+
+function inverseAlg(alg){
+    var inverseStr= '';
+      alg = alg.split(' ');
+
+      for (var x =alg.length-1;x>=0;x--){
+        inverseStr+=alg[x] + " ";
+      }
+     inverseStr = inverseStr.replace(/\' /g,'p');
+     inverseStr = inverseStr.replace(/ /g,'\' ');
+     inverseStr = inverseStr.replace(/p/g,' ');
+// console.log(inverseStr + 'asdf');
+     if (inverseStr == "' ") return '';
+  return inverseStr;
+}
+
+
+var undoEnable = true;      
+
+      $scope.undoMove = function(){
+         if ($rootScope.playerPerspective=='player1' && $scope.gameStatus == 'onGame' && 
+          !simulateIfSolve(allMovesP1 + " " + allAlgP1)){
+
+       if (undoEnable){
+           undoEnable = false;
+            var algStr = reduceString(allAlgP1).split(' ');
+
+            if (!(inverseAlg(algStr[algStr.length-2]) == "")) {
+                 var algInverse  = inverseAlg(algStr[algStr.length-2]);
+                  // console.log(algStr);
+                  // console.log(algInverse);
+                   animateFullPerm(removeTrailing(algInverse),function(){
+                        algStr.pop();
+                        algStr.pop();
+                        algStr.push('');
+
+                        allAlgP1 = algStr.join(' ');
+
+                        // console.log(algStr);
+                        // console.log('callback');
+
+                        undoEnable = true;
+                   
+                        
+                  });
+            }else{
+              undoEnable = true;
+            }
+           
+           
+          }
+            // allAlgP1 = algStr
+            // console.log(allAlgP1.split(' ')[allAlgP1.split(' ').length-1]);
+
+        }else if ($rootScope.playerPerspective=='player2' && $scope.gameStatus == 'onGame' && 
+          !simulateIfSolve(allMovesP2 + " " + allAlgP2)){
+
+             if (undoEnable){
+                   undoEnable = false;
+                    var algStr = reduceString(allAlgP2).split(' ');
+
+                    if (!(inverseAlg(algStr[algStr.length-2]) == "")) {
+                         var algInverse  = inverseAlg(algStr[algStr.length-2]);
+                          // console.log(algStr);
+                          // console.log(algInverse);
+                           animateFullPerm1(removeTrailing(algInverse),function(){
+                                algStr.pop();
+                                algStr.pop();
+                                algStr.push('');
+
+                                allAlgP2 = algStr.join(' ');
+
+                                // console.log(algStr);
+                                // console.log('callback');
+
+                                undoEnable = true;
+                           
+                                
+                          });
+                    }else{
+                      undoEnable = true;
+                    }
+           
+           
+          }
+
+            // console.log(allAlgP2);
+            
+        }
+         
+      }
       $scope.keydown = function(e){
 
         
@@ -1354,8 +1464,8 @@ $scope.displayYourCube  ='loading...';
           !simulateIfSolve(allMovesP1 + " " + allAlgP1)){
 
              queueAlgP1.push(e.key);
-             animatePermSeries();
-
+             animatePermSeries(function(){});
+           
 
         }else if ($rootScope.playerPerspective=='player2' && $scope.gameStatus == 'onGame' && e.key.length ==1 && 
           !simulateIfSolve(allMovesP2 + " " + allAlgP2)){
@@ -1364,7 +1474,7 @@ $scope.displayYourCube  ='loading...';
               // $scope.fx.move.play();
              queueAlgP2.push(e.key);
              animatePermSeries1();
-
+            
         }
          
 
