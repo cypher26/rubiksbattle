@@ -1,5 +1,5 @@
 
-	// var tpad = document.getElementById('tpad');
+
 	var dimen = 3;
 	var arrayCube =[];
 	
@@ -238,12 +238,6 @@ arrayCube = transposeMatrix(arrayCube,3);
 	///////////////////////////////	
 }
 
-
- 	
-
-
-
-
 // printArrayCube();
 
 
@@ -400,7 +394,7 @@ for (z = 0;z<dimenLet.length;z++){
   }
   tpad.innerHTML+='<br>';
 
-  //tpad.innerHTML+='hi';
+
 }
 function execPerm(str){
 		
@@ -743,12 +737,3 @@ this.solve=function (scramble)
 }
 
 
-// console.log(cornerCheck[0]);
-// </script>
-// <input type='text' placeholder='sample' id='inputAlg'></input>
-// <button onClick="execCornerBufferAlg(document.getElementById('inputAlg').value);">Corner</button>
-// <button onClick="execPerm(document.getElementById('inputAlg').value);">Move</button>
-// <button onClick="execEdgeBufferAlg('');">Edge</button>
-
-// </body>
-// </html>

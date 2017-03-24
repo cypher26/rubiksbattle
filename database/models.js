@@ -15,11 +15,11 @@ mongoose.Promise = global.Promise;
 
 
 //without internet
-// var mongoStr = "mongodb://127.0.0.1/rubiksbattle";
+var mongoStr = "mongodb://127.0.0.1/rubiksbattle";
 
 // var mongoStr = "mongodb://localhost/rubiksbattle";
 
-var mongoStr = 'mongodb://rubiksbattle_user:rubiksbattledbpassword@jello.modulusmongo.net:27017/eja4timI';
+// var mongoStr = 'mongodb://rubiksbattle_user:rubiksbattledbpassword@jello.modulusmongo.net:27017/eja4timI';
 
 
 mongoose.connect(mongoStr);
@@ -357,52 +357,52 @@ var friends = [friend1,friend2,friend3];
 		// });
   //    });
 //######################################
-    //   (function() {
-    //        return new Promise(function(resolve, reject){
+      (function() {
+           return new Promise(function(resolve, reject){
 
-    //         // //reset from start
-    //     [user_model,friends_model,msg_model,archive_msg_model,game_model,archive_game_model].forEach(function(data){
-    //       data.remove({}, function(err) { 
-    //            resolve();
-    //       });
-    //     });
+            // //reset from start
+        [user_model,friends_model,msg_model,archive_msg_model,game_model,archive_game_model].forEach(function(data){
+          data.remove({}, function(err) { 
+               resolve();
+          });
+        });
                
-    //        });
-    //  })()
-    // .then(function(){
-    //   return new Promise(function(resolve,reject){
-    //     var ctr = 0;
-    //      people.forEach(function(data,index,array){
-    //         new user_model(data)
-    //         .save(function(err,data){
-    //             console.log(data);
-    //              ctr++;
-    //              if(ctr === array.length) {
-    //           resolve();
-    //           }
-    //         });
+           });
+     })()
+    .then(function(){
+      return new Promise(function(resolve,reject){
+        var ctr = 0;
+         people.forEach(function(data,index,array){
+            new user_model(data)
+            .save(function(err,data){
+                console.log(data);
+                 ctr++;
+                 if(ctr === array.length) {
+              resolve();
+              }
+            });
            
             
-    //     });
+        });
 
-    //     });
-    //  }).then(function() {
-    //        return new Promise(function(resolve, reject){
-    //         var ctr = 0;
-    //             friends.forEach(function(data,index,array){
-    //          new friends_model(data)
-    //         .save(function(err,data){
-    //             console.log(data);
-    //              ctr++;
-    //              if(ctr === array.length) {
-    //           resolve();
-    //            }
-    //         });
-    //     });
+        });
+     }).then(function() {
+           return new Promise(function(resolve, reject){
+            var ctr = 0;
+                friends.forEach(function(data,index,array){
+             new friends_model(data)
+            .save(function(err,data){
+                console.log(data);
+                 ctr++;
+                 if(ctr === array.length) {
+              resolve();
+               }
+            });
+        });
           
 
-    //        });
-    //   });
+           });
+      });
 
 
 
